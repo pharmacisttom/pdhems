@@ -28,6 +28,9 @@ import { FacilityMarkerLayer } from '../components/map/FacilityMarkerLayer';
 import { BaseMarkerLayer } from '../components/map/BaseMarkerLayer';
 import { ActualTrackPolylineLayer } from '../components/map/ActualTrackPolylineLayer';
 import { TrackingHealthWidget } from '../components/map/TrackingHealthWidget';
+import { SmartDispatchModal } from '../components/map/SmartDispatchModal';
+import { TripPlaybackScrubber } from '../components/map/TripPlaybackScrubber';
+import { GpsTrackPoint } from '../types/ems';
 import {
   AlertTriangle,
   Ambulance,
@@ -36,6 +39,8 @@ import {
   X,
   MapPin,
   CheckCircle2,
+  Zap,
+  Play,
 } from 'lucide-react';
 
 // Emergency Scene Pin Icon
@@ -68,6 +73,36 @@ const sceneIcon = L.divIcon({
   popupAnchor: [0, -30],
 });
 
+// Trip Playback Car Pin Icon (Phase MAP-6)
+const playbackIcon = L.divIcon({
+  html: `
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+      <div style="position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; border-radius: 9999px; background: rgba(6, 182, 212, 0.4); animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+      <div style="
+        background: #06b6d4; 
+        color: #0f172a; 
+        border: 2px solid white; 
+        padding: 4px 8px; 
+        border-radius: 9999px; 
+        font-weight: 900; 
+        font-size: 11px;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.6);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      ">
+        <span>🚗</span>
+        <span>PLAYBACK</span>
+      </div>
+      <div style="width: 2px; height: 6px; background: #06b6d4;"></div>
+    </div>
+  `,
+  className: 'custom-playback-pin',
+  iconSize: [80, 40],
+  iconAnchor: [40, 40],
+});
+
 export const CommandCenterMapPage: React.FC = () => {
   const [vehicles, setVehicles] = useState<VehicleMarkerData[]>([]);
   const [facilities, setFacilities] = useState<FacilityData[]>([]);
@@ -75,9 +110,12 @@ export const CommandCenterMapPage: React.FC = () => {
   const [missions, setMissions] = useState<ActiveMissionData[]>([]);
   const [healthSummary, setHealthSummary] = useState<TrackingHealthSummary | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<MissionTrackResponse | null>(null);
+  const [isPlaybackOpen, setIsPlaybackOpen] = useState<boolean>(false);
+  const [playbackPoint, setPlaybackPoint] = useState<GpsTrackPoint | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   const [mapError, setMapError] = useState<boolean>(false);
+  const [isDispatchModalOpen, setIsDispatchModalOpen] = useState<boolean>(false);
 
   // Filters & Layers
   const [currentFilter, setCurrentFilter] = useState<MapFilterType>('ALL');
@@ -241,13 +279,23 @@ export const CommandCenterMapPage: React.FC = () => {
               <Ambulance className="w-4 h-4 text-sky-400" />
               <span className="font-bold text-slate-100">รายการรถ EMS & ภารกิจ</span>
             </div>
-            <button
-              onClick={loadData}
-              title="รีเฟรชข้อมูล GPS"
-              className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => setIsDispatchModalOpen(true)}
+                className="px-2 py-1 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white rounded-lg text-[10px] font-bold shadow-md shadow-rose-600/30 flex items-center gap-1 transition-all"
+                title="ค้นหาและสั่งการรถพยาบาลด่วน"
+              >
+                <Zap className="w-3 h-3" />
+                <span>Smart Dispatch</span>
+              </button>
+              <button
+                onClick={loadData}
+                title="รีเฟรชข้อมูล GPS"
+                className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
 
           {/* Vehicle List */}
@@ -484,6 +532,23 @@ export const CommandCenterMapPage: React.FC = () => {
                         </React.Fragment>
                       );
                     })}
+
+                {/* Animated Playback Marker (Phase MAP-6) */}
+                {isPlaybackOpen && playbackPoint && (
+                  <Marker
+                    position={[Number(playbackPoint.latitude), Number(playbackPoint.longitude)]}
+                    icon={playbackIcon}
+                  >
+                    <Popup>
+                      <div className="p-2 text-xs text-slate-100 space-y-1">
+                        <p className="font-bold text-cyan-400">🚗 PLAYBACK POSITION</p>
+                        <p>เวลา: {new Date(playbackPoint.recorded_at).toLocaleTimeString('th-TH')}</p>
+                        <p>ความเร็ว: {Math.round(playbackPoint.speed)} กม./ชม.</p>
+                        <p>ทิศทาง: {playbackPoint.heading ?? '—'}°</p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                )}
               </MapContainer>
 
               {/* Quick Map Legend Badge at Bottom Right */}
@@ -543,17 +608,50 @@ export const CommandCenterMapPage: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                onClick={() => setSelectedTrack(null)}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 transition-colors"
-              >
-                <X className="w-3.5 h-3.5" />
-                <span>ปิดเส้นทาง</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsPlaybackOpen(true)}
+                  className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-600/30 transition-all"
+                >
+                  <Play className="w-3.5 h-3.5 fill-white" />
+                  <span>เล่นย้อนหลัง (Playback)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedTrack(null);
+                    setIsPlaybackOpen(false);
+                    setPlaybackPoint(null);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>ปิดเส้นทาง</span>
+                </button>
+              </div>
             </div>
+          )}
+
+          {/* Trip Playback Scrubber (Phase MAP-6) */}
+          {isPlaybackOpen && selectedTrack && (
+            <TripPlaybackScrubber
+              track={selectedTrack}
+              onClose={() => {
+                setIsPlaybackOpen(false);
+                setPlaybackPoint(null);
+              }}
+              onPointChange={(pt) => setPlaybackPoint(pt)}
+            />
           )}
         </div>
       </div>
+
+      {/* Smart Dispatch Modal (Phase MAP-5) */}
+      <SmartDispatchModal
+        isOpen={isDispatchModalOpen}
+        onClose={() => setIsDispatchModalOpen(false)}
+        onDispatched={loadData}
+      />
     </div>
   );
 };

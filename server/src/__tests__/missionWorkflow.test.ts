@@ -7,6 +7,13 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   let testMissionId: number;
 
   beforeAll(async () => {
+    // Reset test vehicle & driver to AVAILABLE in case prior tests/browser runs left it active
+    const { pool } = await import('../db/connection');
+    await pool.query("UPDATE ems_missions SET status = 'COMPLETED' WHERE vehicle_id = 1 AND status NOT IN ('COMPLETED', 'CANCELLED')");
+    await pool.query("UPDATE ambulances SET status = 'AVAILABLE' WHERE id = 1");
+    await pool.query("UPDATE drivers SET employment_status = 'AVAILABLE' WHERE id = 1");
+    await pool.query("DELETE FROM mission_crew WHERE staff_id = 1");
+
     // Login to obtain test token
     const res = await request(app).post('/api/auth/login').send({
       username: 'admin',
