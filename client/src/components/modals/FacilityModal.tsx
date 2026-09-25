@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FacilityData, FacilityType } from '../../types/ems';
 import { MapLocationPicker } from '../map/MapLocationPicker';
 import { Building2, MapPin, X, Check } from 'lucide-react';
+import { showWarning, showError, showToast } from '../../services/alertService';
 
 interface FacilityModalProps {
   isOpen: boolean;
@@ -33,7 +34,7 @@ export const FacilityModal: React.FC<FacilityModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!facilityCode || !name) {
-      alert('กรุณากรอกรหัสและชื่อสถานพยาบาล');
+      await showWarning('กรุณากรอกข้อมูลให้ครบ', 'กรุณาระบุรหัสและชื่อสถานพยาบาล');
       return;
     }
 
@@ -50,9 +51,10 @@ export const FacilityModal: React.FC<FacilityModalProps> = ({
         phone_optional: phone || null,
         active: true,
       });
+      showToast('บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
       onClose();
     } catch (err: any) {
-      alert('บันทึกไม่สำเร็จ: ' + err.message);
+      await showError('บันทึกไม่สำเร็จ', err);
     } finally {
       setSaving(false);
     }

@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Circle, useMapEvents } from 'react-lea
 import L from 'leaflet';
 import { MapPin, Check, Crosshair, Navigation } from 'lucide-react';
 import { getActiveMapProvider } from '../../services/mapProviderAdapter';
+import { showWarning, showToast } from '../../services/alertService';
 
 interface MapLocationPickerProps {
   initialLatitude?: number;
@@ -83,14 +84,15 @@ export const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
         (pos) => {
           setLat(pos.coords.latitude);
           setLng(pos.coords.longitude);
+          showToast('ดึงพิกัดตำแหน่งปัจจุบันสำเร็จ', 'success');
         },
         (err) => {
-          alert('ไม่สามารถดึงพิกัดจากอุปกรณ์ได้: ' + err.message);
+          showWarning('ไม่สามารถเข้าถึงตำแหน่งได้', 'กรุณาเปิดสิทธิ์ Location ในเบราว์เซอร์: ' + err.message);
         },
         { enableHighAccuracy: true }
       );
     } else {
-      alert('เบราว์เซอร์ไม่รองรับ Geolocation');
+      showWarning('อุปกรณ์ไม่รองรับ', 'เบราว์เซอร์นี้ไม่รองรับระบบ Geolocation');
     }
   };
 

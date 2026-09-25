@@ -15,6 +15,8 @@ import { AssignMissionModal } from '../components/missions/AssignMissionModal';
 import { PretripChecklistModal } from '../components/missions/PretripChecklistModal';
 import { EmergencyOverrideModal } from '../components/missions/EmergencyOverrideModal';
 import { HandoverModal } from '../components/missions/HandoverModal';
+import { MobileMissionCardList } from '../components/missions/MobileMissionCardList';
+import { showWarning, showError, showToast, confirmAction, confirmDeparture } from '../services/alertService';
 import {
   Plus,
   RefreshCw,
@@ -91,8 +93,17 @@ export const MissionsPage: React.FC = () => {
   };
 
   const handleDepartAttempt = async (mission: any) => {
+    const confirmed = await confirmDeparture({
+      vehicleCode: mission.vehicle_code || 'N/A',
+      driverName: mission.driver_name || 'ไม่ได้ระบุ',
+      crewCount: 2,
+      destination: mission.destination_facility_name || mission.scene_description || 'สถานพยาบาลปลายทาง',
+    });
+    if (!confirmed) return;
+
     const res = await departMission(mission.id, { isEmergencyOverride: false });
     if (res.success) {
+      showToast('🚀 ยืนยันออกเดินทางเรียบร้อยแล้ว', 'success');
       await loadMissionsOnly();
       if (selectedDetail) handleOpenDetail(mission.id);
     } else if (res.missingRequirements) {
@@ -102,26 +113,55 @@ export const MissionsPage: React.FC = () => {
         missing: res.missingRequirements,
       });
     } else {
-      alert(res.message || 'ไม่สามารถออกเดินทางได้');
+      await showError('ไม่สามารถออกเดินทางได้', res.message);
     }
   };
 
   const handleMarkArrived = async (id: number) => {
-    await markMissionArrived(id);
-    await loadMissionsOnly();
-    if (selectedDetail) handleOpenDetail(id);
+    const res = await markMissionArrived(id);
+    if (res.success) {
+      showToast('📍 บันทึกเวลาถึงจุดหมายเรียบร้อยแล้ว', 'success');
+      await loadMissionsOnly();
+      if (selectedDetail) handleOpenDetail(id);
+    } else {
+      await showError('ไม่สามารถอัปเดตสถานะได้', res.message);
+    }
   };
 
   const handleStartReturn = async (id: number) => {
-    await startMissionReturn(id);
-    await loadMissionsOnly();
-    if (selectedDetail) handleOpenDetail(id);
+    const confirmed = await confirmAction({
+      title: 'เริ่มเดินทางกลับฐาน?',
+      text: 'ระบบจะเริ่มบันทึกเวลาเดินทางกลับ (Return Time)',
+      confirmButtonText: '🔄 เริ่มเดินทางกลับ',
+    });
+    if (!confirmed) return;
+
+    const res = await startMissionReturn(id);
+    if (res.success) {
+      showToast('🔄 เริ่มเดินทางกลับฐานกู้ชีพ', 'info');
+      await loadMissionsOnly();
+      if (selectedDetail) handleOpenDetail(id);
+    } else {
+      await showError('ไม่สามารถอัปเดตสถานะได้', res.message);
+    }
   };
 
   const handleComplete = async (id: number) => {
-    await completeMission(id);
-    await loadMissionsOnly();
-    if (selectedDetail) handleOpenDetail(id);
+    const confirmed = await confirmAction({
+      title: 'ยืนยันปิดภารกิจ?',
+      text: 'ข้อมูลการเดินทางจะถูกสรุปเป็นสถิติ และสถานะรถจะคืนเป็นว่างพร้อมรับงานทันที',
+      confirmButtonText: '✓ ปิดภารกิจ',
+    });
+    if (!confirmed) return;
+
+    const res = await completeMission(id);
+    if (res.success) {
+      showToast('✓ ปิดภารกิจเสร็จสมบูรณ์ รถพร้อมรับงานใหม่', 'success');
+      await loadMissionsOnly();
+      if (selectedDetail) handleOpenDetail(id);
+    } else {
+      await showError('ไม่สามารถปิดภารกิจได้', res.message);
+    }
   };
 
   const filteredMissions = missions.filter((m) => {
@@ -254,7 +294,24 @@ export const MissionsPage: React.FC = () => {
             ไม่พบภารกิจที่ตรงกับเงื่อนไขการค้นหา
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
+          <>
+            {/* Mobile View: Touch-First Card List */}
+            <div className="block md:hidden">
+              <MobileMissionCardList
+                missions={filteredMissions}
+                onOpenDetail={handleOpenDetail}
+                onOpenAssign={setAssignMissionTarget}
+                onOpenPretrip={setPretripTarget}
+                onDepart={handleDepartAttempt}
+                onMarkArrived={handleMarkArrived}
+                onOpenHandover={setHandoverTarget}
+                onStartReturn={handleStartReturn}
+                onComplete={handleComplete}
+              />
+            </div>
+
+            {/* Desktop View: Multi-column Card Rows */}
+            <div className="hidden md:grid grid-cols-1 gap-4">
             {filteredMissions.map((mission) => {
               const isAssigned = !!mission.vehicle_id;
               const isReady = mission.status === 'READY';
@@ -448,6 +505,7 @@ export const MissionsPage: React.FC = () => {
               );
             })}
           </div>
+        </>
         )}
       </div>
 

@@ -3,6 +3,7 @@ import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { VehicleMarkerData } from '../../types/ems';
 import { AlertTriangle, Clock, Radio, User, Compass, Gauge, ShieldAlert, Route } from 'lucide-react';
+import { showInfo, showToast } from '../../services/alertService';
 
 interface VehicleMarkerLayerProps {
   vehicles: VehicleMarkerData[];
@@ -308,7 +309,7 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
                       if (v.active_mission && onShowTrack) {
                         onShowTrack(v.active_mission.mission_no);
                       } else {
-                        alert(`รถ ${v.vehicle_code} ยังไม่มีบันทึกเส้นทางภารกิจปัจจุบัน`);
+                        showInfo('เส้นทางภารกิจ', `รถ ${v.vehicle_code} ยังไม่มีบันทึกเส้นทางภารกิจปัจจุบัน`);
                       }
                     }}
                     className="flex-1 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-white rounded text-xs font-semibold text-center transition-colors flex items-center justify-center gap-1"
@@ -317,7 +318,13 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
                     <span>ดูเส้นทาง</span>
                   </button>
                   <button
-                    onClick={() => alert(`Timeline ของรถ ${v.vehicle_code} กำลังโหลด (Phase MAP-6)`)}
+                    onClick={() => {
+                      if (v.active_mission && onShowTrack) {
+                        onShowTrack(v.active_mission.mission_no);
+                      } else {
+                        showToast(`รถ ${v.vehicle_code} สแตนด์บายพร้อมปฏิบัติการ`, 'info');
+                      }
+                    }}
                     className="flex-1 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs font-medium text-center transition-colors"
                   >
                     Timeline

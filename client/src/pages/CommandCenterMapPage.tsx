@@ -30,6 +30,8 @@ import { ActualTrackPolylineLayer } from '../components/map/ActualTrackPolylineL
 import { TrackingHealthWidget } from '../components/map/TrackingHealthWidget';
 import { SmartDispatchModal } from '../components/map/SmartDispatchModal';
 import { TripPlaybackScrubber } from '../components/map/TripPlaybackScrubber';
+import { MobileVehicleBottomSheet } from '../components/map/MobileVehicleBottomSheet';
+import { showInfo, showToast, showWarning } from '../services/alertService';
 import { GpsTrackPoint } from '../types/ems';
 import {
   AlertTriangle,
@@ -131,6 +133,8 @@ export const CommandCenterMapPage: React.FC = () => {
   });
 
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleMarkerData | null>(null);
+  const [selectedVehicleForSheet, setSelectedVehicleForSheet] = useState<VehicleMarkerData | null>(null);
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
 
   // Load Data
   const loadData = async () => {
@@ -171,8 +175,9 @@ export const CommandCenterMapPage: React.FC = () => {
     if (track && track.track_points.length > 0) {
       setSelectedTrack(track);
       setLayers((prev) => ({ ...prev, actualTracks: true }));
+      showToast(`โหลดเส้นทางภารกิจ ${missionIdOrNo} สำเร็จ`, 'success');
     } else {
-      alert(`ไม่พบข้อมูลพิกัด GPS ที่บันทึกไว้สำหรับภารกิจ ${missionIdOrNo}`);
+      showInfo('เส้นทาง GPS', `ไม่พบข้อมูลพิกัด GPS ที่บันทึกไว้สำหรับภารกิจ ${missionIdOrNo}`);
     }
   };
 
@@ -311,6 +316,7 @@ export const CommandCenterMapPage: React.FC = () => {
                   key={`list-v-${v.id}`}
                   onClick={() => {
                     setSelectedVehicle(v);
+                    setSelectedVehicleForSheet(v);
                     if (v.active_mission) {
                       handleShowMissionTrack(v.active_mission.mission_no);
                     }
@@ -449,7 +455,26 @@ export const CommandCenterMapPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="flex-1 relative">
+            <div className={isMapFullscreen ? "fixed inset-0 z-[1500] bg-slate-950 flex flex-col" : "flex-1 relative min-h-[380px]"}>
+              {/* Fullscreen Map Toggle Button */}
+              <button
+                onClick={() => setIsMapFullscreen(!isMapFullscreen)}
+                className="absolute top-4 right-4 z-[1000] px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl border border-slate-700 shadow-xl flex items-center gap-1.5 backdrop-blur-md active:scale-95 transition-all"
+                title={isMapFullscreen ? "ย่อแผนที่" : "เปิดแผนที่เต็มจอ"}
+              >
+                {isMapFullscreen ? (
+                  <>
+                    <X className="w-3.5 h-3.5 text-rose-400" />
+                    <span>ย่อแผนที่</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm">⛶</span>
+                    <span>เปิดเต็มจอ</span>
+                  </>
+                )}
+              </button>
+
               <MapContainer
                 center={defaultCenter}
                 zoom={12}
@@ -479,7 +504,7 @@ export const CommandCenterMapPage: React.FC = () => {
                 {layers.vehicles && (
                   <VehicleMarkerLayer
                     vehicles={filteredVehicles}
-                    onSelectMission={(mNo) => alert(`ดูภารกิจ: ${mNo}`)}
+                    onSelectMission={(mNo) => showToast(`เลือกภารกิจ: ${mNo}`, 'info')}
                     onShowTrack={handleShowMissionTrack}
                   />
                 )}
@@ -651,6 +676,14 @@ export const CommandCenterMapPage: React.FC = () => {
         isOpen={isDispatchModalOpen}
         onClose={() => setIsDispatchModalOpen(false)}
         onDispatched={loadData}
+      />
+
+      {/* Mobile Vehicle Bottom Sheet (Touch-Friendly) */}
+      <MobileVehicleBottomSheet
+        vehicle={selectedVehicleForSheet}
+        onClose={() => setSelectedVehicleForSheet(null)}
+        onShowTrack={handleShowMissionTrack}
+        onSelectMission={(mNo) => showToast(`เลือกภารกิจ: ${mNo}`, 'info')}
       />
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { EmsBaseData } from '../../types/ems';
 import { MapLocationPicker } from '../map/MapLocationPicker';
 import { MapPin, X, Check } from 'lucide-react';
+import { showWarning, showError, showToast } from '../../services/alertService';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -28,7 +29,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) {
-      alert('กรุณากรอกชื่อฐานกู้ชีพ');
+      await showWarning('กรุณากรอกข้อมูลให้ครบ', 'กรุณาระบุชื่อฐานกู้ชีพ');
       return;
     }
 
@@ -42,9 +43,10 @@ export const BaseModal: React.FC<BaseModalProps> = ({
         geofence_radius: geofenceRadius,
         active: true,
       });
+      showToast('บันทึกข้อมูลฐานกู้ชีพเรียบร้อยแล้ว', 'success');
       onClose();
     } catch (err: any) {
-      alert('บันทึกไม่สำเร็จ: ' + err.message);
+      await showError('บันทึกไม่สำเร็จ', err);
     } finally {
       setSaving(false);
     }

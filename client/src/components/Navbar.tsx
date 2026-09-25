@@ -29,8 +29,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <nav className="flex items-center gap-1 sm:gap-2">
+          {/* Desktop / Tablet Navigation Tabs */}
+          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
             <button
               onClick={() => onSelectTab('map')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${

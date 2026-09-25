@@ -11,6 +11,7 @@ import {
 import { gpsTrackingEngine, TelemetryPoint } from '../services/gpsTrackingEngine';
 import { audioAlertService } from '../services/audioAlertService';
 import { wakeLockService } from '../services/wakeLockService';
+import alertService from '../services/alertService';
 import {
   Truck,
   MapPin,
@@ -117,12 +118,26 @@ export const DriverCabPage: React.FC = () => {
   // 1-Tap Quick Status Transitions
   const handleQuickDepart = async () => {
     if (!currentMission) return;
+    const v = vehicles.find((x) => x.id === selectedVehicleId);
+    
+    // Section 22: Departure confirmation when stationary
+    if (displaySpeed === 0) {
+      const confirmed = await alertService.confirmDeparture({
+        vehicleCode: v?.vehicle_code || 'EMS',
+        driverName: currentMission.driver_name || 'พนักงานขับรถประจำการ',
+        crewCount: 3,
+        destination: currentMission.destination_name || 'รพ.ปลายทาง',
+      });
+      if (!confirmed) return;
+    }
+
     audioAlertService.initAudio();
     await departMission(currentMission.id, {
       isEmergencyOverride: true,
-      overrideReason: 'Driver In-Cab Quick Departure',
+      overrideReason: 'Driver In-Cab Departure',
     });
     audioAlertService.playSuccessChime();
+    alertService.showToast('🚀 ล้อหมุนออกเดินทางแล้ว', 'success');
     await loadAssets();
   };
 
@@ -131,33 +146,62 @@ export const DriverCabPage: React.FC = () => {
     audioAlertService.initAudio();
     await markMissionArrived(currentMission.id);
     audioAlertService.playSuccessChime();
+    alertService.showToast('📍 ถึงที่หมายเรียบร้อยแล้ว', 'success');
     await loadAssets();
   };
 
   const handleQuickHandover = async () => {
     if (!currentMission) return;
+    
+    // Section 23: Handover confirmation prompt
+    const result = await alertService.confirmHandoverPrompt({
+      missionNo: currentMission.mission_no,
+      destination: currentMission.destination_name || 'รพ.ปลายทาง',
+    });
+    if (!result.confirmed) return;
+
     audioAlertService.initAudio();
     await confirmMissionHandover(currentMission.id, {
-      receiverName: 'พยาบาลวิชาชีพเวรส่งต่อ รพ.ปลายทาง (Quick Handover)',
-      notes: 'ส่งมอบตัวผู้ป่วยเรียบร้อย',
+      receiverName: result.receiverName || 'พยาบาลวิชาชีพเวรส่งต่อ รพ.ปลายทาง',
+      notes: result.notes || 'ส่งมอบตัวผู้ป่วยเรียบร้อย',
     });
     audioAlertService.playSuccessChime();
+    alertService.showToast('✓ บันทึกการส่งมอบสำเร็จ', 'success');
     await loadAssets();
   };
 
   const handleQuickReturn = async () => {
     if (!currentMission) return;
+    const confirmed = await alertService.confirmAction({
+      title: 'เริ่มเดินทางกลับฐาน?',
+      text: 'ยืนยันรถพยาบาลพร้อมออกเดินทางกลับฐานปฏิบัติการ',
+      confirmButtonText: '🔄 เริ่มเดินทางกลับ',
+    });
+    if (!confirmed) return;
+
     audioAlertService.initAudio();
     await startMissionReturn(currentMission.id);
     audioAlertService.playSuccessChime();
+    alertService.showToast('🔄 เริ่มเดินทางกลับฐานแล้ว', 'success');
     await loadAssets();
   };
 
   const handleQuickComplete = async () => {
     if (!currentMission) return;
+    
+    // Section 24: Complete mission confirmation
+    const confirmed = await alertService.confirmAction({
+      title: 'ยืนยันปิดภารกิจ?',
+      text: 'ข้อมูลการเดินทางจะถูกสรุปเป็น Trip Report บันทึกเข้าสู่ฐานข้อมูล',
+      confirmButtonText: '✓ ปิดภารกิจ',
+      cancelButtonText: 'กลับ',
+    });
+    if (!confirmed) return;
+
     audioAlertService.initAudio();
     await completeMission(currentMission.id);
     audioAlertService.playSuccessChime();
+    alertService.showToast('✓ ปิดภารกิจสำเร็จ', 'success');
     await loadAssets();
   };
 

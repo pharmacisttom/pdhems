@@ -6,6 +6,7 @@ import { BasesPage } from './pages/BasesPage';
 import { MissionsPage } from './pages/MissionsPage';
 import { DriverCabPage } from './pages/DriverCabPage';
 import { ReportsPage } from './pages/ReportsPage';
+import { MobileBottomNav } from './components/common/MobileBottomNav';
 import { fetchActiveMissions } from './services/api';
 
 export function App() {
@@ -25,14 +26,14 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans pb-[env(safe-area-inset-bottom)]">
       <Navbar
         currentTab={currentTab}
         onSelectTab={setCurrentTab}
         activeEmergencyCount={activeEmergencyCount}
       />
 
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden pb-16 sm:pb-0">
         {currentTab === 'map' && <CommandCenterMapPage />}
         {currentTab === 'missions' && <MissionsPage />}
         {currentTab === 'driver' && <DriverCabPage />}
@@ -40,6 +41,13 @@ export function App() {
         {currentTab === 'bases' && <BasesPage />}
         {currentTab === 'reports' && <ReportsPage />}
       </main>
+
+      {/* Mobile Bottom Navigation Bar (Thumb-friendly & Safe Area compliant) */}
+      <MobileBottomNav
+        currentTab={currentTab}
+        onSelectTab={setCurrentTab}
+        activeEmergencyCount={activeEmergencyCount}
+      />
     </div>
   );
 }
