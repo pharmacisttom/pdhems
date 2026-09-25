@@ -1,7 +1,54 @@
 import { Request, Response } from 'express';
+import { z } from 'zod';
 import { pool } from '../db/connection';
 import { MapProviderFactory } from '../adapters/map/IMapProvider';
-import { VehicleMarkerData, TrackingHealthStatus } from '../types/map.types';
+import {
+  VehicleMarkerData,
+  TrackingHealthStatus,
+  GpsTrackPoint,
+  MissionTrackResponse,
+  TrackingHealthSummary,
+} from '../types/map.types';
+
+// Validation schema for batch sync (Phase MAP-2)
+const GpsBatchSyncSchema = z.object({
+  vehicle_id: z.number().int().positive(),
+  mission_id: z.number().int().positive().optional().nullable(),
+  points: z.array(
+    z.object({
+      latitude: z.number().min(-90).max(90),
+      longitude: z.number().min(-180).max(180),
+      altitude: z.number().optional().nullable(),
+      speed: z.number().min(0).max(250).default(0),
+      heading: z.number().min(0).max(360).optional().nullable(),
+      accuracy: z.number().min(0).max(500).default(10),
+      gps_quality: z.enum(['GOOD', 'FAIR', 'POOR', 'INVALID']).default('GOOD'),
+      recorded_at: z.string(),
+    })
+  ).min(1).max(500),
+});
+
+/**
+ * Calculate Haversine distance in kilometers between two GPS points
+ */
+function haversineDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 export class MapController {
   /**
@@ -12,7 +59,6 @@ export class MapController {
       const staleThreshold = Number(process.env.GPS_STALE_THRESHOLD_SEC) || 120;
       const lostThreshold = Number(process.env.GPS_LOST_THRESHOLD_SEC) || 300;
 
-      // Query ambulances + latest active mission + driver + crew count
       const [rows]: any = await pool.query(`
         SELECT 
           a.id,
@@ -53,6 +99,7 @@ export class MapController {
         const sec = r.seconds_since_last_gps !== null ? Number(r.seconds_since_last_gps) : null;
         let trackingHealth: TrackingHealthStatus = 'TRACKING';
         let effectiveStatus = r.status;
+        const currentSpeed = Number(r.current_speed || 0);
 
         if (r.current_latitude === null || r.current_longitude === null) {
           trackingHealth = 'GPS_UNAVAILABLE';
@@ -65,6 +112,9 @@ export class MapController {
           trackingHealth = 'TRACKING_DELAYED';
         }
 
+        // Section 33: Differentiate stopped vehicle from GPS lost
+        const isStopped = currentSpeed === 0 && trackingHealth === 'TRACKING';
+
         return {
           id: r.id,
           vehicle_code: r.vehicle_code,
@@ -74,7 +124,8 @@ export class MapController {
           current_latitude: r.current_latitude !== null ? Number(r.current_latitude) : null,
           current_longitude: r.current_longitude !== null ? Number(r.current_longitude) : null,
           current_heading: r.current_heading !== null ? Number(r.current_heading) : null,
-          current_speed: Number(r.current_speed || 0),
+          current_speed: currentSpeed,
+          is_stopped: isStopped,
           last_gps_at: r.last_gps_at,
           gps_quality: r.gps_quality || 'GOOD',
           seconds_since_last_gps: sec,
@@ -86,17 +137,17 @@ export class MapController {
                 mission_type: r.mission_type,
                 status: r.mission_status,
                 destination_name: r.destination_name,
-                scene_description: r.scene_description
+                scene_description: r.scene_description,
               }
             : null,
           driver: r.driver_id
             ? {
                 id: r.driver_id,
                 display_name: r.driver_name,
-                phone: r.driver_phone
+                phone: r.driver_phone,
               }
             : null,
-          crew_count: Number(r.crew_count || 0)
+          crew_count: Number(r.crew_count || 0),
         };
       });
 
@@ -104,10 +155,270 @@ export class MapController {
         success: true,
         count: vehicles.length,
         data: vehicles,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error: any) {
       console.error('Error fetching vehicle markers:', error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
+  /**
+   * Get recorded GPS track for a specific mission with quality validation and distance calculation (Section 13, 25, 35)
+   */
+  public static async getMissionTrack(req: Request, res: Response): Promise<void> {
+    try {
+      const identifier = String(req.params.id); // numeric mission_id or string mission_no
+      const limit = Math.min(Number(req.query.limit) || 500, 1000);
+      const isNumeric = /^\d+$/.test(identifier);
+
+      // Find mission record
+      const [missionRows]: any = await pool.query(
+        `SELECT m.id, m.mission_no, m.mission_type, a.vehicle_code 
+         FROM ems_missions m
+         LEFT JOIN ambulances a ON a.id = m.vehicle_id
+         WHERE ${isNumeric ? 'm.id = ?' : 'm.mission_no = ?'} LIMIT 1`,
+        [identifier]
+      );
+
+      if (missionRows.length === 0) {
+        res.status(404).json({ success: false, message: 'Mission not found' });
+        return;
+      }
+
+      const mission = missionRows[0];
+
+      // Query recorded GPS tracks with index vehicle_id, mission_id, recorded_at
+      const [trackRows]: any = await pool.query(
+        `SELECT id, latitude, longitude, altitude, speed, heading, accuracy, gps_quality, recorded_at
+         FROM gps_tracks
+         WHERE mission_id = ?
+         ORDER BY recorded_at ASC
+         LIMIT ?`,
+        [mission.id, limit]
+      );
+
+      const trackPoints: GpsTrackPoint[] = trackRows.map((t: any) => ({
+        id: t.id,
+        latitude: Number(t.latitude),
+        longitude: Number(t.longitude),
+        altitude: t.altitude !== null ? Number(t.altitude) : null,
+        speed: Number(t.speed || 0),
+        heading: t.heading !== null ? Number(t.heading) : null,
+        accuracy: Number(t.accuracy || 10),
+        gps_quality: t.gps_quality,
+        recorded_at: t.recorded_at,
+      }));
+
+      // Calculate raw distance vs validated distance (Section 25)
+      let rawDistanceKm = 0;
+      let validatedDistanceKm = 0;
+
+      for (let i = 1; i < trackPoints.length; i++) {
+        const prev = trackPoints[i - 1];
+        const curr = trackPoints[i];
+        const segment = haversineDistance(
+          prev.latitude,
+          prev.longitude,
+          curr.latitude,
+          curr.longitude
+        );
+
+        rawDistanceKm += segment;
+
+        // Validated distance filters out INVALID points and impossible teleportation jumps (>150 km/h)
+        const isQualityValid =
+          curr.gps_quality !== 'INVALID' && prev.gps_quality !== 'INVALID';
+        const timeDiffSeconds = Math.max(
+          1,
+          (new Date(curr.recorded_at).getTime() -
+            new Date(prev.recorded_at).getTime()) /
+            1000
+        );
+        const segmentSpeedKmh = (segment / (timeDiffSeconds / 3600));
+
+        if (isQualityValid && segmentSpeedKmh < 180 && segment > 0.005) {
+          validatedDistanceKm += segment;
+        }
+      }
+
+      const response: MissionTrackResponse = {
+        success: true,
+        mission_id: mission.id,
+        mission_no: mission.mission_no,
+        mission_type: mission.mission_type,
+        vehicle_code: mission.vehicle_code || 'EMS',
+        points_count: trackPoints.length,
+        raw_distance_km: Math.round(rawDistanceKm * 100) / 100,
+        validated_distance_km: Math.round(validatedDistanceKm * 100) / 100,
+        track_points: trackPoints,
+      };
+
+      res.json(response);
+    } catch (error: any) {
+      console.error('Error fetching mission track:', error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
+  /**
+   * Get recent GPS track for a vehicle (Section 35)
+   */
+  public static async getVehicleTrack(req: Request, res: Response): Promise<void> {
+    try {
+      const vehicleId = Number(req.params.id);
+      const limit = Math.min(Number(req.query.limit) || 100, 500);
+
+      const [rows]: any = await pool.query(
+        `SELECT id, latitude, longitude, altitude, speed, heading, accuracy, gps_quality, recorded_at
+         FROM gps_tracks
+         WHERE vehicle_id = ?
+         ORDER BY recorded_at DESC
+         LIMIT ?`,
+        [vehicleId, limit]
+      );
+
+      const points = rows.reverse().map((t: any) => ({
+        id: t.id,
+        latitude: Number(t.latitude),
+        longitude: Number(t.longitude),
+        altitude: t.altitude !== null ? Number(t.altitude) : null,
+        speed: Number(t.speed || 0),
+        heading: t.heading !== null ? Number(t.heading) : null,
+        accuracy: Number(t.accuracy || 10),
+        gps_quality: t.gps_quality,
+        recorded_at: t.recorded_at,
+      }));
+
+      res.json({ success: true, count: points.length, data: points });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
+  /**
+   * Batch Sync GPS points from Driver PWA / Mobile device (Section 19, 20, 21)
+   */
+  public static async syncGpsBatch(req: Request, res: Response): Promise<void> {
+    try {
+      const parsed = GpsBatchSyncSchema.parse(req.body);
+      const { vehicle_id, mission_id, points } = parsed;
+
+      let insertedCount = 0;
+      let lastPoint = points[points.length - 1];
+
+      for (const p of points) {
+        // Prevent duplicate insertion: check if point exists within 5 seconds for same vehicle
+        const [existing]: any = await pool.query(
+          `SELECT id FROM gps_tracks 
+           WHERE vehicle_id = ? AND ABS(TIMESTAMPDIFF(SECOND, recorded_at, ?)) < 3 
+           LIMIT 1`,
+          [vehicle_id, p.recorded_at]
+        );
+
+        if (existing.length === 0) {
+          await pool.query(
+            `INSERT INTO gps_tracks (mission_id, vehicle_id, latitude, longitude, altitude, speed, heading, accuracy, gps_quality, sync_status, recorded_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'SYNCED', ?)`,
+            [
+              mission_id || null,
+              vehicle_id,
+              p.latitude,
+              p.longitude,
+              p.altitude || null,
+              p.speed,
+              p.heading || null,
+              p.accuracy,
+              p.gps_quality,
+              p.recorded_at,
+            ]
+          );
+          insertedCount++;
+        }
+      }
+
+      // Update vehicle latest known telematics from the newest valid point
+      if (lastPoint) {
+        await pool.query(
+          `UPDATE ambulances 
+           SET current_latitude = ?, current_longitude = ?, current_speed = ?, current_heading = ?, last_gps_at = ?, gps_quality = ?
+           WHERE id = ?`,
+          [
+            lastPoint.latitude,
+            lastPoint.longitude,
+            lastPoint.speed,
+            lastPoint.heading || null,
+            lastPoint.recorded_at,
+            lastPoint.gps_quality,
+            vehicle_id,
+          ]
+        );
+      }
+
+      res.status(201).json({
+        success: true,
+        message: `Batch sync complete: ${insertedCount} new points stored`,
+        received: points.length,
+        inserted: insertedCount,
+      });
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ success: false, errors: error.errors });
+        return;
+      }
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
+  /**
+   * Get Tracking Health Breakdown for fleet dashboard (Section 33)
+   */
+  public static async getTrackingHealth(req: Request, res: Response): Promise<void> {
+    try {
+      const staleThreshold = Number(process.env.GPS_STALE_THRESHOLD_SEC) || 120;
+      const lostThreshold = Number(process.env.GPS_LOST_THRESHOLD_SEC) || 300;
+
+      const [rows]: any = await pool.query(`
+        SELECT 
+          current_latitude, 
+          current_longitude, 
+          current_speed,
+          TIMESTAMPDIFF(SECOND, last_gps_at, NOW()) AS sec_since
+        FROM ambulances 
+        WHERE active = 1
+      `);
+
+      let onlineMoving = 0;
+      let onlineStopped = 0;
+      let trackingDelayed = 0;
+      let trackingLost = 0;
+      let gpsUnavailable = 0;
+
+      for (const r of rows) {
+        if (r.current_latitude === null || r.current_longitude === null) {
+          gpsUnavailable++;
+        } else if (r.sec_since === null || r.sec_since > lostThreshold) {
+          trackingLost++;
+        } else if (r.sec_since > staleThreshold) {
+          trackingDelayed++;
+        } else if (Number(r.current_speed || 0) === 0) {
+          onlineStopped++;
+        } else {
+          onlineMoving++;
+        }
+      }
+
+      const summary: TrackingHealthSummary = {
+        total_vehicles: rows.length,
+        online_moving: onlineMoving,
+        online_stopped: onlineStopped,
+        tracking_delayed: trackingDelayed,
+        tracking_lost: trackingLost,
+        gps_unavailable: gpsUnavailable,
+      };
+
+      res.json({ success: true, data: summary });
+    } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
     }
   }
@@ -166,7 +477,7 @@ export class MapController {
       res.json({
         success: true,
         tileConfig: provider.getTileConfig(),
-        defaultCenter: provider.getDefaultCenter()
+        defaultCenter: provider.getDefaultCenter(),
       });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });

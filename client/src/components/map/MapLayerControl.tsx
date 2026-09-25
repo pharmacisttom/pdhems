@@ -106,6 +106,18 @@ export const MapLayerControl: React.FC<MapLayerControlProps> = ({
             />
           </label>
 
+          <label className="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-800/80 cursor-pointer">
+            <span className="flex items-center gap-2 text-slate-300">
+              <span className="text-sm">เส้นทาง</span> เส้นทาง GPS เดินทางจริง (Actual)
+            </span>
+            <input
+              type="checkbox"
+              checked={layers.actualTracks}
+              onChange={() => onChangeLayer('actualTracks')}
+              className="rounded bg-slate-700 border-slate-600 text-cyan-400 focus:ring-cyan-500 w-4 h-4"
+            />
+          </label>
+
           <div className="pt-2 border-t border-slate-800">
             <label className="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-800/80 cursor-pointer">
               <span className="flex items-center gap-2 text-slate-300">

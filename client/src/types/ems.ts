@@ -34,6 +34,7 @@ export interface VehicleMarkerData {
   current_longitude: number | null;
   current_heading: number | null;
   current_speed: number;
+  is_stopped?: boolean;
   last_gps_at: string | null;
   gps_quality: 'GOOD' | 'FAIR' | 'POOR' | 'INVALID';
   seconds_since_last_gps: number | null;
@@ -100,12 +101,46 @@ export interface ActiveMissionData {
   destination_lng?: number | null;
 }
 
+export interface GpsTrackPoint {
+  id?: number;
+  latitude: number;
+  longitude: number;
+  altitude?: number | null;
+  speed: number;
+  heading?: number | null;
+  accuracy?: number;
+  gps_quality: 'GOOD' | 'FAIR' | 'POOR' | 'INVALID';
+  recorded_at: string;
+}
+
+export interface MissionTrackResponse {
+  success: boolean;
+  mission_id: number;
+  mission_no: string;
+  mission_type: string;
+  vehicle_code: string;
+  points_count: number;
+  raw_distance_km: number;
+  validated_distance_km: number;
+  track_points: GpsTrackPoint[];
+}
+
+export interface TrackingHealthSummary {
+  total_vehicles: number;
+  online_moving: number;
+  online_stopped: number;
+  tracking_delayed: number;
+  tracking_lost: number;
+  gps_unavailable: number;
+}
+
 export interface MapLayersState {
   vehicles: boolean;
   facilities: boolean;
   bases: boolean;
   geofences: boolean;
   activeEmergencyScenes: boolean;
+  actualTracks: boolean;
   trafficOrDark: boolean;
 }
 
@@ -117,4 +152,5 @@ export type MapFilterType =
   | 'EN_ROUTE'
   | 'AT_SCENE'
   | 'RETURNING'
-  | 'TRACKING_ALERT';
+  | 'TRACKING_ALERT'
+  | 'SAFETY_ALERT';

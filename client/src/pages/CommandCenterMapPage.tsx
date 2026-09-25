@@ -8,26 +8,34 @@ import {
   ActiveMissionData,
   MapFilterType,
   MapLayersState,
+  MissionTrackResponse,
+  TrackingHealthSummary,
 } from '../types/ems';
-import { fetchVehicles, fetchFacilities, fetchBases, fetchActiveMissions, updateAmbulanceLocation } from '../services/api';
+import {
+  fetchVehicles,
+  fetchFacilities,
+  fetchBases,
+  fetchActiveMissions,
+  updateAmbulanceLocation,
+  fetchMissionTrack,
+  fetchTrackingHealth,
+} from '../services/api';
 import { getActiveMapProvider } from '../services/mapProviderAdapter';
 import { MapFilterBar } from '../components/map/MapFilterBar';
 import { MapLayerControl } from '../components/map/MapLayerControl';
 import { VehicleMarkerLayer } from '../components/map/VehicleMarkerLayer';
 import { FacilityMarkerLayer } from '../components/map/FacilityMarkerLayer';
 import { BaseMarkerLayer } from '../components/map/BaseMarkerLayer';
+import { ActualTrackPolylineLayer } from '../components/map/ActualTrackPolylineLayer';
+import { TrackingHealthWidget } from '../components/map/TrackingHealthWidget';
 import {
   AlertTriangle,
   Ambulance,
-  PhoneCall,
-  Activity,
-  Navigation,
   RefreshCw,
-  Clock,
-  ShieldAlert,
-  ChevronRight,
+  Route,
+  X,
   MapPin,
-  Flame,
+  CheckCircle2,
 } from 'lucide-react';
 
 // Emergency Scene Pin Icon
@@ -65,6 +73,8 @@ export const CommandCenterMapPage: React.FC = () => {
   const [facilities, setFacilities] = useState<FacilityData[]>([]);
   const [bases, setBases] = useState<EmsBaseData[]>([]);
   const [missions, setMissions] = useState<ActiveMissionData[]>([]);
+  const [healthSummary, setHealthSummary] = useState<TrackingHealthSummary | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<MissionTrackResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   const [mapError, setMapError] = useState<boolean>(false);
@@ -78,6 +88,7 @@ export const CommandCenterMapPage: React.FC = () => {
     bases: true,
     geofences: true,
     activeEmergencyScenes: true,
+    actualTracks: true,
     trafficOrDark: true,
   });
 
@@ -86,16 +97,18 @@ export const CommandCenterMapPage: React.FC = () => {
   // Load Data
   const loadData = async () => {
     try {
-      const [vData, fData, bData, mData] = await Promise.all([
+      const [vData, fData, bData, mData, hData] = await Promise.all([
         fetchVehicles(),
         fetchFacilities(),
         fetchBases(),
         fetchActiveMissions(),
+        fetchTrackingHealth(),
       ]);
       setVehicles(vData);
       setFacilities(fData);
       setBases(bData);
       setMissions(mData);
+      setHealthSummary(hData);
       setLastRefreshed(new Date());
     } catch (err) {
       console.error('Error loading telematics data:', err);
@@ -106,7 +119,6 @@ export const CommandCenterMapPage: React.FC = () => {
 
   useEffect(() => {
     loadData();
-    // Auto polling every 10 seconds for real-time tracking
     const interval = setInterval(loadData, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -115,9 +127,19 @@ export const CommandCenterMapPage: React.FC = () => {
     setLayers((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  // Phase MAP-2: Load and display actual GPS track polyline for a mission
+  const handleShowMissionTrack = async (missionIdOrNo: string | number) => {
+    const track = await fetchMissionTrack(missionIdOrNo);
+    if (track && track.track_points.length > 0) {
+      setSelectedTrack(track);
+      setLayers((prev) => ({ ...prev, actualTracks: true }));
+    } else {
+      alert(`ไม่พบข้อมูลพิกัด GPS ที่บันทึกไว้สำหรับภารกิจ ${missionIdOrNo}`);
+    }
+  };
+
   // Filter vehicles according to active criteria
   const filteredVehicles = vehicles.filter((v) => {
-    // Search query matches vehicle code, mission no, or driver name
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const matchCode = v.vehicle_code.toLowerCase().includes(q);
@@ -137,6 +159,8 @@ export const CommandCenterMapPage: React.FC = () => {
     if (currentFilter === 'RETURNING') return v.status === 'RETURNING';
     if (currentFilter === 'TRACKING_ALERT')
       return v.tracking_health === 'TRACKING_DELAYED' || v.tracking_health === 'TRACKING_LOST';
+    if (currentFilter === 'SAFETY_ALERT')
+      return v.current_speed > 80 || v.gps_quality === 'POOR' || v.gps_quality === 'INVALID';
     return true;
   });
 
@@ -200,11 +224,19 @@ export const CommandCenterMapPage: React.FC = () => {
       />
 
       {/* Main Workspace Layout (Section 32) */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
-        {/* Left Side Panel: Missions & Fleet List */}
-        <aside className="w-full lg:w-80 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 order-2 lg:order-1 h-64 lg:h-auto overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+        {/* Left Side Panel: Missions, Tracking Health & Fleet List */}
+        <aside className="w-full md:w-80 lg:w-96 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 h-72 md:h-full overflow-hidden">
+          {/* Tracking Health Widget (Section 33) */}
+          <div className="p-2 border-b border-slate-800 bg-slate-950/50">
+            <TrackingHealthWidget
+              summary={healthSummary}
+              onFilterAlerts={() => setCurrentFilter('TRACKING_ALERT')}
+            />
+          </div>
+
           {/* Panel Header */}
-          <div className="p-3 bg-slate-800/80 border-b border-slate-700/80 flex items-center justify-between text-xs">
+          <div className="p-2.5 bg-slate-800/80 border-b border-slate-700/80 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <Ambulance className="w-4 h-4 text-sky-400" />
               <span className="font-bold text-slate-100">รายการรถ EMS & ภารกิจ</span>
@@ -224,11 +256,17 @@ export const CommandCenterMapPage: React.FC = () => {
               const isSelected = selectedVehicle?.id === v.id;
               const isLost = v.tracking_health === 'TRACKING_LOST';
               const isDelayed = v.tracking_health === 'TRACKING_DELAYED';
+              const isStopped = v.is_stopped && !isLost && !isDelayed;
 
               return (
                 <div
                   key={`list-v-${v.id}`}
-                  onClick={() => setSelectedVehicle(v)}
+                  onClick={() => {
+                    setSelectedVehicle(v);
+                    if (v.active_mission) {
+                      handleShowMissionTrack(v.active_mission.mission_no);
+                    }
+                  }}
                   className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
                     isSelected
                       ? 'bg-sky-950/60 border-sky-500 shadow-md shadow-sky-900/30'
@@ -241,11 +279,15 @@ export const CommandCenterMapPage: React.FC = () => {
                       <div>
                         <div className="flex items-center gap-1.5">
                           <span className="font-bold text-sm text-white">{v.vehicle_code}</span>
-                          {v.current_speed > 0 && !isLost && (
+                          {isStopped ? (
+                            <span className="px-1.5 py-0.2 rounded bg-slate-700 text-slate-300 text-[10px] font-semibold">
+                              🅿️ จอดนิ่ง
+                            </span>
+                          ) : v.current_speed > 0 && !isLost ? (
                             <span className="px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 text-[10px] font-semibold border border-sky-500/30">
                               {Math.round(v.current_speed)} km/h
                             </span>
-                          )}
+                          ) : null}
                         </div>
                         <p className="text-[11px] text-slate-400">{v.registration_no}</p>
                       </div>
@@ -279,19 +321,27 @@ export const CommandCenterMapPage: React.FC = () => {
                   {(isLost || isDelayed) && (
                     <div className="mt-1.5 px-2 py-1 rounded bg-amber-950/40 border border-amber-500/30 text-[10px] text-amber-300 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
-                      <span>{isLost ? 'Tracking Lost (พิกัดเก่า)' : 'Tracking Delayed'}</span>
+                      <span>{isLost ? 'Tracking Lost (พิกัดล่าสุดที่บันทึกได้)' : 'Tracking Delayed'}</span>
                     </div>
                   )}
 
-                  {/* Active mission subtitle */}
+                  {/* Active mission subtitle & track button */}
                   {v.active_mission && (
                     <div className="mt-2 pt-1.5 border-t border-slate-700/60 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-400 truncate max-w-[150px]">
+                      <span className="text-slate-400 truncate max-w-[140px]">
                         {v.active_mission.mission_no}
                       </span>
-                      <span className="text-sky-400 font-medium">
-                        {v.active_mission.mission_type}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShowMissionTrack(v.active_mission!.mission_no);
+                        }}
+                        className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 hover:underline"
+                      >
+                        <Route className="w-3 h-3" />
+                        <span>ดู Track</span>
+                      </button>
                     </div>
                   )}
 
@@ -322,7 +372,7 @@ export const CommandCenterMapPage: React.FC = () => {
         </aside>
 
         {/* Center: Full Interactive Map */}
-        <div className="flex-1 relative order-1 lg:order-2 h-full">
+        <div className="flex-1 relative h-full flex flex-col min-h-0 min-w-0">
           {/* Layer Control Menu */}
           <MapLayerControl
             layers={layers}
@@ -351,110 +401,157 @@ export const CommandCenterMapPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <MapContainer
-              center={defaultCenter}
-              zoom={12}
-              scrollWheelZoom={true}
-              className={`w-full h-full ${layers.trafficOrDark ? 'dark-tiles' : ''}`}
-            >
-              <TileLayer attribution={tileConfig.attribution} url={tileConfig.url} />
+            <div className="flex-1 relative">
+              <MapContainer
+                center={defaultCenter}
+                zoom={12}
+                scrollWheelZoom={true}
+                className={`w-full h-full ${layers.trafficOrDark ? 'dark-tiles' : ''}`}
+              >
+                <TileLayer attribution={tileConfig.attribution} url={tileConfig.url} />
 
-              {/* Bases Layer */}
-              {layers.bases && <BaseMarkerLayer bases={bases} showGeofence={layers.geofences} />}
+                {/* Bases Layer */}
+                {layers.bases && <BaseMarkerLayer bases={bases} showGeofence={layers.geofences} />}
 
-              {/* Facilities Layer */}
-              {layers.facilities && (
-                <FacilityMarkerLayer
-                  facilities={facilities}
-                  showGeofence={layers.geofences}
+                {/* Facilities Layer */}
+                {layers.facilities && (
+                  <FacilityMarkerLayer
+                    facilities={facilities}
+                    showGeofence={layers.geofences}
+                  />
+                )}
+
+                {/* Actual Recorded GPS Track Polyline Layer (Phase MAP-2) */}
+                <ActualTrackPolylineLayer
+                  trackData={selectedTrack}
+                  visible={layers.actualTracks}
                 />
-              )}
 
-              {/* Vehicles Layer */}
-              {layers.vehicles && (
-                <VehicleMarkerLayer
-                  vehicles={filteredVehicles}
-                  onSelectMission={(mNo) => alert(`ดูภารกิจ: ${mNo}`)}
-                />
-              )}
+                {/* Vehicles Layer */}
+                {layers.vehicles && (
+                  <VehicleMarkerLayer
+                    vehicles={filteredVehicles}
+                    onSelectMission={(mNo) => alert(`ดูภารกิจ: ${mNo}`)}
+                    onShowTrack={handleShowMissionTrack}
+                  />
+                )}
 
-              {/* Active Emergency Scene Markers */}
-              {layers.activeEmergencyScenes &&
-                missions
-                  .filter(
-                    (m) =>
-                      m.mission_type === 'EMERGENCY' &&
-                      m.scene_latitude !== null &&
-                      m.scene_longitude !== null
-                  )
-                  .map((m) => {
-                    const sceneLat = Number(m.scene_latitude);
-                    const sceneLng = Number(m.scene_longitude);
-                    if (isNaN(sceneLat) || isNaN(sceneLng)) return null;
+                {/* Active Emergency Scene Markers */}
+                {layers.activeEmergencyScenes &&
+                  missions
+                    .filter(
+                      (m) =>
+                        m.mission_type === 'EMERGENCY' &&
+                        m.scene_latitude !== null &&
+                        m.scene_longitude !== null
+                    )
+                    .map((m) => {
+                      const sceneLat = Number(m.scene_latitude);
+                      const sceneLng = Number(m.scene_longitude);
+                      if (isNaN(sceneLat) || isNaN(sceneLng)) return null;
 
-                    return (
-                      <React.Fragment key={`scene-${m.id}`}>
-                        {layers.geofences && (
-                          <Circle
-                            center={[sceneLat, sceneLng]}
-                            radius={100}
-                            pathOptions={{
-                              color: '#ef4444',
-                              fillColor: '#ef4444',
-                              fillOpacity: 0.2,
-                              weight: 2,
-                              dashArray: '3, 4',
-                            }}
-                          />
-                        )}
-                        <Marker
-                          position={[sceneLat, sceneLng]}
-                          icon={sceneIcon}
-                        >
-                        <Popup minWidth={220}>
-                          <div className="p-3 text-slate-100 space-y-1.5">
-                            <div className="flex items-center gap-1.5 text-rose-400 font-bold text-sm border-b border-slate-700 pb-1">
-                              <span>🚨</span>
-                              <span>{m.mission_no} (จุดเกิดเหตุ)</span>
-                            </div>
-                            <p className="text-xs text-slate-300 font-medium">
-                              {m.scene_description || 'ไม่มีคำอธิบายจุดเกิดเหตุ'}
-                            </p>
-                            <div className="text-[11px] text-slate-400 pt-1">
-                              สถานะ: <strong className="text-white">{m.status}</strong>
-                            </div>
-                          </div>
-                        </Popup>
-                      </Marker>
-                    </React.Fragment>
-                  );
-                })}
-            </MapContainer>
+                      return (
+                        <React.Fragment key={`scene-${m.id}`}>
+                          {layers.geofences && (
+                            <Circle
+                              center={[sceneLat, sceneLng]}
+                              radius={100}
+                              pathOptions={{
+                                color: '#ef4444',
+                                fillColor: '#ef4444',
+                                fillOpacity: 0.2,
+                                weight: 2,
+                                dashArray: '3, 4',
+                              }}
+                            />
+                          )}
+                          <Marker position={[sceneLat, sceneLng]} icon={sceneIcon}>
+                            <Popup minWidth={220}>
+                              <div className="p-3 text-slate-100 space-y-1.5">
+                                <div className="flex items-center gap-1.5 text-rose-400 font-bold text-sm border-b border-slate-700 pb-1">
+                                  <span>🚨</span>
+                                  <span>{m.mission_no} (จุดเกิดเหตุ)</span>
+                                </div>
+                                <p className="text-xs text-slate-300 font-medium">
+                                  {m.scene_description || 'ไม่มีคำอธิบายจุดเกิดเหตุ'}
+                                </p>
+                                <div className="text-[11px] text-slate-400 pt-1">
+                                  สถานะ: <strong className="text-white">{m.status}</strong>
+                                </div>
+                              </div>
+                            </Popup>
+                          </Marker>
+                        </React.Fragment>
+                      );
+                    })}
+              </MapContainer>
+
+              {/* Quick Map Legend Badge at Bottom Right */}
+              <div className="absolute bottom-4 right-4 z-[1000] bg-slate-900/90 border border-slate-700/80 backdrop-blur-md rounded-xl p-2.5 text-[11px] text-slate-300 shadow-xl hidden md:flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <span>พร้อมใช้งาน</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                  <span>กำลังเดินทาง</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                  <span>Actual GPS Track</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  <span>Delayed</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                  <span>Tracking Lost</span>
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Quick Map Legend Badge at Bottom Right */}
-          <div className="absolute bottom-4 right-4 z-[1000] bg-slate-900/90 border border-slate-700/80 backdrop-blur-md rounded-xl p-2.5 text-[11px] text-slate-300 shadow-xl hidden md:flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span>พร้อมใช้งาน</span>
+          {/* Bottom Active Mission Track Details Drawer (Phase MAP-2) */}
+          {selectedTrack && (
+            <div className="bg-slate-900/95 border-t border-cyan-500/40 p-3 px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-2xl backdrop-blur-md z-[1000]">
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40">
+                    ACTUAL GPS TRACK
+                  </span>
+                  <span className="font-bold text-white text-sm">
+                    {selectedTrack.mission_no} ({selectedTrack.vehicle_code})
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 text-slate-300 text-[11px]">
+                  <span>
+                    ระยะทางที่วิ่งจริง:{' '}
+                    <strong className="text-emerald-400 text-sm font-bold">
+                      {selectedTrack.validated_distance_km} กม.
+                    </strong>
+                  </span>
+                  <span>|</span>
+                  <span>
+                    จุด GPS ที่บันทึก:{' '}
+                    <strong className="text-cyan-300">{selectedTrack.points_count} จุด</strong>
+                  </span>
+                  <span>|</span>
+                  <span className="text-slate-400 italic">
+                    * เส้นทางจริงที่บันทึกจาก Telematics ไม่ใช่แบบจำลอง
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelectedTrack(null)}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>ปิดเส้นทาง</span>
+              </button>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-              <span>กำลังเดินทาง</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-              <span>จุดเกิดเหตุ</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-              <span>กลับฐาน/Stale</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
-              <span>Tracking Lost</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

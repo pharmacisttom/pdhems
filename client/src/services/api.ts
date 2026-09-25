@@ -1,4 +1,12 @@
-import { VehicleMarkerData, FacilityData, EmsBaseData, ActiveMissionData } from '../types/ems';
+import {
+  VehicleMarkerData,
+  FacilityData,
+  EmsBaseData,
+  ActiveMissionData,
+  MissionTrackResponse,
+  GpsTrackPoint,
+  TrackingHealthSummary,
+} from '../types/ems';
 
 const API_BASE = '/api';
 
@@ -50,7 +58,47 @@ export async function fetchActiveMissions(): Promise<ActiveMissionData[]> {
   }
 }
 
-export async function saveFacility(facility: Partial<FacilityData>): Promise<{ success: boolean; data?: FacilityData; message?: string }> {
+// Phase MAP-2: Fetch Recorded GPS Track for a Mission (Section 13, 25, 35)
+export async function fetchMissionTrack(missionIdOrNo: string | number): Promise<MissionTrackResponse | null> {
+  try {
+    const res = await fetch(`${API_BASE}/map/mission/${missionIdOrNo}/track`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.error(`Failed to fetch track for mission ${missionIdOrNo}:`, err);
+    return null;
+  }
+}
+
+// Phase MAP-2: Fetch Recent Vehicle Track
+export async function fetchVehicleTrack(vehicleId: number): Promise<GpsTrackPoint[]> {
+  try {
+    const res = await fetch(`${API_BASE}/map/vehicles/${vehicleId}/track`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data || [];
+  } catch (err) {
+    console.error(`Failed to fetch track for vehicle ${vehicleId}:`, err);
+    return [];
+  }
+}
+
+// Phase MAP-2: Fetch Fleet Tracking Health Summary (Section 33)
+export async function fetchTrackingHealth(): Promise<TrackingHealthSummary | null> {
+  try {
+    const res = await fetch(`${API_BASE}/map/tracking-health`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data || null;
+  } catch (err) {
+    console.error('Failed to fetch tracking health summary:', err);
+    return null;
+  }
+}
+
+export async function saveFacility(
+  facility: Partial<FacilityData>
+): Promise<{ success: boolean; data?: FacilityData; message?: string }> {
   try {
     const url = facility.id ? `${API_BASE}/facilities/${facility.id}` : `${API_BASE}/facilities`;
     const method = facility.id ? 'PUT' : 'POST';
@@ -60,9 +108,9 @@ export async function saveFacility(facility: Partial<FacilityData>): Promise<{ s
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify(facility)
+      body: JSON.stringify(facility),
     });
     return await res.json();
   } catch (err: any) {
@@ -70,7 +118,9 @@ export async function saveFacility(facility: Partial<FacilityData>): Promise<{ s
   }
 }
 
-export async function saveBase(base: Partial<EmsBaseData>): Promise<{ success: boolean; data?: EmsBaseData; message?: string }> {
+export async function saveBase(
+  base: Partial<EmsBaseData>
+): Promise<{ success: boolean; data?: EmsBaseData; message?: string }> {
   try {
     const url = base.id ? `${API_BASE}/bases/${base.id}` : `${API_BASE}/bases`;
     const method = base.id ? 'PUT' : 'POST';
@@ -80,9 +130,9 @@ export async function saveBase(base: Partial<EmsBaseData>): Promise<{ success: b
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify(base)
+      body: JSON.stringify(base),
     });
     return await res.json();
   } catch (err: any) {
@@ -98,7 +148,7 @@ export async function updateAmbulanceLocation(
     const res = await fetch(`${API_BASE}/ambulances/${vehicleId}/location`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(coords)
+      body: JSON.stringify(coords),
     });
     return res.ok;
   } catch (err) {

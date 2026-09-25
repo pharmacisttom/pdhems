@@ -130,6 +130,36 @@ async function seed() {
       ON DUPLICATE KEY UPDATE status = VALUES(status)
     `);
 
+    // 10. Recorded GPS Tracks for Active Missions (Phase MAP-2)
+    const tracksM1 = [
+      [1, 2, 13.693822, 99.851921, 25.0, 180.0, 'GOOD', 15],
+      [1, 2, 13.682100, 99.848900, 56.0, 182.0, 'GOOD', 12],
+      [1, 2, 13.668500, 99.843200, 68.0, 185.0, 'GOOD', 9],
+      [1, 2, 13.651200, 99.837100, 72.0, 180.0, 'GOOD', 6],
+      [1, 2, 13.635000, 99.835000, 70.0, 178.0, 'GOOD', 3],
+      [1, 2, 13.621200, 99.834000, 68.5, 180.0, 'GOOD', 1]
+    ];
+
+    for (const [mId, vId, lat, lng, spd, hdg, qual, minAgo] of tracksM1) {
+      await conn.query(`
+        INSERT INTO gps_tracks (mission_id, vehicle_id, latitude, longitude, speed, heading, gps_quality, sync_status, recorded_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'SYNCED', DATE_SUB(NOW(), INTERVAL ? MINUTE))
+      `, [mId, vId, lat, lng, spd, hdg, qual, minAgo]);
+    }
+
+    const tracksM2 = [
+      [2, 3, 13.693822, 99.851921, 30.0, 350.0, 'GOOD', 10],
+      [2, 3, 13.702500, 99.848200, 62.0, 345.0, 'GOOD', 6],
+      [2, 3, 13.712400, 99.845100, 0.0, 90.0, 'GOOD', 2]
+    ];
+
+    for (const [mId, vId, lat, lng, spd, hdg, qual, minAgo] of tracksM2) {
+      await conn.query(`
+        INSERT INTO gps_tracks (mission_id, vehicle_id, latitude, longitude, speed, heading, gps_quality, sync_status, recorded_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'SYNCED', DATE_SUB(NOW(), INTERVAL ? MINUTE))
+      `, [mId, vId, lat, lng, spd, hdg, qual, minAgo]);
+    }
+
     // 10. System Settings
     const settings = [
       ['NORMAL_SYNC_INTERVAL_SEC', '300', 'Batch sync interval for normal refer (seconds)'],

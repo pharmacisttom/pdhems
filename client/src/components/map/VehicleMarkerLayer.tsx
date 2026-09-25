@@ -2,14 +2,15 @@ import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { VehicleMarkerData } from '../../types/ems';
-import { AlertTriangle, Clock, Radio, User, Compass, Gauge, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, Clock, Radio, User, Compass, Gauge, ShieldAlert, Route } from 'lucide-react';
 
 interface VehicleMarkerLayerProps {
   vehicles: VehicleMarkerData[];
   onSelectMission?: (missionNo: string) => void;
+  onShowTrack?: (missionIdOrNo: string | number) => void;
 }
 
-// Convert heading degrees (0-360) to directional arrow symbol
+// Convert heading degrees (0-360) to directional arrow symbol (Section 4)
 function getHeadingArrow(heading: number | null): string {
   if (heading === null || heading === undefined) return '';
   const val = Math.floor((heading / 45) + 0.5) % 8;
@@ -63,6 +64,7 @@ function createVehicleIcon(v: VehicleMarkerData) {
   const isEmergency = v.active_mission?.mission_type === 'EMERGENCY';
   const isLost = v.tracking_health === 'TRACKING_LOST';
   const isDelayed = v.tracking_health === 'TRACKING_DELAYED';
+  const isStopped = v.is_stopped && !isLost && !isDelayed;
 
   const html = `
     <div style="position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer;">
@@ -73,7 +75,7 @@ function createVehicleIcon(v: VehicleMarkerData) {
       }
       <div style="
         background-color: ${styles.bg};
-        border: 2px solid ${styles.border};
+        border: 2px ${isLost ? 'dashed #f87171' : `solid ${styles.border}`};
         color: ${styles.text};
         padding: 3px 8px;
         border-radius: 9999px;
@@ -84,13 +86,25 @@ function createVehicleIcon(v: VehicleMarkerData) {
         gap: 4px;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         white-space: nowrap;
+        opacity: ${isLost ? '0.75' : '1'};
       ">
         <span>🚑</span>
         <span>${v.vehicle_code}</span>
         ${arrow ? `<span style="font-size: 12px; font-weight: 900;">${arrow}</span>` : ''}
       </div>
       ${
-        v.current_speed > 0 && !isLost
+        isStopped
+          ? `<div style="
+              background: #1e293b; 
+              color: #94a3b8; 
+              font-size: 9px; 
+              font-weight: 600; 
+              border: 1px solid #334155; 
+              border-radius: 4px; 
+              padding: 1px 4px; 
+              margin-top: 2px;
+            ">🅿️ จอดนิ่ง</div>`
+          : v.current_speed > 0 && !isLost
           ? `<div style="
               background: #0f172a; 
               color: #38bdf8; 
@@ -111,9 +125,10 @@ function createVehicleIcon(v: VehicleMarkerData) {
               font-size: 8px; 
               font-weight: 700; 
               border-radius: 3px; 
-              padding: 1px 3px; 
+              padding: 1px 4px; 
               margin-top: 1px;
-            ">LOST</div>`
+              border: 1px solid #ef4444;
+            ">LAST KNOWN</div>`
           : isDelayed
           ? `<div style="
               background: #b45309; 
@@ -123,7 +138,7 @@ function createVehicleIcon(v: VehicleMarkerData) {
               border-radius: 3px; 
               padding: 1px 3px; 
               margin-top: 1px;
-            ">STALE</div>`
+            ">DELAYED</div>`
           : ''
       }
     </div>
@@ -141,6 +156,7 @@ function createVehicleIcon(v: VehicleMarkerData) {
 export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
   vehicles,
   onSelectMission,
+  onShowTrack,
 }) => {
   return (
     <>
@@ -162,10 +178,10 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
         return (
           <Marker
             key={`vehicle-${v.id}`}
-            position={[v.current_latitude, v.current_longitude]}
+            position={[Number(v.current_latitude), Number(v.current_longitude)]}
             icon={createVehicleIcon(v)}
           >
-            <Popup minWidth={260} maxWidth={320}>
+            <Popup minWidth={270} maxWidth={330}>
               <div className="p-3 text-slate-100 space-y-2.5">
                 {/* Header with Vehicle Code and Registration */}
                 <div className="flex items-center justify-between border-b border-slate-700/80 pb-2">
@@ -188,19 +204,21 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
                   </span>
                 </div>
 
-                {/* Stale / Tracking Lost Warning (Critical Rule Section 5) */}
+                {/* Stale / Tracking Lost Warning (Critical Rule Section 5 & 22) */}
                 {(isLost || isDelayed) && (
                   <div className="p-2 rounded bg-amber-950/60 border border-amber-500/50 flex items-start gap-2 text-xs text-amber-200">
                     <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold text-amber-300">
-                        {isLost ? '⚠️ LAST KNOWN LOCATION (ขาดการเชื่อมต่อ)' : '⚠️ ตำแหน่งอาจไม่เป็นปัจจุบัน (Stale)'}
+                        {isLost
+                          ? '⚠️ LAST KNOWN LOCATION (พิกัดล่าสุดที่บันทึกได้)'
+                          : '⚠️ ตำแหน่งอาจไม่เป็นปัจจุบัน (Stale)'}
                       </p>
                       <p className="text-[11px] text-amber-200/90">
-                        อัปเดตล่าสุด: {lastSeenText}
+                        สัญญาณหายไปเมื่อ: {lastSeenText}
                         <br />
                         <span className="text-slate-400 text-[10px]">
-                          ห้ามถือว่าพิกัดนี้เป็นตำแหน่งปัจจุบันแบบ Realtime
+                          ห้ามเคลื่อนหมุดจำลองหรือถือเป็นพิกัดปัจจุบัน
                         </span>
                       </p>
                     </div>
@@ -212,7 +230,11 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
                   <div>
                     <span className="text-slate-400 block text-[10px]">ความเร็ว (Speed)</span>
                     <span className="font-semibold text-slate-200 text-sm">
-                      {Math.round(v.current_speed)} km/h
+                      {v.is_stopped && !isLost ? (
+                        <span className="text-sky-300">0 km/h (จอดนิ่ง)</span>
+                      ) : (
+                        `${Math.round(v.current_speed)} km/h`
+                      )}
                     </span>
                   </div>
                   <div>
@@ -272,16 +294,27 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
                 {/* Action Buttons */}
                 <div className="flex items-center gap-1.5 pt-2 border-t border-slate-700/60">
                   <button
-                    onClick={() => onSelectMission && v.active_mission && onSelectMission(v.active_mission.mission_no)}
+                    onClick={() =>
+                      onSelectMission &&
+                      v.active_mission &&
+                      onSelectMission(v.active_mission.mission_no)
+                    }
                     className="flex-1 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded text-xs font-semibold text-center transition-colors"
                   >
                     ดูภารกิจ
                   </button>
                   <button
-                    onClick={() => alert(`เส้นทางของรถ ${v.vehicle_code} กำลังโหลด (Phase MAP-4)`)}
-                    className="flex-1 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs font-medium text-center transition-colors"
+                    onClick={() => {
+                      if (v.active_mission && onShowTrack) {
+                        onShowTrack(v.active_mission.mission_no);
+                      } else {
+                        alert(`รถ ${v.vehicle_code} ยังไม่มีบันทึกเส้นทางภารกิจปัจจุบัน`);
+                      }
+                    }}
+                    className="flex-1 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-white rounded text-xs font-semibold text-center transition-colors flex items-center justify-center gap-1"
                   >
-                    ดูเส้นทาง
+                    <Route className="w-3.5 h-3.5" />
+                    <span>ดูเส้นทาง</span>
                   </button>
                   <button
                     onClick={() => alert(`Timeline ของรถ ${v.vehicle_code} กำลังโหลด (Phase MAP-6)`)}

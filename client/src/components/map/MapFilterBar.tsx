@@ -28,6 +28,9 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
   const trackingAlertCount = vehicles.filter(
     (v) => v.tracking_health === 'TRACKING_DELAYED' || v.tracking_health === 'TRACKING_LOST'
   ).length;
+  const safetyAlertCount = vehicles.filter(
+    (v) => v.current_speed > 80 || v.gps_quality === 'POOR' || v.gps_quality === 'INVALID'
+  ).length;
 
   const filters: { id: MapFilterType; label: string; count?: number; color?: string }[] = [
     { id: 'ALL', label: 'ทั้งหมด', count: vehicles.length },
@@ -38,6 +41,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
     { id: 'AT_SCENE', label: 'ถึงจุดเกิดเหตุ' },
     { id: 'RETURNING', label: 'กำลังกลับฐาน' },
     { id: 'TRACKING_ALERT', label: 'Tracking Alert', count: trackingAlertCount, color: 'text-amber-400' },
+    { id: 'SAFETY_ALERT', label: 'Safety Alert', count: safetyAlertCount, color: 'text-rose-400' },
   ];
 
   return (
