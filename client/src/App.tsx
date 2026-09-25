@@ -1,3 +1,4 @@
+import { AuthBoundary } from './components/AuthBoundary';
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { CommandCenterMapPage } from './pages/CommandCenterMapPage';
@@ -9,8 +10,8 @@ import { ReportsPage } from './pages/ReportsPage';
 import { MobileBottomNav } from './components/common/MobileBottomNav';
 import { fetchActiveMissions } from './services/api';
 
-export function App() {
-  const [currentTab, setCurrentTab] = useState<'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports'>('map');
+function Workspace({ navigation }: { navigation: string[] }) {
+  const [currentTab, setCurrentTab] = useState<'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports'>(navigation[0] as 'map' || 'map');
   const [activeEmergencyCount, setActiveEmergencyCount] = useState<number>(0);
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export function App() {
         currentTab={currentTab}
         onSelectTab={setCurrentTab}
         activeEmergencyCount={activeEmergencyCount}
+        allowedTabs={navigation}
       />
 
       <main className="flex-1 flex flex-col overflow-hidden pb-16 sm:pb-0">
@@ -47,9 +49,11 @@ export function App() {
         currentTab={currentTab}
         onSelectTab={setCurrentTab}
         activeEmergencyCount={activeEmergencyCount}
+        allowedTabs={navigation}
       />
     </div>
   );
 }
 
+export function App() { return <AuthBoundary>{user => <Workspace navigation={user.navigation} />}</AuthBoundary>; }
 export default App;

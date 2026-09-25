@@ -4,9 +4,10 @@ interface NavbarProps {
   currentTab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports';
   onSelectTab: (tab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports') => void;
   activeEmergencyCount: number;
+  allowedTabs: string[];
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeEmergencyCount }) => {
+export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeEmergencyCount, allowedTabs }) => {
   return (
     <header className="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,7 +33,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
           {/* Desktop / Tablet Navigation Tabs */}
           <nav className="hidden md:flex items-center gap-1 lg:gap-2">
             <button
-              onClick={() => onSelectTab('map')}
+              hidden={!allowedTabs.includes('map')} style={{ display: allowedTabs.includes('map') ? undefined : 'none' }}
+          onClick={() => onSelectTab('map')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTab === 'map'
                   ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
@@ -49,7 +51,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
             </button>
 
             <button
-              onClick={() => onSelectTab('missions')}
+              hidden={!allowedTabs.includes('missions')} style={{ display: allowedTabs.includes('missions') ? undefined : 'none' }}
+          onClick={() => onSelectTab('missions')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTab === 'missions'
                   ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
@@ -61,7 +64,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
             </button>
 
             <button
-              onClick={() => onSelectTab('driver')}
+              hidden={!allowedTabs.includes('driver')} style={{ display: allowedTabs.includes('driver') ? undefined : 'none' }}
+          onClick={() => onSelectTab('driver')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTab === 'driver'
                   ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30'
@@ -73,7 +77,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
             </button>
 
             <button
-              onClick={() => onSelectTab('facilities')}
+              hidden={!allowedTabs.includes('facilities')} style={{ display: allowedTabs.includes('facilities') ? undefined : 'none' }}
+          onClick={() => onSelectTab('facilities')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTab === 'facilities'
                   ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
@@ -85,7 +90,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
             </button>
 
             <button
-              onClick={() => onSelectTab('bases')}
+              hidden={!allowedTabs.includes('bases')} style={{ display: allowedTabs.includes('bases') ? undefined : 'none' }}
+          onClick={() => onSelectTab('bases')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTab === 'bases'
                   ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
@@ -97,7 +103,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
             </button>
 
             <button
-              onClick={() => onSelectTab('reports')}
+              hidden={!allowedTabs.includes('reports')} style={{ display: allowedTabs.includes('reports') ? undefined : 'none' }}
+          onClick={() => onSelectTab('reports')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 currentTab === 'reports'
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
@@ -115,15 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
               <span className="text-slate-300">ระบบติดตาม: พร้อมทำงาน</span>
             </div>
-            <div className="flex items-center gap-2 pl-2 border-l border-slate-700">
-              <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-sky-400 border border-slate-600">
-                DISP
-              </div>
-              <div className="text-left text-xs">
-                <p className="font-semibold text-slate-200">Dispatcher (ศูนย์)</p>
-                <p className="text-slate-400">รพ.โพธาราม</p>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

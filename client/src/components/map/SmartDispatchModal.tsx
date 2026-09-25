@@ -1,3 +1,4 @@
+import { authFetch as fetch } from '../../services/auth';
 import React, { useState } from 'react';
 import { X, Zap, Navigation, Clock, ShieldCheck, AlertCircle, Check, ArrowRight, Compass } from 'lucide-react';
 
@@ -50,12 +51,11 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
       const res = await fetch('/api/dispatch/nearest-ambulances', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+
         },
         body: JSON.stringify({
           latitude: Number(sceneLat),
@@ -82,12 +82,11 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
     setDispatchingId(candidate.vehicle_id);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
       const res = await fetch('/api/dispatch/quick-emergency', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+
         },
         body: JSON.stringify({
           sceneLatitude: Number(sceneLat),

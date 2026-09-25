@@ -5,12 +5,14 @@ interface MobileBottomNavProps {
   currentTab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports';
   onSelectTab: (tab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports') => void;
   activeEmergencyCount: number;
+  allowedTabs: string[];
 }
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   currentTab,
   onSelectTab,
   activeEmergencyCount,
+  allowedTabs,
 }) => {
   return (
     <nav
@@ -20,6 +22,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       <div className="grid grid-cols-5 h-16 max-w-lg mx-auto px-1">
         {/* 1. Map */}
         <button
+          hidden={!allowedTabs.includes('map')} style={{ display: allowedTabs.includes('map') ? undefined : 'none' }}
           onClick={() => onSelectTab('map')}
           className={`flex flex-col items-center justify-center gap-1 transition-all min-h-[48px] relative ${
             currentTab === 'map' ? 'text-sky-400 font-bold' : 'text-slate-400 hover:text-slate-200'
@@ -36,6 +39,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 
         {/* 2. Missions */}
         <button
+          hidden={!allowedTabs.includes('missions')} style={{ display: allowedTabs.includes('missions') ? undefined : 'none' }}
           onClick={() => onSelectTab('missions')}
           className={`flex flex-col items-center justify-center gap-1 transition-all min-h-[48px] ${
             currentTab === 'missions' ? 'text-sky-400 font-bold' : 'text-slate-400 hover:text-slate-200'
@@ -47,6 +51,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 
         {/* 3. Driver Cab Mode */}
         <button
+          hidden={!allowedTabs.includes('driver')} style={{ display: allowedTabs.includes('driver') ? undefined : 'none' }}
           onClick={() => onSelectTab('driver')}
           className={`flex flex-col items-center justify-center gap-1 transition-all min-h-[48px] relative ${
             currentTab === 'driver' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
@@ -66,6 +71,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 
         {/* 4. Reports & KPIs */}
         <button
+          hidden={!allowedTabs.includes('reports')} style={{ display: allowedTabs.includes('reports') ? undefined : 'none' }}
           onClick={() => onSelectTab('reports')}
           className={`flex flex-col items-center justify-center gap-1 transition-all min-h-[48px] ${
             currentTab === 'reports' ? 'text-indigo-400 font-bold' : 'text-slate-400 hover:text-slate-200'
@@ -77,6 +83,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 
         {/* 5. Facilities & Bases */}
         <button
+          hidden={!allowedTabs.includes('facilities')} style={{ display: allowedTabs.includes('facilities') ? undefined : 'none' }}
           onClick={() => onSelectTab('facilities')}
           className={`flex flex-col items-center justify-center gap-1 transition-all min-h-[48px] ${
             currentTab === 'facilities' || currentTab === 'bases'

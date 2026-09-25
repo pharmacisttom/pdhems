@@ -6,19 +6,19 @@ describe('Phase MAP-4 & MAP-5: Smart Dispatch & Nearest Ambulance Tests', () => 
   let authToken: string;
 
   beforeAll(async () => {
-    const res = await request(app).post('/api/auth/login').send({
+    const res = await request(app).post('/api/auth/login').set('X-PDH-Request', '1').send({
       username: 'admin',
       password: 'admin1234',
     });
     expect(res.status).toBe(200);
-    authToken = res.body.token;
+    authToken = res.headers['set-cookie'][0].split(';')[0];
   });
 
   it('1. Recommends nearest ambulances based on road distance (1.35x) and GPS freshness', async () => {
     // Target scene near Photharam Hospital (13.7000, 99.8500)
     const res = await request(app)
       .post('/api/dispatch/nearest-ambulances')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         latitude: 13.7000,
         longitude: 99.8500,
@@ -43,7 +43,7 @@ describe('Phase MAP-4 & MAP-5: Smart Dispatch & Nearest Ambulance Tests', () => 
   it('2. Disqualifies or penalizes vehicles with lost GPS or busy status', async () => {
     const res = await request(app)
       .post('/api/dispatch/nearest-ambulances')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         latitude: 13.7000,
         longitude: 99.8500,
@@ -61,7 +61,7 @@ describe('Phase MAP-4 & MAP-5: Smart Dispatch & Nearest Ambulance Tests', () => 
   it('3. Performs 1-Click Quick Emergency Dispatch (Section 14)', async () => {
     const res = await request(app)
       .post('/api/dispatch/quick-emergency')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         sceneLatitude: 13.7050,
         sceneLongitude: 99.8420,
@@ -79,6 +79,6 @@ describe('Phase MAP-4 & MAP-5: Smart Dispatch & Nearest Ambulance Tests', () => 
     // Clean up: complete the emergency mission to reset vehicle 1 to AVAILABLE
     await request(app)
       .post(`/api/missions/${res.body.data.missionId}/complete`)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
   });
 });

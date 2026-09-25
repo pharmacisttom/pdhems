@@ -1,3 +1,4 @@
+import { authFetch as fetch } from './auth';
 /**
  * PDH Smart EMS - GPS Tracking & Offline Telematics Engine
  * Handles high-frequency GPS collection, offline queuing, batch synchronization,
@@ -214,10 +215,7 @@ class GpsTrackingEngine {
     if (!this.vehicleId) return false;
     const queue = this.getQueue();
     if (queue.length === 0) return true;
-
-    const token = localStorage.getItem('token');
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const payload = {
       missionId: this.missionId,

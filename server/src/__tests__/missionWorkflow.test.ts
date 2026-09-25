@@ -15,18 +15,18 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     await pool.query("DELETE FROM mission_crew WHERE staff_id = 1");
 
     // Login to obtain test token
-    const res = await request(app).post('/api/auth/login').send({
+    const res = await request(app).post('/api/auth/login').set('X-PDH-Request', '1').send({
       username: 'admin',
       password: 'admin1234',
     });
     expect(res.status).toBe(200);
-    authToken = res.body.token;
+    authToken = res.headers['set-cookie'][0].split(';')[0];
   });
 
   it('1. Fetches available resources for assignment', async () => {
     const res = await request(app)
       .get('/api/missions/resources/available')
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -38,7 +38,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   it('2. Creates a new Refer Mission', async () => {
     const res = await request(app)
       .post('/api/missions/refer')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         originFacilityId: 1, // PDH
         destinationFacilityId: 2, // Ratchaburi Hospital
@@ -57,7 +57,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Conflict verification: Try to assign Staff ID 2 who is already on active mission 1
     const resStaffConflict = await request(app)
       .post(`/api/missions/${testMissionId}/assign`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         vehicleId: 1,
         driverId: 1,
@@ -69,7 +69,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Valid assignment with free staff (Staff 1 - Doctor Anan)
     const res = await request(app)
       .post(`/api/missions/${testMissionId}/assign`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         vehicleId: 1,
         driverId: 1,
@@ -82,13 +82,13 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Conflict verification: Try to assign the same vehicle (vehicle 1) to another new mission
     const resCreateSecond = await request(app)
       .post('/api/missions/refer')
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({ originFacilityId: 1, destinationFacilityId: 3 });
     const secondMissionId = resCreateSecond.body.data.id;
 
     const resConflict = await request(app)
       .post(`/api/missions/${secondMissionId}/assign`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({ vehicleId: 1, driverId: 4 });
 
     expect(resConflict.status).toBe(409);
@@ -98,7 +98,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   it('4. Blocks normal departure if readiness checklist is incomplete', async () => {
     const res = await request(app)
       .post(`/api/missions/${testMissionId}/depart`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({ isEmergencyOverride: false });
 
     expect(res.status).toBe(403);
@@ -110,14 +110,14 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Confirm Driver
     const resDriver = await request(app)
       .post(`/api/missions/${testMissionId}/confirm-readiness`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({ confirmedBy: 'DRIVER' });
     expect(resDriver.status).toBe(200);
 
     // Confirm Crew
     const resCrew = await request(app)
       .post(`/api/missions/${testMissionId}/confirm-readiness`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({ confirmedBy: 'CREW' });
     expect(resCrew.status).toBe(200);
     expect(resCrew.body.data.newStatus).toBe('CREW_CONFIRMED');
@@ -126,7 +126,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   it('6. Submits Pre-trip Checklist and reaches READY status', async () => {
     const res = await request(app)
       .post(`/api/missions/${testMissionId}/pretrip`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         fuelLevel: 'FULL',
         oxygenLevelPsi: 2000,
@@ -144,7 +144,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Check mission status is now READY
     const missionRes = await request(app)
       .get(`/api/missions/${testMissionId}`)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
     expect(missionRes.body.data.status).toBe('READY');
     expect(missionRes.body.data.pretrip_checklist).not.toBeNull();
   });
@@ -152,7 +152,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   it('7. Departs mission normally into EN_ROUTE', async () => {
     const res = await request(app)
       .post(`/api/missions/${testMissionId}/depart`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({ isEmergencyOverride: false });
 
     expect(res.status).toBe(200);
@@ -162,7 +162,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   it('8. Marks mission as ARRIVED at destination facility', async () => {
     const res = await request(app)
       .post(`/api/missions/${testMissionId}/arrived`)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('ARRIVED');
@@ -172,7 +172,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Attempt without receiver name
     const failRes = await request(app)
       .post(`/api/missions/${testMissionId}/handover`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({ receiverName: '' });
 
     expect(failRes.status).toBe(400);
@@ -180,7 +180,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Provide receiver name
     const passRes = await request(app)
       .post(`/api/missions/${testMissionId}/handover`)
-      .set('Authorization', `Bearer ${authToken}`)
+      .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         receiverName: 'พว.สุดาพร พยาบาลวิชาชีพ ER รพ.ศูนย์ราชบุรี',
         notes: 'Handover vitals stable, medical summary delivered.',
@@ -193,7 +193,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   it('10. Starts return trip to base while tracking remains active', async () => {
     const res = await request(app)
       .post(`/api/missions/${testMissionId}/start-return`)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('RETURNING');
@@ -202,7 +202,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
   it('11. Completes mission at base and resets asset status to AVAILABLE', async () => {
     const res = await request(app)
       .post(`/api/missions/${testMissionId}/complete`)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('COMPLETED');
@@ -210,7 +210,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
     // Verify vehicle is released back to AVAILABLE
     const vehRes = await request(app)
       .get('/api/ambulances/1')
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
     expect(vehRes.body.data.status).toBe('AVAILABLE');
   });
 });

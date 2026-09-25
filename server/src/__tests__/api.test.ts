@@ -4,19 +4,24 @@ import app from '../index';
 import { pool } from '../db/connection';
 
 describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
+  const agent = request.agent(app);
+  beforeAll(async () => {
+    const res = await agent.post('/api/auth/login').set('X-PDH-Request','1').send({username:'admin',password:'admin1234'});
+    expect(res.status).toBe(200);
+  });
   afterAll(async () => {
     await pool.end();
   });
 
   it('GET /api/health returns status UP with database connected', async () => {
-    const res = await request(app).get('/api/health');
+    const res = await agent.get('/api/health');
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('UP');
     expect(res.body.database).toBe('CONNECTED');
   });
 
   it('GET /api/map/vehicles returns vehicle markers with freshness calculation and stopped detection', async () => {
-    const res = await request(app).get('/api/map/vehicles');
+    const res = await agent.get('/api/map/vehicles');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(Array.isArray(res.body.data)).toBe(true);
@@ -32,7 +37,7 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
   });
 
   it('GET /api/map/facilities returns hospital master map entries with numerical coordinates', async () => {
-    const res = await request(app).get('/api/map/facilities');
+    const res = await agent.get('/api/map/facilities');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.length).toBeGreaterThan(0);
@@ -45,7 +50,7 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
   });
 
   it('GET /api/map/bases returns EMS bases with numerical coordinates', async () => {
-    const res = await request(app).get('/api/map/bases');
+    const res = await agent.get('/api/map/bases');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.length).toBeGreaterThan(0);
@@ -56,16 +61,17 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
   it('POST /api/auth/login validates credentials correctly', async () => {
     // Valid login
     const validRes = await request(app)
-      .post('/api/auth/login')
+      .post('/api/auth/login').set('X-PDH-Request', '1')
       .send({ username: 'admin', password: 'admin1234' });
     expect(validRes.status).toBe(200);
     expect(validRes.body.success).toBe(true);
-    expect(validRes.body).toHaveProperty('token');
+    expect(validRes.body).not.toHaveProperty('token');
+    expect(validRes.headers['set-cookie'][0]).toContain('HttpOnly');
     expect(validRes.body.user.role).toBe('SUPER_ADMIN');
 
     // Invalid login
     const invalidRes = await request(app)
-      .post('/api/auth/login')
+      .post('/api/auth/login').set('X-PDH-Request', '1')
       .send({ username: 'admin', password: 'wrongpassword' });
     expect(invalidRes.status).toBe(401);
     expect(invalidRes.body.success).toBe(false);
@@ -73,7 +79,7 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
 
   // Phase MAP-2 Tests:
   it('GET /api/map/mission/1/track returns recorded GPS track with distance validation (Phase MAP-2)', async () => {
-    const res = await request(app).get('/api/map/mission/1/track');
+    const res = await agent.get('/api/map/mission/1/track');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.mission_no).toBe('REF-2026-000124');
@@ -91,7 +97,7 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
   });
 
   it('GET /api/map/tracking-health returns fleet health breakdown (Phase MAP-2)', async () => {
-    const res = await request(app).get('/api/map/tracking-health');
+    const res = await agent.get('/api/map/tracking-health');
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveProperty('total_vehicles');
@@ -118,7 +124,7 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
       ],
     };
 
-    const res = await request(app).post('/api/map/gps/batch').send(testBatch);
+    const res = await agent.post('/api/map/gps/batch').set('X-PDH-Request','1').send(testBatch);
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.inserted).toBeGreaterThanOrEqual(1);

@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { authenticate } from './middleware/auth';
+import { authError } from './utils/session';
 import { testConnection } from './db/connection';
 import authRoutes from './routes/authRoutes';
 import mapRoutes from './routes/mapRoutes';
@@ -14,6 +16,7 @@ import dispatchRoutes from './routes/dispatchRoutes';
 import reportRoutes from './routes/reportRoutes';
 
 dotenv.config();
+if (process.env.NODE_ENV === 'production' && (!process.env.CORS_ORIGIN?.startsWith('https://') || process.env.CORS_ORIGIN.includes('*'))) throw new Error('Production requires an explicit HTTPS CORS_ORIGIN');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +32,16 @@ app.use(
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    const origin = req.get('origin');
+    if (req.get('x-pdh-request') !== '1' || (origin && origin !== (process.env.CORS_ORIGIN || 'http://localhost:5173'))) {
+      authError(res, 403, 'CSRF_REJECTED', 'Invalid request'); return;
+    }
+  }
+  next();
+});
 
 // Health Check Endpoint (Required by Section 50)
 app.get('/api/health', async (req: Request, res: Response) => {
@@ -43,6 +56,7 @@ app.get('/api/health', async (req: Request, res: Response) => {
 
 // Register Core Routes
 app.use('/api/auth', authRoutes);
+app.use('/api', authenticate);
 app.use('/api/map', mapRoutes);
 app.use('/api/facilities', facilityRoutes);
 app.use('/api/bases', baseRoutes);
@@ -58,10 +72,10 @@ app.use((req: Request, res: Response) => {
 
 // Centralized error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.error('Unhandled Server Error:', err);
+  console.error('Unhandled Server Error');
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || 'Internal Server Error',
+    message: 'Internal Server Error',
   });
 });
 

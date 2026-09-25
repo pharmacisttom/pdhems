@@ -6,18 +6,18 @@ describe('Phase 9 & MAP-7: Reports, EMS KPIs and Spatial Analytics Tests', () =>
   let authToken: string;
 
   beforeAll(async () => {
-    const res = await request(app).post('/api/auth/login').send({
+    const res = await request(app).post('/api/auth/login').set('X-PDH-Request', '1').send({
       username: 'admin',
       password: 'admin1234',
     });
     expect(res.status).toBe(200);
-    authToken = res.body.token;
+    authToken = res.headers['set-cookie'][0].split(';')[0];
   });
 
   it('1. Calculates all 8 EMS KPIs with benchmarks and compliance rates (Section 40)', async () => {
     const res = await request(app)
       .get('/api/reports/kpis?timeframe=all')
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -48,7 +48,7 @@ describe('Phase 9 & MAP-7: Reports, EMS KPIs and Spatial Analytics Tests', () =>
   it('2. Supports timeframe and missionType filtering for KPIs', async () => {
     const res = await request(app)
       .get('/api/reports/kpis?timeframe=30days&missionType=EMERGENCY')
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -59,7 +59,7 @@ describe('Phase 9 & MAP-7: Reports, EMS KPIs and Spatial Analytics Tests', () =>
   it('3. Generates Trip Summary Report with telematics stats & privacy compliance (Section 39)', async () => {
     const res = await request(app)
       .get('/api/reports/trip-summary?limit=10')
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
@@ -89,7 +89,7 @@ describe('Phase 9 & MAP-7: Reports, EMS KPIs and Spatial Analytics Tests', () =>
   it('4. Aggregates Spatial Analytics, accident hotspots & frequent refer corridors (Section 23 MAP-7)', async () => {
     const res = await request(app)
       .get('/api/reports/spatial-density?timeframe=all')
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authToken).set('X-PDH-Request', '1');
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);

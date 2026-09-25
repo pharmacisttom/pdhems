@@ -12,7 +12,13 @@ async function migrate() {
 
   const connection = await pool.getConnection();
   try {
+    await connection.query("SET time_zone = '+00:00'");
+    const [lock]: any = await connection.query("SELECT GET_LOCK(CONCAT(DATABASE(), ':migration'), 30) AS acquired");
+    if (!lock[0].acquired) throw new Error('Migration lock unavailable');
+    await connection.query('CREATE TABLE IF NOT EXISTS schema_migrations (name VARCHAR(255) PRIMARY KEY, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)');
     for (const file of files) {
+      const [applied]: any = await connection.query('SELECT name FROM schema_migrations WHERE name=?', [file]);
+      if (applied.length) continue;
       console.log(`Executing migration: ${file}`);
       const filePath = path.join(migrationsDir, file);
       const sql = fs.readFileSync(filePath, 'utf8');
@@ -27,13 +33,15 @@ async function migrate() {
           await connection.query(statement);
         }
       }
+      await connection.query('INSERT INTO schema_migrations (name) VALUES (?)', [file]);
       console.log(`✓ Completed: ${file} (${statements.length} statements)`);
     }
     console.log('All migrations applied successfully.');
   } catch (error) {
     console.error('Migration failed:', error);
-    process.exit(1);
+    process.exitCode = 1;
   } finally {
+    await connection.query("SELECT RELEASE_LOCK(CONCAT(DATABASE(), ':migration'))");
     connection.release();
     await pool.end();
   }

@@ -66,6 +66,7 @@ export const DriverCabPage: React.FC = () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       unsubscribe();
+      gpsTrackingEngine.stopTracking();
       wakeLockService.releaseLock();
     };
   }, []);

@@ -1,3 +1,4 @@
+import { authFetch as fetch } from './auth';
 import {
   VehicleMarkerData,
   FacilityData,
@@ -102,13 +103,12 @@ export async function saveFacility(
   try {
     const url = facility.id ? `${API_BASE}/facilities/${facility.id}` : `${API_BASE}/facilities`;
     const method = facility.id ? 'PUT' : 'POST';
-    const token = localStorage.getItem('token');
 
     const res = await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+
       },
       body: JSON.stringify(facility),
     });
@@ -124,13 +124,12 @@ export async function saveBase(
   try {
     const url = base.id ? `${API_BASE}/bases/${base.id}` : `${API_BASE}/bases`;
     const method = base.id ? 'PUT' : 'POST';
-    const token = localStorage.getItem('token');
 
     const res = await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+
       },
       body: JSON.stringify(base),
     });
@@ -161,30 +160,7 @@ export async function updateAmbulanceLocation(
 // Phase 2 & 3: Mission & Pretrip Telematics API Methods
 // -------------------------------------------------------------
 
-function getAuthHeader(): Record<string, string> {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
-export async function loginAsAdmin(): Promise<string | null> {
-  try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: 'admin', password: 'admin1234' }),
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    if (json.token) {
-      localStorage.setItem('token', json.token);
-      return json.token;
-    }
-    return null;
-  } catch (e) {
-    console.error('Failed to login:', e);
-    return null;
-  }
-}
+function getAuthHeader(): Record<string, string> { return {}; }
 
 export async function fetchMissions(filter?: { status?: string; type?: string }): Promise<any[]> {
   try {
@@ -193,10 +169,7 @@ export async function fetchMissions(filter?: { status?: string; type?: string })
     if (filter?.type) url += `&type=${filter.type}`;
 
     let res = await fetch(url, { headers: getAuthHeader() });
-    if (res.status === 401) {
-      await loginAsAdmin();
-      res = await fetch(url, { headers: getAuthHeader() });
-    }
+
     const json = await res.json();
     return json.data || [];
   } catch (err) {
@@ -208,10 +181,7 @@ export async function fetchMissions(filter?: { status?: string; type?: string })
 export async function fetchMissionDetail(id: number): Promise<any | null> {
   try {
     let res = await fetch(`${API_BASE}/missions/${id}`, { headers: getAuthHeader() });
-    if (res.status === 401) {
-      await loginAsAdmin();
-      res = await fetch(`${API_BASE}/missions/${id}`, { headers: getAuthHeader() });
-    }
+
     if (!res.ok) return null;
     const json = await res.json();
     return json.data || null;
@@ -224,10 +194,7 @@ export async function fetchMissionDetail(id: number): Promise<any | null> {
 export async function fetchAvailableResources(): Promise<any> {
   try {
     let res = await fetch(`${API_BASE}/missions/resources/available`, { headers: getAuthHeader() });
-    if (res.status === 401) {
-      await loginAsAdmin();
-      res = await fetch(`${API_BASE}/missions/resources/available`, { headers: getAuthHeader() });
-    }
+
     const json = await res.json();
     return json.data || { availableVehicles: [], availableDrivers: [], availableStaff: [] };
   } catch (err) {
@@ -247,14 +214,7 @@ export async function createReferMission(payload: {
       headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
       body: JSON.stringify(payload),
     });
-    if (res.status === 401) {
-      await loginAsAdmin();
-      res = await fetch(`${API_BASE}/missions/refer`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-        body: JSON.stringify(payload),
-      });
-    }
+
     return await res.json();
   } catch (err: any) {
     return { success: false, message: err.message };
@@ -383,12 +343,7 @@ export async function fetchEmsKpis(timeframe = 'all', missionType = 'ALL'): Prom
     let res = await fetch(`${API_BASE}/reports/kpis?timeframe=${timeframe}&missionType=${missionType}`, {
       headers: getAuthHeader(),
     });
-    if (res.status === 401) {
-      await loginAsAdmin();
-      res = await fetch(`${API_BASE}/reports/kpis?timeframe=${timeframe}&missionType=${missionType}`, {
-        headers: getAuthHeader(),
-      });
-    }
+
     return await res.json();
   } catch (err: any) {
     console.error('Failed to fetch EMS KPIs:', err);
@@ -412,12 +367,7 @@ export async function fetchTripSummary(params?: {
     let res = await fetch(`${API_BASE}/reports/trip-summary?${searchParams.toString()}`, {
       headers: getAuthHeader(),
     });
-    if (res.status === 401) {
-      await loginAsAdmin();
-      res = await fetch(`${API_BASE}/reports/trip-summary?${searchParams.toString()}`, {
-        headers: getAuthHeader(),
-      });
-    }
+
     return await res.json();
   } catch (err: any) {
     console.error('Failed to fetch Trip Summary Report:', err);
@@ -430,12 +380,7 @@ export async function fetchSpatialDensity(timeframe = 'all'): Promise<any> {
     let res = await fetch(`${API_BASE}/reports/spatial-density?timeframe=${timeframe}`, {
       headers: getAuthHeader(),
     });
-    if (res.status === 401) {
-      await loginAsAdmin();
-      res = await fetch(`${API_BASE}/reports/spatial-density?timeframe=${timeframe}`, {
-        headers: getAuthHeader(),
-      });
-    }
+
     return await res.json();
   } catch (err: any) {
     console.error('Failed to fetch Spatial Density:', err);

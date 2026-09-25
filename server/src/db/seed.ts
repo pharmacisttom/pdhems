@@ -26,8 +26,9 @@ async function seed() {
     }
 
     // 2. Users
-    const passwordHash = await bcrypt.hash('admin1234', 10);
-    const emsPasswordHash = await bcrypt.hash('ems1234', 10);
+    if (!process.env.SEED_ADMIN_PASSWORD || !process.env.SEED_STAFF_PASSWORD) throw new Error('Set SEED_ADMIN_PASSWORD and SEED_STAFF_PASSWORD');
+    const passwordHash = await bcrypt.hash(process.env.SEED_ADMIN_PASSWORD, 12);
+    const emsPasswordHash = await bcrypt.hash(process.env.SEED_STAFF_PASSWORD, 12);
 
     const [adminRole]: any = await conn.query('SELECT id FROM roles WHERE name = "SUPER_ADMIN" LIMIT 1');
     const [dispRole]: any = await conn.query('SELECT id FROM roles WHERE name = "DISPATCHER" LIMIT 1');
