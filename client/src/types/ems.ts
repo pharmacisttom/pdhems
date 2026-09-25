@@ -243,3 +243,106 @@ export interface AvailableResources {
     position?: string;
   }>;
 }
+
+export interface EmsKpiMetric {
+  name: string;
+  code: string;
+  avgMinutes: number;
+  benchmarkMinutes?: number;
+  complianceRatePercent?: number;
+  unit: string;
+  samples: number;
+}
+
+export interface EmsKpisResponse {
+  success: boolean;
+  timeframe: string;
+  missionType: string;
+  summary: {
+    totalMissions: number;
+    completedCount: number;
+    activeCount: number;
+    emergencyCount: number;
+    referCount: number;
+  };
+  kpis: {
+    t1_call_to_dispatch: EmsKpiMetric;
+    t2_turnout_time: EmsKpiMetric;
+    t3_response_time: EmsKpiMetric;
+    t4_onscene_time: EmsKpiMetric;
+    t5_transport_time: EmsKpiMetric;
+    t6_handover_time: EmsKpiMetric;
+    t7_return_time: EmsKpiMetric;
+    t8_total_cycle_time: EmsKpiMetric;
+  };
+}
+
+export interface TripSummaryItem {
+  id: number;
+  missionNo: string;
+  missionType: 'REFER' | 'EMERGENCY' | 'OTHER';
+  status: string;
+  vehicleCode: string;
+  registrationNo: string;
+  driverName: string;
+  origin: string;
+  destination: string;
+  sceneDescription?: string | null;
+  sceneLatitude?: number | null;
+  sceneLongitude?: number | null;
+  createdAt: string;
+  departureAt?: string | null;
+  arrivedAt?: string | null;
+  handoverAt?: string | null;
+  completedAt?: string | null;
+  durationMinutes: number;
+  distanceKm: number;
+  maxSpeedKmh: number;
+  speedWarningsCount: number;
+  speedCriticalsCount: number;
+  offlineSyncCount: number;
+  handoverConfirmedBy?: string | null;
+  handoverNotes?: string | null;
+  pretripPassed: boolean;
+  isEmergencyOverride: boolean;
+}
+
+export interface SpatialHotspot {
+  latitude: number;
+  longitude: number;
+  count: number;
+  intensity: number;
+  riskLevel: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  avgResponseMinutes: number;
+  label: string;
+  descriptions: string[];
+}
+
+export interface ReferCorridor {
+  originId: number;
+  originName: string;
+  originCoords: [number, number];
+  destinationId: number;
+  destinationName: string;
+  destinationCoords: [number, number];
+  transferCount: number;
+  avgTransportMinutes: number;
+}
+
+export interface SpatialDensityResponse {
+  success: boolean;
+  timeframe: string;
+  totalIncidents: number;
+  hotspots: SpatialHotspot[];
+  referCorridors: ReferCorridor[];
+  rawIncidents: Array<{
+    id: number;
+    missionNo: string;
+    latitude: number;
+    longitude: number;
+    description: string;
+    createdAt: string;
+    responseMinutes: number | null;
+  }>;
+}
+

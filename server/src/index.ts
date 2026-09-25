@@ -11,6 +11,7 @@ import baseRoutes from './routes/baseRoutes';
 import ambulanceRoutes from './routes/ambulanceRoutes';
 import missionRoutes from './routes/missionRoutes';
 import dispatchRoutes from './routes/dispatchRoutes';
+import reportRoutes from './routes/reportRoutes';
 
 dotenv.config();
 
@@ -48,6 +49,7 @@ app.use('/api/bases', baseRoutes);
 app.use('/api/ambulances', ambulanceRoutes);
 app.use('/api/missions', missionRoutes);
 app.use('/api/dispatch', dispatchRoutes);
+app.use('/api/reports', reportRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

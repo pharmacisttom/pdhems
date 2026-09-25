@@ -376,3 +376,70 @@ export async function completeMission(id: number): Promise<{ success: boolean; m
     return { success: false, message: err.message };
   }
 }
+
+// Phase 9 & MAP-7: Reports, EMS KPIs and Spatial Density API calls
+export async function fetchEmsKpis(timeframe = 'all', missionType = 'ALL'): Promise<any> {
+  try {
+    let res = await fetch(`${API_BASE}/reports/kpis?timeframe=${timeframe}&missionType=${missionType}`, {
+      headers: getAuthHeader(),
+    });
+    if (res.status === 401) {
+      await loginAsAdmin();
+      res = await fetch(`${API_BASE}/reports/kpis?timeframe=${timeframe}&missionType=${missionType}`, {
+        headers: getAuthHeader(),
+      });
+    }
+    return await res.json();
+  } catch (err: any) {
+    console.error('Failed to fetch EMS KPIs:', err);
+    return { success: false, message: err.message };
+  }
+}
+
+export async function fetchTripSummary(params?: {
+  missionType?: string;
+  status?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<any> {
+  try {
+    const searchParams = new URLSearchParams();
+    if (params?.missionType) searchParams.append('missionType', params.missionType);
+    if (params?.status) searchParams.append('status', params.status);
+    if (params?.limit) searchParams.append('limit', String(params.limit));
+    if (params?.offset) searchParams.append('offset', String(params.offset));
+
+    let res = await fetch(`${API_BASE}/reports/trip-summary?${searchParams.toString()}`, {
+      headers: getAuthHeader(),
+    });
+    if (res.status === 401) {
+      await loginAsAdmin();
+      res = await fetch(`${API_BASE}/reports/trip-summary?${searchParams.toString()}`, {
+        headers: getAuthHeader(),
+      });
+    }
+    return await res.json();
+  } catch (err: any) {
+    console.error('Failed to fetch Trip Summary Report:', err);
+    return { success: false, trips: [], total: 0 };
+  }
+}
+
+export async function fetchSpatialDensity(timeframe = 'all'): Promise<any> {
+  try {
+    let res = await fetch(`${API_BASE}/reports/spatial-density?timeframe=${timeframe}`, {
+      headers: getAuthHeader(),
+    });
+    if (res.status === 401) {
+      await loginAsAdmin();
+      res = await fetch(`${API_BASE}/reports/spatial-density?timeframe=${timeframe}`, {
+        headers: getAuthHeader(),
+      });
+    }
+    return await res.json();
+  } catch (err: any) {
+    console.error('Failed to fetch Spatial Density:', err);
+    return { success: false, hotspots: [], referCorridors: [], rawIncidents: [] };
+  }
+}
+

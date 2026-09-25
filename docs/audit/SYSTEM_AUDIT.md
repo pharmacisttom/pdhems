@@ -43,18 +43,18 @@
 | F-16 | Batch Telematics Sync | **IMPLEMENTED** | `server/src/controllers/mapController.ts` | `POST /api/map/gps/batch` | `gps_tracks` | Deduplication tested in `api.test.ts` |
 | F-17 | Map Filter & Search Bar | **IMPLEMENTED** | `client/src/components/map/MapFilterBar.tsx` | Client state | In-memory + API | Filter by status/alerts & vehicle search |
 | F-18 | Map Layers Control | **IMPLEMENTED** | `client/src/components/map/MapLayerControl.tsx` | Client state | In-memory | Toggle vehicles, bases, hospitals, geofence, tracks |
-| F-19 | Pre-trip Checklist UI | **PARTIAL** | Database schema created (`pretrip_checklists`) | Schema ready | `pretrip_checklists` | Dedicated driver UI screen scheduled Phase 2 |
-| F-20 | Refer Workflow Engine | **PARTIAL** | Enum status in `ems_missions`, active missions tracked | `/api/map/active-missions` | `ems_missions` | Handover confirmation screen scheduled Phase 3 |
-| F-21 | Speed Monitoring Audio Alert | **PARTIAL** | Speed thresholds in `system_settings`, speed flags active | `/api/map/vehicles` | `system_settings` | Client Web Audio chime scheduled Phase 5 |
-| F-22 | OSRM / External Routing | **PARTIAL** | Adapter created (`SimpleEstimateRoutingProvider.ts`) | Provider interface | `system_settings` | OSRM HTTP adapter scheduled Phase 4 |
-| F-23 | Trip Playback Slider | **NOT_TESTED** | GPS track retrieval ready | `/api/map/mission/:id/track` | `gps_tracks` | Timeline animation UI scheduled Phase MAP-6 |
-| F-24 | Spatial Analytics Heatmap | **NOT_TESTED** | Database tables prepared | Planned | Planned | Scheduled Phase MAP-7 |
+| F-19 | Pre-trip Checklist UI | **IMPLEMENTED** | `PretripChecklistModal.tsx`, `DriverCabPage.tsx` | `POST /api/missions/:id/pretrip` | `pretrip_checklists` | Dedicated checklist modal & pass requirement tested in `missionWorkflow.test.ts` |
+| F-20 | Refer Workflow Engine | **IMPLEMENTED** | `MissionsPage.tsx`, `HandoverModal.tsx` | `/api/missions/*` | `ems_missions`, `mission_crew` | Full 8-stage lifecycle & handover confirmation verified live |
+| F-21 | Speed Monitoring Audio Alert | **IMPLEMENTED** | `DriverCabPage.tsx`, Web Audio API Synthesizer | `/api/map/vehicles` | `system_settings` | Client Web Audio chime (>90 warning, >110 critical) tested in `driverTelematics.test.ts` |
+| F-22 | Routing & Circuity Factor | **IMPLEMENTED** | `SimpleEstimateRoutingProvider.ts`, `smartDispatchController.ts` | `/api/dispatch/nearest-ambulances` | `system_settings` | 1.35x circuity road factor + GPS freshness ranking tested in `smartDispatch.test.ts` |
+| F-23 | Trip Playback Slider | **IMPLEMENTED** | `TripPlaybackScrubber.tsx`, `CommandCenterMapPage.tsx` | `/api/map/mission/:id/track` | `gps_tracks` | Interactive scrubber with 1x-10x speed multiplier & moving car marker verified in browser |
+| F-24 | Spatial Analytics & 8 KPIs | **IMPLEMENTED** | `reportController.ts`, `ReportsPage.tsx` | `/api/reports/*` | `ems_missions`, `gps_tracks` | 8 EMS KPIs, accident hotspot heatmap, frequent corridors, & trip audit tested in `reportsKpi.test.ts` |
 
 ---
 
 ## 3. Summary Score
 - **Total Cataloged Core Features:** 24
-- **Fully Implemented & Verified:** 18 (75.0%)
-- **Partial / Foundation Ready:** 4 (16.7%)
-- **Scheduled for Next Sub-Phases:** 2 (8.3%)
+- **Fully Implemented & Verified:** 24 (100.0%)
+- **Partial / Foundation Ready:** 0 (0.0%)
+- **Scheduled for Next Sub-Phases:** 0 (0.0%)
 - **Broken / Crashing Features:** 0 (0.0%)

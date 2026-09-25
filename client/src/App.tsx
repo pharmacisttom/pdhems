@@ -5,10 +5,11 @@ import { FacilitiesPage } from './pages/FacilitiesPage';
 import { BasesPage } from './pages/BasesPage';
 import { MissionsPage } from './pages/MissionsPage';
 import { DriverCabPage } from './pages/DriverCabPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { fetchActiveMissions } from './services/api';
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<'map' | 'missions' | 'driver' | 'facilities' | 'bases'>('map');
+  const [currentTab, setCurrentTab] = useState<'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports'>('map');
   const [activeEmergencyCount, setActiveEmergencyCount] = useState<number>(0);
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export function App() {
         {currentTab === 'driver' && <DriverCabPage />}
         {currentTab === 'facilities' && <FacilitiesPage />}
         {currentTab === 'bases' && <BasesPage />}
+        {currentTab === 'reports' && <ReportsPage />}
       </main>
     </div>
   );

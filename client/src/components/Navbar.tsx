@@ -1,9 +1,8 @@
-import React from 'react';
-import { Shield, MapPin, Building2, Navigation, AlertTriangle } from 'lucide-react';
+import { Shield, MapPin, Building2, Navigation, AlertTriangle, BarChart3 } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases';
-  onSelectTab: (tab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases') => void;
+  currentTab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports';
+  onSelectTab: (tab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports') => void;
   activeEmergencyCount: number;
 }
 
@@ -95,6 +94,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
             >
               <MapPin className="w-4 h-4" />
               <span>ฐานกู้ชีพ (Bases)</span>
+            </button>
+
+            <button
+              onClick={() => onSelectTab('reports')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                currentTab === 'reports'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+              }`}
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span>รายงาน & KPIs</span>
             </button>
           </nav>
 
