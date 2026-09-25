@@ -9,6 +9,7 @@ import mapRoutes from './routes/mapRoutes';
 import facilityRoutes from './routes/facilityRoutes';
 import baseRoutes from './routes/baseRoutes';
 import ambulanceRoutes from './routes/ambulanceRoutes';
+import missionRoutes from './routes/missionRoutes';
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use('/api/map', mapRoutes);
 app.use('/api/facilities', facilityRoutes);
 app.use('/api/bases', baseRoutes);
 app.use('/api/ambulances', ambulanceRoutes);
+app.use('/api/missions', missionRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

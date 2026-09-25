@@ -40,6 +40,19 @@ export class AmbulanceController {
     }
   }
 
+  public static async getById(req: Request, res: Response): Promise<void> {
+    try {
+      const [rows]: any = await pool.query('SELECT * FROM ambulances WHERE id = ?', [req.params.id]);
+      if (!rows.length) {
+        res.status(404).json({ success: false, message: 'Ambulance not found' });
+        return;
+      }
+      res.json({ success: true, data: rows[0] });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
   public static async updateLocation(req: Request, res: Response): Promise<void> {
     try {
       const vehicleId = Number(req.params.id);

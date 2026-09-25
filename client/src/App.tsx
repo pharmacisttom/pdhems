@@ -3,10 +3,11 @@ import { Navbar } from './components/Navbar';
 import { CommandCenterMapPage } from './pages/CommandCenterMapPage';
 import { FacilitiesPage } from './pages/FacilitiesPage';
 import { BasesPage } from './pages/BasesPage';
+import { MissionsPage } from './pages/MissionsPage';
 import { fetchActiveMissions } from './services/api';
 
 export function App() {
-  const [currentTab, setCurrentTab] = useState<'map' | 'facilities' | 'bases'>('map');
+  const [currentTab, setCurrentTab] = useState<'map' | 'missions' | 'facilities' | 'bases'>('map');
   const [activeEmergencyCount, setActiveEmergencyCount] = useState<number>(0);
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export function App() {
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {currentTab === 'map' && <CommandCenterMapPage />}
+        {currentTab === 'missions' && <MissionsPage />}
         {currentTab === 'facilities' && <FacilitiesPage />}
         {currentTab === 'bases' && <BasesPage />}
       </main>

@@ -154,3 +154,92 @@ export type MapFilterType =
   | 'RETURNING'
   | 'TRACKING_ALERT'
   | 'SAFETY_ALERT';
+
+export interface PretripChecklist {
+  id?: number;
+  mission_id: number;
+  vehicle_id: number;
+  fuel_level: 'FULL' | 'THREE_QUARTERS' | 'HALF' | 'ONE_QUARTER' | 'LOW';
+  oxygen_level_psi: number;
+  medical_equipment_ready: boolean;
+  lights_siren_working: boolean;
+  tires_brakes_checked: boolean;
+  communication_device_ready: boolean;
+  dashcam_gps_ready: boolean;
+  notes?: string;
+  is_passed: boolean;
+  created_at?: string;
+}
+
+export interface MissionCrewMember {
+  id?: number;
+  staff_id: number;
+  display_name?: string;
+  position?: string;
+  profession?: string;
+  crew_role: string;
+  is_team_leader: boolean;
+  confirmed?: boolean;
+}
+
+export interface FullMissionDetail {
+  id: number;
+  mission_no: string;
+  mission_type: 'REFER' | 'EMERGENCY' | 'OTHER';
+  status: string;
+  vehicle_id?: number | null;
+  vehicle_code?: string | null;
+  registration_no?: string | null;
+  current_speed?: number | null;
+  driver_id?: number | null;
+  driver_name?: string | null;
+  driver_phone?: string | null;
+  origin_facility_id?: number | null;
+  origin_facility_name?: string | null;
+  destination_facility_id?: number | null;
+  destination_facility_name?: string | null;
+  driver_confirmed_at?: string | null;
+  crew_confirmed_at?: string | null;
+  pretrip_passed?: boolean;
+  is_emergency_override?: boolean;
+  override_reason?: string | null;
+  handover_confirmed_by?: string | null;
+  handover_notes?: string | null;
+  departure_at?: string | null;
+  arrived_at?: string | null;
+  handover_at?: string | null;
+  return_started_at?: string | null;
+  completed_at?: string | null;
+  created_at: string;
+  crew?: MissionCrewMember[];
+  pretrip_checklist?: PretripChecklist | null;
+  status_logs?: Array<{
+    id: number;
+    status: string;
+    note: string | null;
+    logged_by_name: string | null;
+    created_at: string;
+  }>;
+}
+
+export interface AvailableResources {
+  availableVehicles: Array<{
+    id: number;
+    vehicle_code: string;
+    registration_no: string;
+    brand: string;
+    model: string;
+  }>;
+  availableDrivers: Array<{
+    id: number;
+    display_name: string;
+    phone_optional?: string;
+    driver_license_no_optional?: string;
+  }>;
+  availableStaff: Array<{
+    id: number;
+    display_name: string;
+    profession: string;
+    position?: string;
+  }>;
+}

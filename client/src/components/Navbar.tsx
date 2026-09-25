@@ -2,8 +2,8 @@ import React from 'react';
 import { Shield, MapPin, Building2, Navigation, AlertTriangle } from 'lucide-react';
 
 interface NavbarProps {
-  currentTab: 'map' | 'facilities' | 'bases';
-  onSelectTab: (tab: 'map' | 'facilities' | 'bases') => void;
+  currentTab: 'map' | 'missions' | 'facilities' | 'bases';
+  onSelectTab: (tab: 'map' | 'missions' | 'facilities' | 'bases') => void;
   activeEmergencyCount: number;
 }
 
@@ -47,6 +47,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeE
                   {activeEmergencyCount}
                 </span>
               )}
+            </button>
+
+            <button
+              onClick={() => onSelectTab('missions')}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                currentTab === 'missions'
+                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
+                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+              }`}
+            >
+              <span className="text-sm">📋</span>
+              <span>ภารกิจ Refer / EMS</span>
             </button>
 
             <button

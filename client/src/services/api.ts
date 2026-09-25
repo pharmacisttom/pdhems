@@ -156,3 +156,223 @@ export async function updateAmbulanceLocation(
     return false;
   }
 }
+
+// -------------------------------------------------------------
+// Phase 2 & 3: Mission & Pretrip Telematics API Methods
+// -------------------------------------------------------------
+
+function getAuthHeader(): Record<string, string> {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+export async function loginAsAdmin(): Promise<string | null> {
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'admin', password: 'admin1234' }),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json.token) {
+      localStorage.setItem('token', json.token);
+      return json.token;
+    }
+    return null;
+  } catch (e) {
+    console.error('Failed to login:', e);
+    return null;
+  }
+}
+
+export async function fetchMissions(filter?: { status?: string; type?: string }): Promise<any[]> {
+  try {
+    let url = `${API_BASE}/missions?limit=50`;
+    if (filter?.status) url += `&status=${filter.status}`;
+    if (filter?.type) url += `&type=${filter.type}`;
+
+    let res = await fetch(url, { headers: getAuthHeader() });
+    if (res.status === 401) {
+      await loginAsAdmin();
+      res = await fetch(url, { headers: getAuthHeader() });
+    }
+    const json = await res.json();
+    return json.data || [];
+  } catch (err) {
+    console.error('Failed to fetch missions:', err);
+    return [];
+  }
+}
+
+export async function fetchMissionDetail(id: number): Promise<any | null> {
+  try {
+    let res = await fetch(`${API_BASE}/missions/${id}`, { headers: getAuthHeader() });
+    if (res.status === 401) {
+      await loginAsAdmin();
+      res = await fetch(`${API_BASE}/missions/${id}`, { headers: getAuthHeader() });
+    }
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data || null;
+  } catch (err) {
+    console.error(`Failed to fetch mission ${id}:`, err);
+    return null;
+  }
+}
+
+export async function fetchAvailableResources(): Promise<any> {
+  try {
+    let res = await fetch(`${API_BASE}/missions/resources/available`, { headers: getAuthHeader() });
+    if (res.status === 401) {
+      await loginAsAdmin();
+      res = await fetch(`${API_BASE}/missions/resources/available`, { headers: getAuthHeader() });
+    }
+    const json = await res.json();
+    return json.data || { availableVehicles: [], availableDrivers: [], availableStaff: [] };
+  } catch (err) {
+    console.error('Failed to fetch available resources:', err);
+    return { availableVehicles: [], availableDrivers: [], availableStaff: [] };
+  }
+}
+
+export async function createReferMission(payload: {
+  originFacilityId: number;
+  destinationFacilityId: number;
+  notes?: string;
+}): Promise<{ success: boolean; data?: any; message?: string }> {
+  try {
+    let res = await fetch(`${API_BASE}/missions/refer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 401) {
+      await loginAsAdmin();
+      res = await fetch(`${API_BASE}/missions/refer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+        body: JSON.stringify(payload),
+      });
+    }
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function assignMission(
+  id: number,
+  payload: { vehicleId?: number; driverId?: number; crew?: any[] }
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    let res = await fetch(`${API_BASE}/missions/${id}/assign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function confirmMissionReadiness(
+  id: number,
+  confirmedBy: 'DRIVER' | 'CREW'
+): Promise<{ success: boolean; message?: string; data?: any }> {
+  try {
+    const res = await fetch(`${API_BASE}/missions/${id}/confirm-readiness`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify({ confirmedBy }),
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function submitPretripChecklist(
+  id: number,
+  payload: any
+): Promise<{ success: boolean; isPassed?: boolean; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/missions/${id}/pretrip`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function departMission(
+  id: number,
+  payload: { isEmergencyOverride?: boolean; overrideReason?: string }
+): Promise<{ success: boolean; status?: string; message?: string; missingRequirements?: string[] }> {
+  try {
+    const res = await fetch(`${API_BASE}/missions/${id}/depart`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function markMissionArrived(id: number): Promise<{ success: boolean; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/missions/${id}/arrived`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function confirmMissionHandover(
+  id: number,
+  payload: { receiverName: string; notes?: string }
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/missions/${id}/handover`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+      body: JSON.stringify(payload),
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function startMissionReturn(id: number): Promise<{ success: boolean; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/missions/${id}/start-return`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
+
+export async function completeMission(id: number): Promise<{ success: boolean; message?: string }> {
+  try {
+    const res = await fetch(`${API_BASE}/missions/${id}/complete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    });
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, message: err.message };
+  }
+}
