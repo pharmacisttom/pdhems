@@ -31,6 +31,23 @@
 | `POST` | `/map/gps/batch` | Yes | `DRIVER`, `EMS_CREW`, System | JSON array of `{recorded_at, latitude, longitude, speed, heading, accuracy}` | 100 req / min | **ACTIVE** | **PASS** (Batch idempotency verified) |
 | `GET` | `/map/tracking-health` | Yes | All Authenticated | None | Standard | **ACTIVE** | **PASS** (Separates Stopped from Lost) |
 | `GET` | `/map/config` | Yes | All Authenticated | None | Standard | **ACTIVE** | **PASS** (OSM provider config) |
+| `GET` | `/missions` | Yes | All Authenticated | Status & type query params | Standard | **ACTIVE** | **PASS** (`missionWorkflow.test.ts`) |
+| `GET` | `/missions/resources/available` | Yes | All Authenticated | None | Standard | **ACTIVE** | **PASS** (Available vehicles, drivers, staff) |
+| `GET` | `/missions/:id` | Yes | All Authenticated | Mission ID integer validation | Standard | **ACTIVE** | **PASS** (Full mission detail with crew) |
+| `POST` | `/missions/refer` | Yes | `REFER_CENTER`, `DISPATCHER` | Origin, Destination, Notes | Standard | **ACTIVE** | **PASS** (Creates refer in CREATED state) |
+| `POST` | `/missions/:id/assign` | Yes | `REFER_CENTER`, `DISPATCHER` | VehicleId, DriverId, StaffIds | Standard | **ACTIVE** | **PASS** (Assigns resources, prevents conflict) |
+| `POST` | `/missions/:id/confirm-readiness` | Yes | `DRIVER`, `EMS_STAFF` | User role verification | Standard | **ACTIVE** | **PASS** (Crew confirmation status) |
+| `POST` | `/missions/:id/pretrip` | Yes | `DRIVER`, `EMS_STAFF` | Fuel, Oxygen, Equipment, Brakes | Standard | **ACTIVE** | **PASS** (`pretrip_checklists` recorded) |
+| `POST` | `/missions/:id/depart` | Yes | `DRIVER`, `DISPATCHER` | Emergency override support | Standard | **ACTIVE** | **PASS** (Enforces pre-trip or override) |
+| `POST` | `/missions/:id/arrived` | Yes | `DRIVER`, `EMS_STAFF` | None | Standard | **ACTIVE** | **PASS** (Transitions to ARRIVED) |
+| `POST` | `/missions/:id/handover` | Yes | `EMS_STAFF`, `DISPATCHER` | receiverName, notes | Standard | **ACTIVE** | **PASS** (Human handover confirmation) |
+| `POST` | `/missions/:id/start-return` | Yes | `DRIVER`, `DISPATCHER` | None | Standard | **ACTIVE** | **PASS** (Transitions to RETURNING) |
+| `POST` | `/missions/:id/complete` | Yes | `DISPATCHER`, `COMMANDER` | None | Standard | **ACTIVE** | **PASS** (Frees vehicle & driver) |
+| `POST` | `/dispatch/nearest-ambulances` | Yes | `DISPATCHER`, `COMMANDER` | Lat, Lng, Urgency level | Standard | **ACTIVE** | **PASS** (1.35x road circuity factor & freshness) |
+| `POST` | `/dispatch/quick-emergency` | Yes | `DISPATCHER`, `COMMANDER` | VehicleId, Lat, Lng, Desc | Standard | **ACTIVE** | **PASS** (1-click quick dispatch) |
+| `GET` | `/reports/kpis` | Yes | All Authenticated | Timeframe & MissionType | Standard | **ACTIVE** | **PASS** (8 EMS KPIs, T1..T8 benchmarks) |
+| `GET` | `/reports/trip-summary` | Yes | All Authenticated | Pagination, Filter parameters | Standard | **ACTIVE** | **PASS** (Distance, duration, speed violations) |
+| `GET` | `/reports/spatial-density` | Yes | All Authenticated | Timeframe | Standard | **ACTIVE** | **PASS** (Hotspot clusters & refer corridors) |
 
 ---
 
