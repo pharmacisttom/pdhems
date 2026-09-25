@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: pdh_ems_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
+      MYSQL_DATABASE: pdh_smart_ems
+      MYSQL_USER: ${DB_USER:-pdh_admin}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-pdhsecret1234}
+    volumes:
+      - pdh_mariadb_data:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p${DB_ROOT_PASSWORD:-rootsecret}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: pdh_ems_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-pdh_admin}
+      DB_PASSWORD: ${DB_PASSWORD:-pdhsecret1234}
+      DB_NAME: pdh_smart_ems
+      JWT_SECRET: ${JWT_SECRET:-pdh-smart-ems-jwt-secret-key-2026}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+    ports:
+      - '5000:5000'
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: pdh_ems_client
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - '80:80'
+
+volumes:
+  pdh_mariadb_data:
