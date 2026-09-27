@@ -44,7 +44,7 @@ export class SimpleEstimateRoutingProvider implements IRoutingProvider {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const straightLineKm = R * c;
 
-    // Road factor ~ 1.35x straight line in urban/suburban Ratchaburi/Thailand
+    // Road factor ~ 1.35x straight line in urban/suburban Pluak Daeng & Rayong/Thailand
     const roadKm = Math.round(straightLineKm * 1.35 * 10) / 10;
     // Average EMS speed ~ 50 km/h with traffic & turns
     const durationMins = Math.max(3, Math.round((roadKm / 50) * 60));

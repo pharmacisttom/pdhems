@@ -6,15 +6,15 @@ import Swal, { SweetAlertIcon, SweetAlertOptions } from 'sweetalert2';
  */
 
 // Custom Dark Mode Theme Configuration using Swal.mixin
-const darkSwal = Swal.mixin({
-  background: '#0f172a', // slate-900
-  color: '#f8fafc', // slate-50
+const emsSwal = Swal.mixin({
+  background: '#ffffff', // slate-900
+  color: '#16324f', // slate-50
   customClass: {
-    popup: 'border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12',
-    title: 'text-lg font-bold text-white tracking-tight',
-    htmlContainer: 'text-sm text-slate-300 leading-relaxed',
+    popup: 'border border-ems-border/80 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12',
+    title: 'text-lg font-bold text-ems-ink tracking-tight',
+    htmlContainer: 'text-sm text-ems-muted leading-relaxed',
     confirmButton: 'px-5 py-2.5 bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-sky-600/30 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
-    cancelButton: 'px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 font-semibold text-sm rounded-xl border border-slate-700 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
+    cancelButton: 'px-5 py-2.5 bg-ems-inset hover:bg-slate-200 active:bg-ems-surface text-ems-muted font-semibold text-sm rounded-xl border border-ems-border transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
     actions: 'flex gap-2 flex-wrap justify-center mt-4',
   },
   buttonsStyling: false,
@@ -22,7 +22,7 @@ const darkSwal = Swal.mixin({
 
 // 1. Success Alert (Modal)
 export async function showSuccess(title: string, text?: string): Promise<void> {
-  await darkSwal.fire({
+  await emsSwal.fire({
     icon: 'success',
     iconColor: '#10b981', // emerald-500
     title,
@@ -48,7 +48,7 @@ export async function showError(title: string, rawError?: any): Promise<void> {
 
   console.error('[PDH Alert Service] Logged Technical Error:', rawError);
 
-  await darkSwal.fire({
+  await emsSwal.fire({
     icon: 'error',
     iconColor: '#ef4444', // rose-500
     title,
@@ -59,7 +59,7 @@ export async function showError(title: string, rawError?: any): Promise<void> {
 
 // 3. Warning Alert
 export async function showWarning(title: string, text?: string): Promise<void> {
-  await darkSwal.fire({
+  await emsSwal.fire({
     icon: 'warning',
     iconColor: '#f59e0b', // amber-500
     title,
@@ -70,7 +70,7 @@ export async function showWarning(title: string, text?: string): Promise<void> {
 
 // 4. Info Alert
 export async function showInfo(title: string, text?: string): Promise<void> {
-  await darkSwal.fire({
+  await emsSwal.fire({
     icon: 'info',
     iconColor: '#38bdf8', // sky-400
     title,
@@ -91,11 +91,11 @@ export function showToast(
     showConfirmButton: false,
     timer,
     timerProgressBar: true,
-    background: '#1e293b', // slate-800
-    color: '#f8fafc',
+    background: '#ffffff', // slate-800
+    color: '#16324f',
     customClass: {
-      popup: 'border border-slate-700/80 rounded-xl shadow-xl p-3 flex items-center gap-2 max-w-xs',
-      title: 'text-xs font-semibold text-white',
+      popup: 'border border-ems-border/80 rounded-xl shadow-xl p-3 flex items-center gap-2 max-w-xs',
+      title: 'text-xs font-semibold text-ems-ink',
     },
     didOpen: (toast) => {
       toast.addEventListener('mouseenter', Swal.stopTimer);
@@ -117,7 +117,7 @@ export async function confirmAction(options: {
   cancelButtonText?: string;
   icon?: SweetAlertIcon;
 }): Promise<boolean> {
-  const result = await darkSwal.fire({
+  const result = await emsSwal.fire({
     icon: options.icon || 'question',
     iconColor: '#38bdf8',
     title: options.title,
@@ -139,7 +139,7 @@ export async function confirmDanger(options: {
   confirmButtonText?: string;
   cancelButtonText?: string;
 }): Promise<boolean> {
-  const result = await darkSwal.fire({
+  const result = await emsSwal.fire({
     icon: 'warning',
     iconColor: '#ef4444',
     title: options.title,
@@ -148,13 +148,13 @@ export async function confirmDanger(options: {
     confirmButtonText: options.confirmButtonText || 'ยืนยันดำเนินการ',
     cancelButtonText: options.cancelButtonText || 'ยกเลิก',
     customClass: {
-      popup: 'border border-rose-900/60 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12 bg-slate-900',
-      title: 'text-lg font-bold text-white tracking-tight',
-      htmlContainer: 'text-sm text-slate-300 leading-relaxed',
+      popup: 'border border-rose-900/60 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12 bg-ems-surface',
+      title: 'text-lg font-bold text-ems-ink tracking-tight',
+      htmlContainer: 'text-sm text-ems-muted leading-relaxed',
       confirmButton:
         'px-5 py-2.5 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-rose-600/30 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
       cancelButton:
-        'px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 font-semibold text-sm rounded-xl border border-slate-700 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
+        'px-5 py-2.5 bg-ems-inset hover:bg-slate-200 active:bg-ems-surface text-ems-muted font-semibold text-sm rounded-xl border border-ems-border transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
       actions: 'flex gap-2 flex-wrap justify-center mt-4',
     },
     reverseButtons: true,
@@ -172,18 +172,18 @@ export async function confirmDeparture(details: {
   destination: string;
 }): Promise<boolean> {
   const htmlContent = `
-    <div class="text-left text-xs space-y-2 mt-2 bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-      <div class="flex justify-between"><span class="text-slate-400">ยานพาหนะ:</span> <span class="font-bold text-white">🚑 ${details.vehicleCode}</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">พนักงานขับรถ:</span> <span class="font-semibold text-slate-200">👤 ${details.driverName}</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">ทีมผู้ปฏิบัติการ:</span> <span class="font-semibold text-sky-400">👥 ${details.crewCount} คน</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">ปลายทาง:</span> <span class="font-semibold text-amber-400 truncate max-w-[180px]">${details.destination}</span></div>
+    <div class="text-left text-xs space-y-2 mt-2 bg-ems-canvas/70 p-3 rounded-xl border border-ems-border">
+      <div class="flex justify-between"><span class="text-ems-muted">ยานพาหนะ:</span> <span class="font-bold text-ems-ink">🚑 ${details.vehicleCode}</span></div>
+      <div class="flex justify-between"><span class="text-ems-muted">พนักงานขับรถ:</span> <span class="font-semibold text-ems-ink">👤 ${details.driverName}</span></div>
+      <div class="flex justify-between"><span class="text-ems-muted">ทีมผู้ปฏิบัติการ:</span> <span class="font-semibold text-sky-700">👥 ${details.crewCount} คน</span></div>
+      <div class="flex justify-between"><span class="text-ems-muted">ปลายทาง:</span> <span class="font-semibold text-amber-700 truncate max-w-[180px]">${details.destination}</span></div>
     </div>
-    <div class="mt-3 text-xs text-emerald-400 flex items-center justify-center gap-1">
+    <div class="mt-3 text-xs text-emerald-700 flex items-center justify-center gap-1">
       <span>✓</span> ตรวจสอบความพร้อมก่อนออกปฏิบัติการ
     </div>
   `;
 
-  const result = await darkSwal.fire({
+  const result = await emsSwal.fire({
     icon: 'question',
     iconColor: '#38bdf8',
     title: 'ยืนยันพร้อมออกเดินทาง?',
@@ -202,23 +202,23 @@ export async function confirmHandoverPrompt(details: {
   missionNo: string;
   destination: string;
 }): Promise<{ confirmed: boolean; receiverName?: string; notes?: string }> {
-  const result = await darkSwal.fire({
+  const result = await emsSwal.fire({
     icon: 'success',
     iconColor: '#10b981',
     title: 'ยืนยันการส่งมอบภารกิจ',
     html: `
-      <div class="text-left text-xs mb-3 text-slate-300">
-        <div>ภารกิจ: <span class="font-bold text-white">${details.missionNo}</span></div>
-        <div>ปลายทาง: <span class="font-bold text-sky-400">${details.destination}</span></div>
+      <div class="text-left text-xs mb-3 text-ems-muted">
+        <div>ภารกิจ: <span class="font-bold text-ems-ink">${details.missionNo}</span></div>
+        <div>ปลายทาง: <span class="font-bold text-sky-700">${details.destination}</span></div>
       </div>
       <div class="space-y-3 text-left">
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">ชื่อเจ้าหน้าที่ผู้รับมอบ *</label>
-          <input id="swal-receiver-name" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-emerald-500" placeholder="เช่น พว.สมหญิง / พยาบาลเวรรับส่ง" />
+          <label class="block text-xs font-medium text-ems-muted mb-1">ชื่อเจ้าหน้าที่ผู้รับมอบ *</label>
+          <input id="swal-receiver-name" class="w-full px-3 py-2 bg-ems-inset border border-ems-border rounded-lg text-ems-ink text-xs focus:outline-none focus:border-emerald-500" placeholder="เช่น พว.สมหญิง / พยาบาลเวรรับส่ง" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">บันทึกเพิ่มเติม (ถ้ามี)</label>
-          <input id="swal-handover-notes" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-emerald-500" placeholder="เช่น สัญญาณชีพคงที่ ส่งมอบ ER สำเร็จ" />
+          <label class="block text-xs font-medium text-ems-muted mb-1">บันทึกเพิ่มเติม (ถ้ามี)</label>
+          <input id="swal-handover-notes" class="w-full px-3 py-2 bg-ems-inset border border-ems-border rounded-lg text-ems-ink text-xs focus:outline-none focus:border-emerald-500" placeholder="เช่น สัญญาณชีพคงที่ ส่งมอบ ER สำเร็จ" />
         </div>
       </div>
     `,
@@ -226,13 +226,13 @@ export async function confirmHandoverPrompt(details: {
     confirmButtonText: '✓ บันทึกการส่งมอบ',
     cancelButtonText: 'ยกเลิก',
     customClass: {
-      popup: 'border border-slate-700/80 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12 bg-slate-900',
-      title: 'text-lg font-bold text-white tracking-tight',
-      htmlContainer: 'text-sm text-slate-300 leading-relaxed',
+      popup: 'border border-ems-border/80 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12 bg-ems-surface',
+      title: 'text-lg font-bold text-ems-ink tracking-tight',
+      htmlContainer: 'text-sm text-ems-muted leading-relaxed',
       confirmButton:
         'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-emerald-600/30 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
       cancelButton:
-        'px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 font-semibold text-sm rounded-xl border border-slate-700 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
+        'px-5 py-2.5 bg-ems-inset hover:bg-slate-200 active:bg-ems-surface text-ems-muted font-semibold text-sm rounded-xl border border-ems-border transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
       actions: 'flex gap-2 flex-wrap justify-center mt-4',
     },
     preConfirm: () => {
@@ -262,30 +262,30 @@ export async function confirmHandoverPrompt(details: {
 
 // 10. Emergency Override Confirmation Dialog (Section 25)
 export async function confirmEmergencyOverridePrompt(): Promise<{ confirmed: boolean; reason?: string }> {
-  const result = await darkSwal.fire({
+  const result = await emsSwal.fire({
     icon: 'warning',
     iconColor: '#ef4444',
     title: '⚠️ Emergency Departure Override',
     html: `
-      <p class="text-xs text-rose-300 mb-2">
+      <p class="text-xs text-rose-700 mb-2">
         รายการตรวจเช็ครถยังไม่ครบถ้วน หรือมีเงื่อนไขติดค้าง สำหรับเหตุฉุกเฉินวิกฤตสามารถออกเดินทางทันทีได้
       </p>
       <div class="text-left mt-3">
-        <label class="block text-xs font-semibold text-slate-200 mb-1">เหตุผลความจำเป็นเร่งด่วน (Audit Reason) *</label>
-        <textarea id="swal-override-reason" rows="2" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-rose-500" placeholder="เช่น ผู้ป่วย CPR กลางทาง / ออกเหตุแดงด่วนฉุกเฉิน"></textarea>
+        <label class="block text-xs font-semibold text-ems-ink mb-1">เหตุผลความจำเป็นเร่งด่วน (Audit Reason) *</label>
+        <textarea id="swal-override-reason" rows="2" class="w-full px-3 py-2 bg-ems-inset border border-ems-border rounded-lg text-ems-ink text-xs focus:outline-none focus:border-rose-500" placeholder="เช่น ผู้ป่วย CPR กลางทาง / ออกเหตุแดงด่วนฉุกเฉิน"></textarea>
       </div>
     `,
     showCancelButton: true,
     confirmButtonText: '⚡ ยืนยันออกเหตุฉุกเฉินทันที',
     cancelButtonText: 'กลับไปตรวจเช็ค',
     customClass: {
-      popup: 'border border-rose-900/60 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12 bg-slate-900',
-      title: 'text-lg font-bold text-white tracking-tight',
-      htmlContainer: 'text-sm text-slate-300 leading-relaxed',
+      popup: 'border border-rose-900/60 rounded-2xl shadow-2xl backdrop-blur-md p-6 max-w-sm sm:max-w-md w-11/12 bg-ems-surface',
+      title: 'text-lg font-bold text-ems-ink tracking-tight',
+      htmlContainer: 'text-sm text-ems-muted leading-relaxed',
       confirmButton:
         'px-5 py-2.5 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold text-sm rounded-xl shadow-lg shadow-rose-600/30 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
       cancelButton:
-        'px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:bg-slate-900 text-slate-300 font-semibold text-sm rounded-xl border border-slate-700 transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
+        'px-5 py-2.5 bg-ems-inset hover:bg-slate-200 active:bg-ems-surface text-ems-muted font-semibold text-sm rounded-xl border border-ems-border transition-all min-h-[44px] min-w-[100px] flex items-center justify-center cursor-pointer m-1',
       actions: 'flex gap-2 flex-wrap justify-center mt-4',
     },
     preConfirm: () => {
@@ -306,7 +306,7 @@ export async function confirmEmergencyOverridePrompt(): Promise<{ confirmed: boo
 
 // 11. Loading Spinner Dialog
 export function showLoading(title = 'กำลังประมวลผล...', text?: string): void {
-  darkSwal.fire({
+  emsSwal.fire({
     title,
     text,
     allowOutsideClick: false,

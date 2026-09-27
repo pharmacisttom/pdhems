@@ -53,8 +53,8 @@ function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number,
 }
 
 export const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
-  initialLatitude = 13.693822,
-  initialLongitude = 99.851921,
+  initialLatitude = 12.9756,
+  initialLongitude = 101.2155,
   initialRadius = 200,
   title = 'เลือกพิกัดบนแผนที่ (Map Location Picker)',
   onConfirm,
@@ -97,17 +97,17 @@ export const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[560px]">
+    <div className="bg-ems-surface border border-ems-border rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[560px]">
       {/* Header */}
-      <div className="p-4 bg-slate-800/90 border-b border-slate-700 flex items-center justify-between">
+      <div className="p-4 bg-ems-inset/90 border-b border-ems-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MapPin className="w-5 h-5 text-rose-500" />
-          <h3 className="font-bold text-slate-100 text-sm sm:text-base">{title}</h3>
+          <h3 className="font-bold text-ems-ink text-sm sm:text-base">{title}</h3>
         </div>
         <button
           type="button"
           onClick={handleGetCurrentLocation}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-sky-300 text-xs font-medium transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-600 text-sky-700 text-xs font-medium transition-colors"
         >
           <Crosshair className="w-3.5 h-3.5" />
           <span>ตำแหน่งปัจจุบันของฉัน</span>
@@ -145,38 +145,38 @@ export const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
           />
         </MapContainer>
 
-        <div className="absolute top-3 left-3 z-[1000] bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-300 shadow-md">
+        <div className="absolute top-3 left-3 z-[1000] bg-ems-surface/90 backdrop-blur px-3 py-1.5 rounded-lg border border-ems-border text-[11px] text-ems-muted shadow-md">
           💡 คลิกบนแผนที่หรือลากหมุดสีแดงเพื่อปรับตำแหน่ง
         </div>
       </div>
 
       {/* Footer Controls & Coordinate Confirmation */}
-      <div className="p-4 bg-slate-800/95 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="p-4 bg-ems-inset/95 border-t border-ems-border flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           <div>
-            <label className="block text-[10px] text-slate-400 font-semibold mb-0.5">LATITUDE</label>
+            <label className="block text-[10px] text-ems-muted font-semibold mb-0.5">LATITUDE</label>
             <input
               type="number"
               step="0.000001"
               value={lat.toFixed(6)}
               onChange={(e) => setLat(parseFloat(e.target.value) || 0)}
-              className="w-28 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-100 font-mono focus:ring-1 focus:ring-sky-500"
+              className="w-28 px-2 py-1 bg-ems-surface border border-ems-border rounded text-xs text-ems-ink font-mono focus:ring-1 focus:ring-sky-500"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] text-slate-400 font-semibold mb-0.5">LONGITUDE</label>
+            <label className="block text-[10px] text-ems-muted font-semibold mb-0.5">LONGITUDE</label>
             <input
               type="number"
               step="0.000001"
               value={lng.toFixed(6)}
               onChange={(e) => setLng(parseFloat(e.target.value) || 0)}
-              className="w-28 px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-100 font-mono focus:ring-1 focus:ring-sky-500"
+              className="w-28 px-2 py-1 bg-ems-surface border border-ems-border rounded text-xs text-ems-ink font-mono focus:ring-1 focus:ring-sky-500"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] text-slate-400 font-semibold mb-0.5">
+            <label className="block text-[10px] text-ems-muted font-semibold mb-0.5">
               GEOFENCE: {radius} เมตร
             </label>
             <input
@@ -196,7 +196,7 @@ export const MapLocationPicker: React.FC<MapLocationPickerProps> = ({
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold transition-colors"
+              className="px-4 py-2 bg-slate-200 hover:bg-slate-600 text-ems-ink rounded-lg text-xs font-semibold transition-colors"
             >
               ยกเลิก
             </button>

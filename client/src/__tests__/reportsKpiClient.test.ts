@@ -58,8 +58,8 @@ describe('Phase 9 & MAP-7: Client Reports, KPIs and Spatial Density Services', (
           vehicleCode: 'EMS-01',
           registrationNo: 'นข-1101',
           driverName: 'สมชาย ใจดี',
-          origin: 'รพ.โพธาราม',
-          destination: 'สี่แยกบ้านเลือก',
+          origin: 'รพ.ปลวกแดง',
+          destination: 'แยกสะพานสี่ ปลวกแดง',
           durationMinutes: 45,
           distanceKm: 12.5,
           maxSpeedKmh: 94.5,
@@ -90,21 +90,21 @@ describe('Phase 9 & MAP-7: Client Reports, KPIs and Spatial Density Services', (
       totalIncidents: 4,
       hotspots: [
         {
-          latitude: 13.7124,
-          longitude: 99.8451,
+          latitude: 12.9640,
+          longitude: 101.1520,
           count: 3,
           intensity: 1.0,
           riskLevel: 'CRITICAL',
           avgResponseMinutes: 6.5,
-          label: 'แยกบ้านเลือก',
+          label: 'สี่แยกปลวกแดง',
         },
       ],
       referCorridors: [
         {
-          originName: 'รพ.โพธาราม',
-          destinationName: 'รพ.ศูนย์ราชบุรี',
+          originName: 'รพ.ปลวกแดง',
+          destinationName: 'รพ.กรุงเทพปลวกแดง',
           transferCount: 5,
-          avgTransportMinutes: 26.5,
+          avgTransportMinutes: 15.0,
         },
       ],
     };

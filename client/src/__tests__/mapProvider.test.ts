@@ -15,11 +15,11 @@ describe('Map Provider Adapter (Section 1 & 14)', () => {
     expect(tileConfig.maxZoom).toBeGreaterThanOrEqual(18);
   });
 
-  it('provides default center coordinates at Photharam Hospital (PDH)', () => {
+  it('provides default center coordinates at Pluakdaeng Hospital (PDH)', () => {
     const provider = getActiveMapProvider();
     const [lat, lng] = provider.getDefaultCenter();
-    expect(lat).toBeCloseTo(13.693822, 4);
-    expect(lng).toBeCloseTo(99.851921, 4);
+    expect(lat).toBeCloseTo(12.9756, 4);
+    expect(lng).toBeCloseTo(101.2155, 4);
     expect(provider.getDefaultZoom()).toBe(12);
   });
 

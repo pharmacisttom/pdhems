@@ -15,13 +15,13 @@ describe('Phase MAP-4 & MAP-5: Smart Dispatch & Nearest Ambulance Tests', () => 
   });
 
   it('1. Recommends nearest ambulances based on road distance (1.35x) and GPS freshness', async () => {
-    // Target scene near Photharam Hospital (13.7000, 99.8500)
+    // Target scene near Pluak Daeng Hospital (12.9756, 101.2155)
     const res = await request(app)
       .post('/api/dispatch/nearest-ambulances')
       .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
-        latitude: 13.7000,
-        longitude: 99.8500,
+        latitude: 12.9756,
+        longitude: 101.2155,
         urgency: 'CRITICAL',
       });
 
@@ -45,8 +45,8 @@ describe('Phase MAP-4 & MAP-5: Smart Dispatch & Nearest Ambulance Tests', () => 
       .post('/api/dispatch/nearest-ambulances')
       .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
-        latitude: 13.7000,
-        longitude: 99.8500,
+        latitude: 12.9756,
+        longitude: 101.2155,
       });
 
     const candidates = res.body.candidates;
@@ -63,9 +63,9 @@ describe('Phase MAP-4 & MAP-5: Smart Dispatch & Nearest Ambulance Tests', () => 
       .post('/api/dispatch/quick-emergency')
       .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
-        sceneLatitude: 13.7050,
-        sceneLongitude: 99.8420,
-        sceneDescription: 'อุบัติเหตุรถยนต์ชนเสาไฟ ทางแยกคลองตาคต',
+        sceneLatitude: 12.9640,
+        sceneLongitude: 101.1520,
+        sceneDescription: 'อุบัติเหตุรถยนต์ชนเสาไฟ แยกสะพานสี่ มาบยางพร ปลวกแดง',
         vehicleId: 1,
         driverId: 1,
         urgency: 'CRITICAL',

@@ -54,31 +54,31 @@ export const EmergencyOverrideModal: React.FC<EmergencyOverrideModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-rose-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-slate-100">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ems-canvas/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-ems-surface border border-rose-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-ems-ink">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-100 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          className="absolute top-4 right-4 text-ems-muted hover:text-ems-ink p-2 rounded-lg hover:bg-ems-inset transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-600 flex items-center justify-center shadow-lg shadow-rose-600/30">
-            <AlertOctagon className="w-5 h-5 text-white" />
+            <AlertOctagon className="w-5 h-5 text-ems-ink" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">คำสั่งออกรถฉุกเฉินเร่งด่วน (Emergency Override)</h3>
-            <p className="text-xs text-rose-400 font-mono">ภารกิจ: {missionNo}</p>
+            <h3 className="text-lg font-bold text-ems-ink">คำสั่งออกรถฉุกเฉินเร่งด่วน (Emergency Override)</h3>
+            <p className="text-xs text-rose-700 font-mono">ภารกิจ: {missionNo}</p>
           </div>
         </div>
 
-        <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs space-y-1 text-slate-300">
-          <p className="font-semibold text-rose-400 flex items-center gap-1.5">
+        <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs space-y-1 text-ems-muted">
+          <p className="font-semibold text-rose-700 flex items-center gap-1.5">
             <ShieldAlert className="w-4 h-4 shrink-0" />
             การออกรถปกติถูกระงับเนื่องจากข้อมูลความปลอดภัยยังไม่ครบถ้วน:
           </p>
-          <ul className="list-disc list-inside text-rose-200/80 text-[11px] pl-2 space-y-0.5">
+          <ul className="list-disc list-inside text-rose-700/80 text-[11px] pl-2 space-y-0.5">
             {missingRequirements.map((req, idx) => (
               <li key={idx}>{req}</li>
             ))}
@@ -86,14 +86,14 @@ export const EmergencyOverrideModal: React.FC<EmergencyOverrideModalProps> = ({
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-rose-500/20 border border-rose-500/50 rounded-xl text-rose-300 text-xs">
+          <div className="mb-4 p-3 bg-rose-500/20 border border-rose-500/50 rounded-xl text-rose-700 text-xs">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-200 mb-1.5">
+            <label className="block text-xs font-semibold text-ems-ink mb-1.5">
               ระบุเหตุผลความจำเป็นในการ Override ออกรถทันที (Mandatory Reason)
             </label>
             <textarea
@@ -101,9 +101,9 @@ export const EmergencyOverrideModal: React.FC<EmergencyOverrideModalProps> = ({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="เช่น ผู้ป่วยภาวะวิกฤต Cardiac Arrest ต้องรีบนำส่งด่วนที่สุด โดยได้ประสานตรวจเช็คระบบพยาบาลทางวิทยุแล้ว"
-              className="w-full bg-slate-800 border border-rose-500/30 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="w-full bg-ems-inset border border-rose-500/30 rounded-xl px-3 py-2 text-xs text-ems-ink placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500"
             />
-            <span className="text-[10px] text-slate-400 mt-1 block">
+            <span className="text-[10px] text-ems-muted mt-1 block">
               * ข้อมูลนี้จะถูกบันทึกลงใน Audit Log พร้อมชื่อผู้สั่งการ วันและเวลาอย่างเป็นทางการ
             </span>
           </div>
@@ -112,7 +112,7 @@ export const EmergencyOverrideModal: React.FC<EmergencyOverrideModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm font-medium text-ems-muted hover:text-ems-ink hover:bg-ems-inset rounded-xl transition-colors"
             >
               ยกเลิก
             </button>

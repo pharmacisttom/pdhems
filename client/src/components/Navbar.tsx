@@ -1,131 +1,73 @@
-import { Shield, MapPin, Building2, Navigation, AlertTriangle, BarChart3 } from 'lucide-react';
+import {
+  Activity,
+  MapPin,
+  Building2,
+  Navigation,
+  BarChart3,
+  Ambulance,
+  ClipboardList,
+  ShieldCheck,
+  Truck,
+  Users,
+  DollarSign,
+} from 'lucide-react';
 
+export type WorkspaceTab =
+  | 'map'
+  | 'missions'
+  | 'driver'
+  | 'fleet'
+  | 'facilities'
+  | 'bases'
+  | 'reports'
+  | 'expenses'
+  | 'users';
+
+export const navigationItems = [
+  { id: 'map' as const, label: 'แผนที่สั่งการ', short: 'แผนที่', icon: Navigation },
+  { id: 'missions' as const, label: 'ภารกิจ EMS / Refer', short: 'ภารกิจ', icon: ClipboardList },
+  { id: 'driver' as const, label: 'โหมดพลขับ', short: 'พลขับ', icon: Ambulance },
+  { id: 'fleet' as const, label: 'รถและทีมกู้ชีพ', short: 'รถ/ทีม', icon: Truck },
+  { id: 'facilities' as const, label: 'สถานพยาบาล', short: 'รพ.', icon: Building2 },
+  { id: 'bases' as const, label: 'ฐานกู้ชีพ', short: 'ฐาน', icon: MapPin },
+  { id: 'reports' as const, label: 'รายงานและสถิติ', short: 'รายงาน', icon: BarChart3 },
+  { id: 'expenses' as const, label: 'ค่าใช้จ่ายและ Log', short: 'ค่าใช้จ่าย/Log', icon: DollarSign },
+  { id: 'users' as const, label: 'จัดการผู้ใช้และสิทธิ์', short: 'ผู้ใช้งาน', icon: Users },
+];
 interface NavbarProps {
-  currentTab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports';
-  onSelectTab: (tab: 'map' | 'missions' | 'driver' | 'facilities' | 'bases' | 'reports') => void;
+  currentTab: WorkspaceTab;
+  onSelectTab: (tab: WorkspaceTab) => void;
   activeEmergencyCount: number;
   allowedTabs: string[];
 }
-
-export const Navbar: React.FC<NavbarProps> = ({ currentTab, onSelectTab, activeEmergencyCount, allowedTabs }) => {
-  return (
-    <header className="bg-slate-900/90 border-b border-slate-800 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo & App Name */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-600/30">
-              <span className="text-xl font-black text-white">🚑</span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold tracking-tight text-white">PDH SMART EMS</span>
-                <span className="px-2 py-0.5 text-xs font-semibold rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
-                  GEOSPATIAL INTELLIGENCE
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 hidden sm:block">
-                ศูนย์รับแจ้งเหตุ สั่งการ และระบบติดตามรถพยาบาล รพ.โพธาราม
-              </p>
-            </div>
-          </div>
-
-          {/* Desktop / Tablet Navigation Tabs */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-            <button
-              hidden={!allowedTabs.includes('map')} style={{ display: allowedTabs.includes('map') ? undefined : 'none' }}
-          onClick={() => onSelectTab('map')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                currentTab === 'map'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <Navigation className="w-4 h-4" />
-              <span>แผนที่สั่งการ (Map)</span>
-              {activeEmergencyCount > 0 && (
-                <span className="ml-1 px-1.5 py-0.2 bg-rose-500 text-white text-xs font-bold rounded-full animate-pulse">
-                  {activeEmergencyCount}
-                </span>
-              )}
-            </button>
-
-            <button
-              hidden={!allowedTabs.includes('missions')} style={{ display: allowedTabs.includes('missions') ? undefined : 'none' }}
-          onClick={() => onSelectTab('missions')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                currentTab === 'missions'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <span className="text-sm">📋</span>
-              <span>ภารกิจ Refer / EMS</span>
-            </button>
-
-            <button
-              hidden={!allowedTabs.includes('driver')} style={{ display: allowedTabs.includes('driver') ? undefined : 'none' }}
-          onClick={() => onSelectTab('driver')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                currentTab === 'driver'
-                  ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <span className="text-sm">⚡</span>
-              <span>โหมดพลขับ (Driver Cab)</span>
-            </button>
-
-            <button
-              hidden={!allowedTabs.includes('facilities')} style={{ display: allowedTabs.includes('facilities') ? undefined : 'none' }}
-          onClick={() => onSelectTab('facilities')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                currentTab === 'facilities'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <Building2 className="w-4 h-4" />
-              <span>โรงพยาบาล/ปลายทาง</span>
-            </button>
-
-            <button
-              hidden={!allowedTabs.includes('bases')} style={{ display: allowedTabs.includes('bases') ? undefined : 'none' }}
-          onClick={() => onSelectTab('bases')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                currentTab === 'bases'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <MapPin className="w-4 h-4" />
-              <span>ฐานกู้ชีพ (Bases)</span>
-            </button>
-
-            <button
-              hidden={!allowedTabs.includes('reports')} style={{ display: allowedTabs.includes('reports') ? undefined : 'none' }}
-          onClick={() => onSelectTab('reports')}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                currentTab === 'reports'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>รายงาน & KPIs</span>
-            </button>
-          </nav>
-
-          {/* User badge & system status */}
-          <div className="hidden lg:flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              <span className="text-slate-300">ระบบติดตาม: พร้อมทำงาน</span>
-            </div>
-
-          </div>
+export const Navbar = ({ currentTab, onSelectTab, activeEmergencyCount, allowedTabs }: NavbarProps) => (
+  <header className="ems-header">
+    <div className="ems-brand-row">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="w-12 h-12 flex-shrink-0 rounded-full overflow-hidden shadow-sm border border-sky-100 bg-white grid place-items-center">
+          <img src="/logo.png" alt="โลโก้ระบบการแพทย์ฉุกเฉิน โรงพยาบาลปลวกแดง" className="w-full h-full object-cover rounded-full" />
+        </div>
+        <div className="min-w-0">
+          <p className="ems-eyebrow">PLUAKDAENG EMS NETWORK</p>
+          <h1 className="text-lg sm:text-xl font-extrabold tracking-tight text-ems-ink">PDH <span className="text-sky-700">SMART EMS</span></h1>
+          <p className="text-xs text-ems-muted mt-0.5">ระบบการแพทย์ฉุกเฉิน รพ.ปลวกแดง · มูลนิธิกู้ภัยอำเภอปลวกแดง · รพ.กรุงเทพปลวกแดง</p>
         </div>
       </div>
-    </header>
-  );
-};
+      <div className="hidden sm:flex items-center gap-3">
+        <div className="ems-service-label"><ShieldCheck size={18} /><span>EMS Command &amp; Refer</span></div>
+        <div className="hidden lg:block text-right border-l border-ems-border pl-4">
+          <p className="text-xs text-ems-muted">ศูนย์สั่งการเครือข่าย EMS ปลวกแดง</p>
+          <p className="text-sm font-semibold text-ems-ink mt-1">พร้อมดูแล ทุกการส่งต่อ</p>
+        </div>
+      </div>
+    </div>
+    <nav className="ems-desktop-nav" aria-label="เมนูหลัก">
+      {navigationItems.filter(item => allowedTabs.includes(item.id)).map(({ id, label, icon: Icon }) => (
+        <button key={id} onClick={() => onSelectTab(id)} aria-current={currentTab === id ? 'page' : undefined} className={`ems-nav-item ${currentTab === id ? 'is-active' : ''}`}>
+          <Icon size={18} strokeWidth={currentTab === id ? 2.4 : 1.8} /><span>{label}</span>
+          {id === 'map' && activeEmergencyCount > 0 && <span className="ems-count">{activeEmergencyCount}</span>}
+        </button>
+      ))}
+    </nav>
+  </header>
+);

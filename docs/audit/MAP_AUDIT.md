@@ -26,7 +26,7 @@
 ```
 
 ### 1.1 Provider Independence
-- **Frontend Adapter:** `client/src/services/mapProviderAdapter.ts` defines tile URL templates, attribution, and default center coordinates (Photharam Hospital: `13.6938, 99.8517`, Zoom: 12).
+- **Frontend Adapter:** `client/src/services/mapProviderAdapter.ts` defines tile URL templates, attribution, and default center coordinates (Pluak Daeng Hospital: `12.9756, 101.2155`, Zoom: 12).
 - **Backend Adapter:** `server/src/adapters/map/IMapProvider.ts` and `server/src/adapters/routing/IRoutingProvider.ts` decouple geospatial calculations from any single commercial provider.
 - **Fail-Safe Principle:** In the event of tile server latency or internet disconnection, marker coordinates, status drawers, mission dispatch, and telematics telemetry continue operating autonomously.
 
@@ -74,7 +74,7 @@
 
 ### 3.4 Actual GPS Trail Polyline
 - **Implementation:** `client/src/components/map/ActualTrackPolylineLayer.tsx`.
-- **Verification:** Tested on mission `REF-2026-000124` (Ambulance 01: PDH → Ratchaburi Hospital). 10 historical GPS points render as a cyan trail with start flag, direction arrows, and click popovers detailing timestamp and speed.
+- **Verification:** Tested on mission `REF-2026-000124` (Ambulance 01: PDH → Bangkok Hospital Pluak Daeng / Rayong Hospital). 10 historical GPS points render as a cyan trail with start flag, direction arrows, and click popovers detailing timestamp and speed.
 
 ---
 

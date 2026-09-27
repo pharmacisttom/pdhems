@@ -41,7 +41,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
       .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
         originFacilityId: 1, // PDH
-        destinationFacilityId: 2, // Ratchaburi Hospital
+        destinationFacilityId: 2, // Bangkok Hospital Pluak Daeng
         notes: 'Test urgent transfer',
       });
 
@@ -182,7 +182,7 @@ describe('Phase 2 & 3: Mission Workflow & Handover Tests', () => {
       .post(`/api/missions/${testMissionId}/handover`)
       .set('Cookie', authToken).set('X-PDH-Request', '1')
       .send({
-        receiverName: 'พว.สุดาพร พยาบาลวิชาชีพ ER รพ.ศูนย์ราชบุรี',
+        receiverName: 'พว.สุดาพร พยาบาลวิชาชีพ ER รพ.กรุงเทพปลวกแดง',
         notes: 'Handover vitals stable, medical summary delivered.',
       });
 

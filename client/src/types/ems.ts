@@ -29,6 +29,9 @@ export interface VehicleMarkerData {
   vehicle_code: string;
   registration_no: string;
   vehicle_type: string;
+  brand?: string;
+  model?: string;
+  odometer?: number;
   status: VehicleStatus;
   current_latitude: number | null;
   current_longitude: number | null;

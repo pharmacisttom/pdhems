@@ -62,26 +62,26 @@ export const ActualTrackPolylineLayer: React.FC<ActualTrackPolylineLayerProps> =
         }}
       >
         <Popup minWidth={240}>
-          <div className="p-2 text-xs space-y-1.5 text-slate-100">
-            <div className="font-bold text-cyan-400 flex items-center gap-1.5 border-b border-slate-700 pb-1">
+          <div className="p-2 text-xs space-y-1.5 text-ems-ink">
+            <div className="font-bold text-cyan-700 flex items-center gap-1.5 border-b border-ems-border pb-1">
               <span>📍</span>
               <span>Actual GPS Track (เส้นทางเดินทางจริง)</span>
             </div>
-            <div className="text-[11px] text-slate-300">
-              ภารกิจ: <strong className="text-white">{trackData.mission_no}</strong>
+            <div className="text-[11px] text-ems-muted">
+              ภารกิจ: <strong className="text-ems-ink">{trackData.mission_no}</strong>
             </div>
-            <div className="text-[11px] text-slate-300">
-              รถ: <strong className="text-white">{trackData.vehicle_code}</strong>
+            <div className="text-[11px] text-ems-muted">
+              รถ: <strong className="text-ems-ink">{trackData.vehicle_code}</strong>
             </div>
             <div className="flex justify-between text-[11px] pt-1">
-              <span className="text-slate-400">ระยะทางตรวจสอบแล้ว:</span>
-              <span className="font-bold text-emerald-400">{trackData.validated_distance_km} กม.</span>
+              <span className="text-ems-muted">ระยะทางตรวจสอบแล้ว:</span>
+              <span className="font-bold text-emerald-700">{trackData.validated_distance_km} กม.</span>
             </div>
             <div className="flex justify-between text-[11px]">
-              <span className="text-slate-400">จำนวนจุดพิกัด:</span>
-              <span className="text-slate-200">{trackData.points_count} จุด</span>
+              <span className="text-ems-muted">จำนวนจุดพิกัด:</span>
+              <span className="text-ems-ink">{trackData.points_count} จุด</span>
             </div>
-            <p className="text-[10px] text-slate-400 italic pt-1 border-t border-slate-800">
+            <p className="text-[10px] text-ems-muted italic pt-1 border-t border-ems-border">
               * ข้อมูลจาก GPS อุปกรณ์ ไม่ใช่เส้นทางแนะนำจำลอง
             </p>
           </div>
@@ -110,13 +110,13 @@ export const ActualTrackPolylineLayer: React.FC<ActualTrackPolylineLayerProps> =
           }}
         >
           <Popup minWidth={180}>
-            <div className="p-1.5 text-xs text-slate-200 space-y-1">
-              <div className="font-bold text-sky-400 text-[11px]">
+            <div className="p-1.5 text-xs text-ems-ink space-y-1">
+              <div className="font-bold text-sky-700 text-[11px]">
                 จุดที่ #{index + 1} ({new Date(pt.recorded_at).toLocaleTimeString('th-TH')})
               </div>
               <div className="flex justify-between text-[11px]">
                 <span>ความเร็ว:</span>
-                <span className="font-bold text-white">{Math.round(pt.speed)} km/h</span>
+                <span className="font-bold text-ems-ink">{Math.round(pt.speed)} km/h</span>
               </div>
               <div className="flex justify-between text-[11px]">
                 <span>ทิศทาง:</span>
@@ -124,7 +124,7 @@ export const ActualTrackPolylineLayer: React.FC<ActualTrackPolylineLayerProps> =
               </div>
               <div className="flex justify-between text-[11px]">
                 <span>คุณภาพ GPS:</span>
-                <span className={pt.gps_quality === 'GOOD' ? 'text-emerald-400' : 'text-amber-400'}>
+                <span className={pt.gps_quality === 'GOOD' ? 'text-emerald-700' : 'text-amber-700'}>
                   {pt.gps_quality}
                 </span>
               </div>

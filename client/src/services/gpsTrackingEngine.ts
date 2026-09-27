@@ -176,8 +176,8 @@ class GpsTrackingEngine {
   }
 
   private handleSimulatedPosition() {
-    // Default fallback to Photharam hospital area
-    this.injectManualPosition(13.693822, 99.851921, 0, 45);
+    // Default fallback to Pluak Daeng Hospital area
+    this.injectManualPosition(12.975600, 101.215500, 0, 45);
   }
 
   /**

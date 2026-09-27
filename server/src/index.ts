@@ -14,6 +14,10 @@ import ambulanceRoutes from './routes/ambulanceRoutes';
 import missionRoutes from './routes/missionRoutes';
 import dispatchRoutes from './routes/dispatchRoutes';
 import reportRoutes from './routes/reportRoutes';
+import fleetRoutes from './routes/fleetRoutes';
+import userRoutes from './routes/userRoutes';
+import expenseRoutes from './routes/expenseRoutes';
+import gisRoutes from './routes/gisRoutes';
 
 dotenv.config();
 if (process.env.NODE_ENV === 'production' && (!process.env.CORS_ORIGIN?.startsWith('https://') || process.env.CORS_ORIGIN.includes('*'))) throw new Error('Production requires an explicit HTTPS CORS_ORIGIN');
@@ -64,6 +68,10 @@ app.use('/api/ambulances', ambulanceRoutes);
 app.use('/api/missions', missionRoutes);
 app.use('/api/dispatch', dispatchRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/fleet', fleetRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/gis', gisRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

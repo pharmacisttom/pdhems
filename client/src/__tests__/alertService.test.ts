@@ -110,7 +110,7 @@ describe('SweetAlert2 Central Alert Service (alertService)', () => {
       vehicleCode: 'EMS-01',
       driverName: 'นายสมชาย ดีมาก',
       crewCount: 3,
-      destination: 'รพ.ศูนย์ราชบุรี',
+      destination: 'รพ.กรุงเทพปลวกแดง',
     });
     expect(result).toBe(true);
   });

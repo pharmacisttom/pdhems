@@ -47,9 +47,11 @@ async function seed() {
     await conn.query(`
       INSERT INTO ems_bases (id, name, latitude, longitude, geofence_radius, active)
       VALUES
-        (1, 'ศูนย์กู้ชีพและส่งต่อ รพ.โพธาราม (Main Station)', 13.693822, 99.851921, 150, 1),
-        (2, 'จุดจอดรถพยาบาล รพ.สต.บ้านเลือก (North Sub-station)', 13.731500, 99.832100, 150, 1),
-        (3, 'จุดจอดรถกู้ชีพแยกบางแพ (South Sub-station)', 13.655200, 99.912400, 150, 1)
+        (1, 'ศูนย์สั่งการกู้ชีพและส่งต่อ รพ.ปลวกแดง (Main Command Station)', 12.975600, 101.215500, 150, 1),
+        (2, 'ศูนย์วิทยุและปฏิบัติการ มูลนิธิกู้ภัยอำเภอปลวกแดง (Rescue Base)', 12.980500, 101.221000, 150, 1),
+        (3, 'จุดจอดกู้ชีพฉุกเฉิน รพ.กรุงเทพปลวกแดง (BHP EMS Base)', 12.978562, 101.196742, 150, 1),
+        (4, 'จุดจอดกู้ชีพ อบต.มาบยางพร (West Sub-station)', 12.962000, 101.148000, 150, 1),
+        (5, 'จุดจอดกู้ชีพแม่น้ำคู้ (South Sub-station)', 12.923000, 101.282000, 150, 1)
       ON DUPLICATE KEY UPDATE name = VALUES(name), latitude = VALUES(latitude), longitude = VALUES(longitude)
     `);
 
@@ -57,12 +59,14 @@ async function seed() {
     await conn.query(`
       INSERT INTO facilities (id, facility_code, name, facility_type, latitude, longitude, geofence_radius, phone_optional, active)
       VALUES
-        (1, 'PDH', 'โรงพยาบาลโพธาราม (ศูนย์แม่ข่าย)', 'HOSPITAL', 13.693822, 99.851921, 200, '032-231021', 1),
-        (2, 'RB-CENTRAL', 'โรงพยาบาลศูนย์ราชบุรี', 'REGIONAL_HOSPITAL', 13.529712, 99.816431, 300, '032-327999', 1),
-        (3, 'BAN-PONG', 'โรงพยาบาลบ้านโป่ง', 'GENERAL_HOSPITAL', 13.815243, 99.877123, 250, '032-221111', 1),
-        (4, 'DAMNOEN', 'โรงพยาบาลดำเนินสะดวก', 'COMMUNITY_HOSPITAL', 13.518290, 99.957110, 200, '032-241222', 1),
-        (5, 'PAK-THO', 'โรงพยาบาลปากท่อ', 'COMMUNITY_HOSPITAL', 13.368140, 99.829150, 200, '032-281099', 1),
-        (6, 'BASE-NORTH', 'ฐานกู้ชีพบ้านเลือก', 'EMS_BASE', 13.731500, 99.832100, 150, '032-231112', 1)
+        (1, 'PDH', 'โรงพยาบาลปลวกแดง (ศูนย์แม่ข่าย)', 'HOSPITAL', 12.975600, 101.215500, 200, '038-659171', 1),
+        (2, 'BHP', 'โรงพยาบาลกรุงเทพปลวกแดง', 'GENERAL_HOSPITAL', 12.978562, 101.196742, 200, '033-221339', 1),
+        (3, 'RY-CENTRAL', 'โรงพยาบาลระยอง (ศูนย์ตติยภูมิ)', 'REGIONAL_HOSPITAL', 12.684100, 101.281800, 300, '038-611104', 1),
+        (4, 'BAN-KHAI', 'โรงพยาบาลบ้านค่าย', 'GENERAL_HOSPITAL', 12.784500, 101.298500, 250, '038-641194', 1),
+        (5, 'NIKHOM', 'โรงพยาบาลนิคมพัฒนา', 'COMMUNITY_HOSPITAL', 12.825000, 101.178000, 200, '038-636400', 1),
+        (6, 'MABTAPHUT', 'โรงพยาบาลเฉลิมพระเกียรติฯ มาบตาพุด', 'COMMUNITY_HOSPITAL', 12.721400, 101.168500, 200, '038-684444', 1),
+        (7, 'MABYANGPORN', 'รพ.สต. มาบยางพร (อมตะซิตี้)', 'HEALTH_CENTER', 12.965000, 101.145000, 150, '038-027111', 1),
+        (8, 'TASIT', 'รพ.สต. ตาสิทธิ์ (อีสเทิร์นซีบอร์ด)', 'HEALTH_CENTER', 12.998000, 101.265000, 150, '038-028222', 1)
       ON DUPLICATE KEY UPDATE name = VALUES(name), latitude = VALUES(latitude), longitude = VALUES(longitude)
     `);
 
@@ -70,10 +74,10 @@ async function seed() {
     await conn.query(`
       INSERT INTO drivers (id, employee_code, first_name, last_name, display_name, phone_optional, driver_license_no_optional, license_type_optional, employment_status, active)
       VALUES
-        (1, 'DRV-001', 'สมชาย', 'ใจดี', 'สมชาย ใจดี', '081-111-2222', 'DL-7788991', 'ชนิดที่ 2 ทั่วไป/สาธารณะ', 'AVAILABLE', 1),
-        (2, 'DRV-002', 'ประเสริฐ', 'เรืองเดช', 'ประเสริฐ เรืองเดช', '081-222-3333', 'DL-7788992', 'ชนิดที่ 2 สาธารณะ', 'ON_MISSION', 1),
-        (3, 'DRV-003', 'วิชัย', 'วงศ์สุวรรณ', 'วิชัย วงศ์สุวรรณ', '081-333-4444', 'DL-7788993', 'ชนิดที่ 2 สาธารณะ', 'ON_MISSION', 1),
-        (4, 'DRV-004', 'อำนาจ', 'มั่นคง', 'อำนาจ มั่นคง', '081-444-5555', 'DL-7788994', 'ชนิดที่ 2 สาธารณะ', 'OFF_DUTY', 1)
+        (1, 'DRV-001', 'สมชาย', 'ใจดี', 'สมชาย ใจดี (รพ.ปลวกแดง)', '081-111-2222', 'DL-7788991', 'ชนิดที่ 2 ทั่วไป/สาธารณะ', 'AVAILABLE', 1),
+        (2, 'DRV-002', 'ประเสริฐ', 'เรืองเดช', 'ประเสริฐ เรืองเดช (รพ.ปลวกแดง)', '081-222-3333', 'DL-7788992', 'ชนิดที่ 2 สาธารณะ', 'ON_MISSION', 1),
+        (3, 'DRV-003', 'วิชัย', 'วงศ์สุวรรณ', 'วิชัย วงศ์สุวรรณ (มูลนิธิกู้ภัยอำเภอปลวกแดง)', '081-333-4444', 'DL-7788993', 'ชนิดที่ 2 สาธารณะ', 'ON_MISSION', 1),
+        (4, 'DRV-004', 'อำนาจ', 'มั่นคง', 'อำนาจ มั่นคง (รพ.กรุงเทพปลวกแดง)', '081-444-5555', 'DL-7788994', 'ชนิดที่ 2 สาธารณะ', 'OFF_DUTY', 1)
       ON DUPLICATE KEY UPDATE display_name = VALUES(display_name), employment_status = VALUES(employment_status)
     `);
 
@@ -81,11 +85,11 @@ async function seed() {
     await conn.query(`
       INSERT INTO ems_staff (id, employee_code, first_name, last_name, display_name, position, profession, phone_optional, active)
       VALUES
-        (1, 'STF-001', 'อนันต์', 'สุขประเสริฐ', 'นพ.อนันต์ สุขประเสริฐ', 'แพทย์เวชศาสตร์ฉุกเฉิน', 'Doctor', '089-111-0001', 1),
-        (2, 'STF-002', 'สุภาพร', 'ศรีสุข', 'พว.สุภาพร ศรีสุข', 'พยาบาลวิชาชีพชำนาญการ (หัวหน้าทีม)', 'Nurse', '089-111-0002', 1),
-        (3, 'STF-003', 'ธนวัฒน์', 'รักชาติ', 'นายธนวัฒน์ รักชาติ', 'นักปฏิบัติการฉุกเฉินการแพทย์ (Paramedic)', 'Paramedic', '089-111-0003', 1),
-        (4, 'STF-004', 'ณัฐพล', 'ชัยสุวรรณ', 'นายณัฐพล ชัยสุวรรณ', 'พนักงานฉุกเฉินการแพทย์ (EMT)', 'EMT', '089-111-0004', 1),
-        (5, 'STF-005', 'กานดา', 'บุญยืน', 'พว.กานดา บุญยืน', 'พยาบาลวิชาชีพ (Refer)', 'Nurse', '089-111-0005', 1)
+        (1, 'STF-001', 'อนันต์', 'สุขประเสริฐ', 'นพ.อนันต์ สุขประเสริฐ (รพ.ปลวกแดง)', 'แพทย์เวชศาสตร์ฉุกเฉิน', 'Doctor', '089-111-0001', 1),
+        (2, 'STF-002', 'สุภาพร', 'ศรีสุข', 'พว.สุภาพร ศรีสุข (รพ.ปลวกแดง)', 'พยาบาลวิชาชีพชำนาญการ (หัวหน้าทีม)', 'Nurse', '089-111-0002', 1),
+        (3, 'STF-003', 'ธนวัฒน์', 'รักชาติ', 'นายธนวัฒน์ รักชาติ (มูลนิธิกู้ภัยอำเภอปลวกแดง)', 'นักปฏิบัติการฉุกเฉินการแพทย์ (Paramedic)', 'Paramedic', '089-111-0003', 1),
+        (4, 'STF-004', 'ณัฐพล', 'ชัยสุวรรณ', 'นายณัฐพล ชัยสุวรรณ (มูลนิธิกู้ภัยอำเภอปลวกแดง)', 'พนักงานฉุกเฉินการแพทย์ (EMT)', 'EMT', '089-111-0004', 1),
+        (5, 'STF-005', 'กานดา', 'บุญยืน', 'พว.กานดา บุญยืน (รพ.กรุงเทพปลวกแดง)', 'พยาบาลวิชาชีพ (Refer)', 'Nurse', '089-111-0005', 1)
       ON DUPLICATE KEY UPDATE display_name = VALUES(display_name), position = VALUES(position)
     `);
 
@@ -96,11 +100,11 @@ async function seed() {
     await conn.query(`
       INSERT INTO ambulances (id, vehicle_code, registration_no, vehicle_type, brand, model, odometer, status, current_latitude, current_longitude, current_heading, current_speed, last_gps_at, gps_quality, active)
       VALUES
-        (1, 'EMS-01', 'นข-1101 ราชบุรี', 'ALS_AMBULANCE', 'Toyota', 'Commuter D4D', 45210.5, 'AVAILABLE', 13.693822, 99.851921, 45.0, 0.0, NOW(), 'GOOD', 1),
-        (2, 'EMS-02', 'นข-1102 ราชบุรี', 'ALS_AMBULANCE', 'Toyota', 'Commuter High Roof', 68420.0, 'EN_ROUTE', 13.621200, 99.834000, 180.0, 68.5, NOW(), 'GOOD', 1),
-        (3, 'EMS-03', 'นข-1103 ราชบุรี', 'BLS_AMBULANCE', 'Toyota', 'Commuter', 82140.2, 'AT_SCENE', 13.712400, 99.845100, 90.0, 0.0, NOW(), 'GOOD', 1),
-        (4, 'EMS-04', 'นข-1104 ราชบุรี', 'ALS_AMBULANCE', 'Toyota', 'Hiace Super GL', 32190.8, 'RETURNING', 13.568000, 99.821000, 355.0, 62.0, NOW(), 'GOOD', 1),
-        (5, 'EMS-05', 'นข-1105 ราชบุรี', 'INTERMEDIATE', 'Toyota', 'Commuter', 115200.0, 'TRACKING_LOST', 13.682000, 99.810000, 270.0, 0.0, ?, 'POOR', 1)
+        (1, 'EMS-01', 'กข-1101 ระยอง', 'ALS_AMBULANCE', 'Toyota', 'Commuter D4D (รพ.ปลวกแดง)', 45210.5, 'AVAILABLE', 12.975600, 101.215500, 45.0, 0.0, NOW(), 'GOOD', 1),
+        (2, 'EMS-02', 'กข-1102 ระยอง', 'ALS_AMBULANCE', 'Toyota', 'Commuter High Roof (รพ.ปลวกแดง)', 68420.0, 'EN_ROUTE', 12.860000, 101.250000, 160.0, 72.5, NOW(), 'GOOD', 1),
+        (3, 'EMS-03', 'กข-1103 ระยอง', 'BLS_AMBULANCE', 'Toyota', 'Hilux Revo (มูลนิธิกู้ภัยอำเภอปลวกแดง)', 82140.2, 'AT_SCENE', 12.964000, 101.152000, 270.0, 0.0, NOW(), 'GOOD', 1),
+        (4, 'EMS-04', 'กข-1104 ระยอง', 'ALS_AMBULANCE', 'Toyota', 'Hiace Super GL (รพ.กรุงเทพปลวกแดง)', 32190.8, 'RETURNING', 12.750000, 101.270000, 345.0, 64.0, NOW(), 'GOOD', 1),
+        (5, 'EMS-05', 'กข-1105 ระยอง', 'INTERMEDIATE', 'Toyota', 'Commuter (มูลนิธิกู้ภัยอำเภอปลวกแดง)', 115200.0, 'TRACKING_LOST', 12.985000, 101.230000, 90.0, 0.0, ?, 'POOR', 1)
       ON DUPLICATE KEY UPDATE status = VALUES(status), current_latitude = VALUES(current_latitude), current_longitude = VALUES(current_longitude), current_speed = VALUES(current_speed), last_gps_at = VALUES(last_gps_at)
     `, [staleTime]);
 
@@ -115,7 +119,7 @@ async function seed() {
     await conn.query(`
       INSERT INTO ems_missions (id, mission_no, mission_type, status, vehicle_id, driver_id, origin_facility_id, destination_facility_id, scene_latitude, scene_longitude, scene_accuracy, scene_description, departure_at, arrived_at, created_at)
       VALUES
-        (2, 'EMS-2026-000045', 'EMERGENCY', 'ARRIVED_SCENE', 3, 3, 1, 1, 13.712400, 99.845100, 5.0, 'อุบัติเหตุ จยย. ชนเสาไฟ สี่แยกบ้านเลือก มีผู้บาดเจ็บ 1 ราย รู้สึกตัวดี', NOW(), NOW(), NOW())
+        (2, 'EMS-2026-000045', 'EMERGENCY', 'ARRIVED_SCENE', 3, 3, 1, 1, 12.964000, 101.152000, 5.0, 'อุบัติเหตุ จยย. ชนรถกระบะ แยกสะพานสี่ มาบยางพร มีผู้บาดเจ็บ 1 ราย กู้ภัยอำเภอปลวกแดงร่วมศูนย์สั่งการ รพ.ปลวกแดง', NOW(), NOW(), NOW())
       ON DUPLICATE KEY UPDATE mission_no = VALUES(mission_no), status = VALUES(status)
     `);
 
@@ -126,19 +130,18 @@ async function seed() {
         (1, 2, 'TEAM_LEADER', 1, 'CONFIRMED'),
         (1, 3, 'PARAMEDIC', 0, 'CONFIRMED'),
         (1, 4, 'EMT', 0, 'CONFIRMED'),
-        (2, 5, 'TEAM_LEADER', 1, 'CONFIRMED'),
+        (2, 3, 'TEAM_LEADER', 1, 'CONFIRMED'),
         (2, 4, 'EMT', 0, 'CONFIRMED')
       ON DUPLICATE KEY UPDATE status = VALUES(status)
     `);
 
     // 10. Recorded GPS Tracks for Active Missions (Phase MAP-2)
     const tracksM1 = [
-      [1, 2, 13.693822, 99.851921, 25.0, 180.0, 'GOOD', 15],
-      [1, 2, 13.682100, 99.848900, 56.0, 182.0, 'GOOD', 12],
-      [1, 2, 13.668500, 99.843200, 68.0, 185.0, 'GOOD', 9],
-      [1, 2, 13.651200, 99.837100, 72.0, 180.0, 'GOOD', 6],
-      [1, 2, 13.635000, 99.835000, 70.0, 178.0, 'GOOD', 3],
-      [1, 2, 13.621200, 99.834000, 68.5, 180.0, 'GOOD', 1]
+      [1, 2, 12.975600, 101.215500, 25.0, 170.0, 'GOOD', 15],
+      [1, 2, 12.942000, 101.228000, 58.0, 165.0, 'GOOD', 12],
+      [1, 2, 12.910000, 101.239000, 70.0, 160.0, 'GOOD', 9],
+      [1, 2, 12.880000, 101.246000, 74.0, 160.0, 'GOOD', 6],
+      [1, 2, 12.860000, 101.250000, 72.5, 160.0, 'GOOD', 1]
     ];
 
     for (const [mId, vId, lat, lng, spd, hdg, qual, minAgo] of tracksM1) {
@@ -149,9 +152,9 @@ async function seed() {
     }
 
     const tracksM2 = [
-      [2, 3, 13.693822, 99.851921, 30.0, 350.0, 'GOOD', 10],
-      [2, 3, 13.702500, 99.848200, 62.0, 345.0, 'GOOD', 6],
-      [2, 3, 13.712400, 99.845100, 0.0, 90.0, 'GOOD', 2]
+      [2, 3, 12.975600, 101.215500, 30.0, 240.0, 'GOOD', 10],
+      [2, 3, 12.969000, 101.185000, 65.0, 250.0, 'GOOD', 6],
+      [2, 3, 12.964000, 101.152000, 0.0, 270.0, 'GOOD', 2]
     ];
 
     for (const [mId, vId, lat, lng, spd, hdg, qual, minAgo] of tracksM2) {
@@ -171,8 +174,8 @@ async function seed() {
       ['MAX_SPEED_CRITICAL_KMH', '110', 'Critical speed alarm trigger limit (km/h)'],
       ['DEFAULT_MAP_PROVIDER', 'openstreetmap', 'Map provider engine (openstreetmap, mapbox, google)'],
       ['DEFAULT_ROUTING_PROVIDER', 'simple_estimate', 'Routing engine adapter (simple_estimate, osrm, graphhopper)'],
-      ['MAP_DEFAULT_CENTER_LAT', '13.693822', 'Default center latitude for map (PDH)'],
-      ['MAP_DEFAULT_CENTER_LNG', '99.851921', 'Default center longitude for map (PDH)'],
+      ['MAP_DEFAULT_CENTER_LAT', '12.975600', 'Default center latitude for map (PDH Pluak Daeng)'],
+      ['MAP_DEFAULT_CENTER_LNG', '101.215500', 'Default center longitude for map (PDH Pluak Daeng)'],
       ['MAP_DEFAULT_ZOOM', '12', 'Default zoom level for command center map']
     ];
 

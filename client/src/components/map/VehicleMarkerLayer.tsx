@@ -183,14 +183,14 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
             icon={createVehicleIcon(v)}
           >
             <Popup minWidth={270} maxWidth={330}>
-              <div className="p-3 text-slate-100 space-y-2.5">
+              <div className="p-3 text-ems-ink space-y-2.5">
                 {/* Header with Vehicle Code and Registration */}
-                <div className="flex items-center justify-between border-b border-slate-700/80 pb-2">
+                <div className="flex items-center justify-between border-b border-ems-border/80 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">🚑</span>
                     <div>
-                      <h4 className="font-bold text-base text-white">{v.vehicle_code}</h4>
-                      <p className="text-xs text-slate-400">{v.registration_no}</p>
+                      <h4 className="font-bold text-base text-ems-ink">{v.vehicle_code}</h4>
+                      <p className="text-xs text-ems-muted">{v.registration_no}</p>
                     </div>
                   </div>
                   <span
@@ -207,18 +207,18 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
 
                 {/* Stale / Tracking Lost Warning (Critical Rule Section 5 & 22) */}
                 {(isLost || isDelayed) && (
-                  <div className="p-2 rounded bg-amber-950/60 border border-amber-500/50 flex items-start gap-2 text-xs text-amber-200">
-                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <div className="p-2 rounded bg-amber-50/60 border border-amber-500/50 flex items-start gap-2 text-xs text-amber-700">
+                    <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-amber-300">
+                      <p className="font-bold text-amber-700">
                         {isLost
                           ? '⚠️ LAST KNOWN LOCATION (พิกัดล่าสุดที่บันทึกได้)'
                           : '⚠️ ตำแหน่งอาจไม่เป็นปัจจุบัน (Stale)'}
                       </p>
-                      <p className="text-[11px] text-amber-200/90">
+                      <p className="text-[11px] text-amber-700/90">
                         สัญญาณหายไปเมื่อ: {lastSeenText}
                         <br />
-                        <span className="text-slate-400 text-[10px]">
+                        <span className="text-ems-muted text-[10px]">
                           ห้ามเคลื่อนหมุดจำลองหรือถือเป็นพิกัดปัจจุบัน
                         </span>
                       </p>
@@ -227,73 +227,73 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
                 )}
 
                 {/* Telematics Info Grid */}
-                <div className="grid grid-cols-2 gap-2 text-xs bg-slate-800/80 p-2 rounded-lg border border-slate-700/50">
+                <div className="grid grid-cols-2 gap-2 text-xs bg-ems-inset/80 p-2 rounded-lg border border-ems-border/50">
                   <div>
-                    <span className="text-slate-400 block text-[10px]">ความเร็ว (Speed)</span>
-                    <span className="font-semibold text-slate-200 text-sm">
+                    <span className="text-ems-muted block text-[10px]">ความเร็ว (Speed)</span>
+                    <span className="font-semibold text-ems-ink text-sm">
                       {v.is_stopped && !isLost ? (
-                        <span className="text-sky-300">0 km/h (จอดนิ่ง)</span>
+                        <span className="text-sky-700">0 km/h (จอดนิ่ง)</span>
                       ) : (
                         `${Math.round(v.current_speed)} km/h`
                       )}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">ทิศทาง (Heading)</span>
-                    <span className="font-semibold text-slate-200 text-sm">
+                    <span className="text-ems-muted block text-[10px]">ทิศทาง (Heading)</span>
+                    <span className="font-semibold text-ems-ink text-sm">
                       {v.current_heading !== null ? `${Math.round(v.current_heading)}° ${arrow}` : '—'}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">คุณภาพ GPS</span>
+                    <span className="text-ems-muted block text-[10px]">คุณภาพ GPS</span>
                     <span
                       className={`font-semibold ${
-                        v.gps_quality === 'GOOD' ? 'text-emerald-400' : 'text-amber-400'
+                        v.gps_quality === 'GOOD' ? 'text-emerald-700' : 'text-amber-700'
                       }`}
                     >
                       {v.gps_quality}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">อัปเดตล่าสุด</span>
-                    <span className="font-semibold text-slate-200">{lastSeenText}</span>
+                    <span className="text-ems-muted block text-[10px]">อัปเดตล่าสุด</span>
+                    <span className="font-semibold text-ems-ink">{lastSeenText}</span>
                   </div>
                 </div>
 
                 {/* Mission & Crew Information */}
                 {v.active_mission ? (
-                  <div className="space-y-1 text-xs border-t border-slate-700/60 pt-2">
+                  <div className="space-y-1 text-xs border-t border-ems-border/60 pt-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-400">ภารกิจ:</span>
-                      <span className="font-bold text-sky-400">{v.active_mission.mission_no}</span>
+                      <span className="text-ems-muted">ภารกิจ:</span>
+                      <span className="font-bold text-sky-700">{v.active_mission.mission_no}</span>
                     </div>
                     {v.active_mission.destination_name && (
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">ปลายทาง:</span>
-                        <span className="font-semibold text-slate-200 text-right truncate max-w-[150px]">
+                        <span className="text-ems-muted">ปลายทาง:</span>
+                        <span className="font-semibold text-ems-ink text-right truncate max-w-[150px]">
                           {v.active_mission.destination_name}
                         </span>
                       </div>
                     )}
                     {v.driver && (
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">พนักงานขับรถ:</span>
-                        <span className="text-slate-200">{v.driver.display_name}</span>
+                        <span className="text-ems-muted">พนักงานขับรถ:</span>
+                        <span className="text-ems-ink">{v.driver.display_name}</span>
                       </div>
                     )}
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-400">ลูกเรือ EMS:</span>
-                      <span className="text-slate-200">{v.crew_count || 0} คน</span>
+                      <span className="text-ems-muted">ลูกเรือ EMS:</span>
+                      <span className="text-ems-ink">{v.crew_count || 0} คน</span>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-xs text-slate-400 italic text-center py-1">
+                  <div className="text-xs text-ems-muted italic text-center py-1">
                     ไม่มีภารกิจผูกติดในขณะนี้ (รถพร้อมสั่งการ)
                   </div>
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-1.5 pt-2 border-t border-slate-700/60">
+                <div className="flex items-center gap-1.5 pt-2 border-t border-ems-border/60">
                   <button
                     onClick={() =>
                       onSelectMission &&
@@ -325,7 +325,7 @@ export const VehicleMarkerLayer: React.FC<VehicleMarkerLayerProps> = ({
                         showToast(`รถ ${v.vehicle_code} สแตนด์บายพร้อมปฏิบัติการ`, 'info');
                       }
                     }}
-                    className="flex-1 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs font-medium text-center transition-colors"
+                    className="flex-1 py-1.5 bg-slate-200 hover:bg-slate-600 text-ems-ink rounded text-xs font-medium text-center transition-colors"
                   >
                     Timeline
                   </button>

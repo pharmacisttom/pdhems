@@ -20,10 +20,10 @@ export async function seedHistoricalMissions() {
         vehicle_id: 1,
         driver_id: 1,
         origin_facility_id: 1,
-        destination_facility_id: 1, // PDH
-        scene_lat: 13.712400,
-        scene_lng: 99.845100,
-        scene_desc: 'จยย. ล้มหน้าตลาดสดบ้านเลือก บาดเจ็บ 1 ราย',
+        destination_facility_id: 1, // PDH Pluak Daeng
+        scene_lat: 12.964000,
+        scene_lng: 101.152000,
+        scene_desc: 'จยย. ล้มหน้าตลาดสะพานสี่ มาบยางพร บาดเจ็บ 1 ราย',
         // Call: -2 days, 14:00
         call_sub_hours: 48,
         t1_dispatch_min: 1.2,
@@ -42,9 +42,9 @@ export async function seedHistoricalMissions() {
         driver_id: 3,
         origin_facility_id: 1,
         destination_facility_id: 1,
-        scene_lat: 13.655200,
-        scene_lng: 99.912400,
-        scene_desc: 'เก๋งชนปิคอัพ สี่แยกบางแพ ชาย 1 ราย ศีรษะแตก',
+        scene_lat: 12.980500,
+        scene_lng: 101.221000,
+        scene_desc: 'เก๋งชนปิคอัพ สี่แยกปลวกแดง ชาย 1 ราย ศีรษะแตก',
         call_sub_hours: 40,
         t1_dispatch_min: 0.8,
         t2_turnout_min: 1.5,
@@ -61,10 +61,10 @@ export async function seedHistoricalMissions() {
         vehicle_id: 2,
         driver_id: 2,
         origin_facility_id: 1,
-        destination_facility_id: 2, // RB-CENTRAL
-        scene_lat: 13.670500,
-        scene_lng: 99.825000,
-        scene_desc: 'ชนท้ายรถบรรทุก ถนนเพชรเกษม กม.82 ผู้บาดเจ็บสาหัส (Red Alert)',
+        destination_facility_id: 2, // RY-CENTRAL (รพ.ระยอง)
+        scene_lat: 12.910000,
+        scene_lng: 101.239000,
+        scene_desc: 'ชนท้ายรถบรรทุก ถนน ทล.3191 กม.15 ผู้บาดเจ็บสาหัส (Red Alert)',
         call_sub_hours: 32,
         t1_dispatch_min: 1.0,
         t2_turnout_min: 1.6,
@@ -82,9 +82,9 @@ export async function seedHistoricalMissions() {
         driver_id: 4,
         origin_facility_id: 1,
         destination_facility_id: 1,
-        scene_lat: 13.691200,
-        scene_lng: 99.855400,
-        scene_desc: 'ผู้สูงอายุล้มหมดสติ บริเวณวงเวียนโพธาราม',
+        scene_lat: 12.978000,
+        scene_lng: 101.218000,
+        scene_desc: 'ผู้สูงอายุล้มหมดสติ บริเวณหน้าเทศบาลตำบลปลวกแดง',
         call_sub_hours: 24,
         t1_dispatch_min: 0.6,
         t2_turnout_min: 1.2,
@@ -102,9 +102,9 @@ export async function seedHistoricalMissions() {
         driver_id: 1,
         origin_facility_id: 1,
         destination_facility_id: 1,
-        scene_lat: 13.712400,
-        scene_lng: 99.845100, // Spot 1 recurring hotspot!
-        scene_desc: 'จยย. เฉี่ยวชนคนเดินเท้า หน้าตลาดบ้านเลือก',
+        scene_lat: 12.964000,
+        scene_lng: 101.152000, // Spot 1 recurring hotspot!
+        scene_desc: 'จยย. เฉี่ยวชนคนเดินเท้า หน้าตลาดสะพานสี่',
         call_sub_hours: 18,
         t1_dispatch_min: 1.1,
         t2_turnout_min: 1.7,
@@ -120,8 +120,8 @@ export async function seedHistoricalMissions() {
         status: 'COMPLETED',
         vehicle_id: 2,
         driver_id: 2,
-        origin_facility_id: 1, // PDH
-        destination_facility_id: 2, // RB-CENTRAL
+        origin_facility_id: 1, // PDH Pluak Daeng
+        destination_facility_id: 2, // BHP (รพ.กรุงเทพปลวกแดง)
         scene_lat: null,
         scene_lng: null,
         scene_desc: null,
@@ -130,9 +130,9 @@ export async function seedHistoricalMissions() {
         t2_turnout_min: 5.0, // Refer has longer prep
         t3_response_min: 0,
         t4_onscene_min: 0,
-        t5_transport_min: 28.0,
-        t6_handover_min: 14.0,
-        t7_return_min: 26.0
+        t5_transport_min: 15.0,
+        t6_handover_min: 10.0,
+        t7_return_min: 15.0
       },
       {
         mission_no: 'REF-2026-HIST-002',
@@ -140,8 +140,8 @@ export async function seedHistoricalMissions() {
         status: 'COMPLETED',
         vehicle_id: 1,
         driver_id: 1,
-        origin_facility_id: 1, // PDH
-        destination_facility_id: 3, // BAN-PONG
+        origin_facility_id: 1, // PDH Pluak Daeng
+        destination_facility_id: 3, // RY-CENTRAL (รพ.ระยอง)
         scene_lat: null,
         scene_lng: null,
         scene_desc: null,
@@ -150,9 +150,9 @@ export async function seedHistoricalMissions() {
         t2_turnout_min: 4.5,
         t3_response_min: 0,
         t4_onscene_min: 0,
-        t5_transport_min: 22.0,
+        t5_transport_min: 28.0,
         t6_handover_min: 12.0,
-        t7_return_min: 20.0
+        t7_return_min: 25.0
       },
       {
         mission_no: 'REF-2026-HIST-003',
@@ -160,8 +160,8 @@ export async function seedHistoricalMissions() {
         status: 'COMPLETED',
         vehicle_id: 4,
         driver_id: 4,
-        origin_facility_id: 1, // PDH
-        destination_facility_id: 2, // RB-CENTRAL
+        origin_facility_id: 1, // PDH Pluak Daeng
+        destination_facility_id: 2, // BHP (รพ.กรุงเทพปลวกแดง)
         scene_lat: null,
         scene_lng: null,
         scene_desc: null,
@@ -170,9 +170,9 @@ export async function seedHistoricalMissions() {
         t2_turnout_min: 3.5,
         t3_response_min: 0,
         t4_onscene_min: 0,
-        t5_transport_min: 27.0,
-        t6_handover_min: 15.0,
-        t7_return_min: 25.0
+        t5_transport_min: 16.0,
+        t6_handover_min: 12.0,
+        t7_return_min: 15.0
       }
     ];
 
@@ -227,8 +227,8 @@ export async function seedHistoricalMissions() {
         for (let i = 0; i < points; i++) {
           const ptTime = new Date(departedAt.getTime() + i * 4 * 60 * 1000);
           const speed = (i === 4 && m.mission_type === 'EMERGENCY') ? 94.5 : (i === 5 && m.mission_type === 'EMERGENCY') ? 96.0 : 65.0;
-          const lat = (m.scene_lat ? m.scene_lat : 13.60) + (i * 0.01);
-          const lng = (m.scene_lng ? m.scene_lng : 99.83) + (i * 0.005);
+          const lat = (m.scene_lat ? m.scene_lat : 12.9756) + (i * 0.005);
+          const lng = (m.scene_lng ? m.scene_lng : 101.2155) + (i * 0.003);
 
           await conn.query(`
             INSERT INTO gps_tracks (mission_id, vehicle_id, latitude, longitude, speed, heading, accuracy, gps_quality, sync_status, recorded_at)

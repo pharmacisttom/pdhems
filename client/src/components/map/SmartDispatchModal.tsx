@@ -30,13 +30,13 @@ interface SmartDispatchModalProps {
 export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
   isOpen,
   onClose,
-  defaultLat = 13.6938,
-  defaultLng = 99.8519,
+  defaultLat = 12.9756,
+  defaultLng = 101.2155,
   onDispatched,
 }) => {
   const [sceneLat, setSceneLat] = useState<number>(defaultLat);
   const [sceneLng, setSceneLng] = useState<number>(defaultLng);
-  const [sceneDesc, setSceneDesc] = useState<string>('อุบัติเหตุฉุกเฉิน หน้าตลาดโพธาราม');
+  const [sceneDesc, setSceneDesc] = useState<string>('อุบัติเหตุฉุกเฉิน หน้าตลาดปลวกแดง');
   const [urgency, setUrgency] = useState<string>('CRITICAL');
 
   const [candidates, setCandidates] = useState<CandidateAmbulance[]>([]);
@@ -112,39 +112,39 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative text-slate-100 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ems-canvas/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-ems-surface border border-ems-border rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative text-ems-ink max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-100 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          className="absolute top-4 right-4 text-ems-muted hover:text-ems-ink p-2 rounded-lg hover:bg-ems-inset transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-3 mb-5">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-600 flex items-center justify-center shadow-lg shadow-rose-600/30">
-            <Zap className="w-5 h-5 text-white" />
+            <Zap className="w-5 h-5 text-ems-ink" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">Smart Dispatch — ค้นหาและสั่งการรถพยาบาลที่เหมาะสมที่สุด</h3>
-            <p className="text-xs text-slate-400">
+            <h3 className="text-lg font-bold text-ems-ink">Smart Dispatch — ค้นหาและสั่งการรถพยาบาลที่เหมาะสมที่สุด</h3>
+            <p className="text-xs text-ems-muted">
               วิเคราะห์ตามระยะทางถนนจริง (Road Factor 1.35x) ความสดใหม่ของ GPS และความพร้อมของรถ
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {/* Scene Input Form */}
-        <div className="space-y-3 bg-slate-950/50 p-4 rounded-xl border border-slate-800 mb-5">
+        <div className="space-y-3 bg-ems-canvas/50 p-4 rounded-xl border border-ems-border mb-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+              <label className="block text-[11px] font-semibold text-ems-muted mb-1">
                 พิกัดละติจูดจุดเกิดเหตุ (Latitude)
               </label>
               <input
@@ -152,11 +152,11 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
                 step="0.0001"
                 value={sceneLat}
                 onChange={(e) => setSceneLat(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full bg-ems-inset border border-ems-border rounded-lg px-2.5 py-1.5 text-xs text-ems-ink focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+              <label className="block text-[11px] font-semibold text-ems-muted mb-1">
                 พิกัดลองจิจูดจุดเกิดเหตุ (Longitude)
               </label>
               <input
@@ -164,13 +164,13 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
                 step="0.0001"
                 value={sceneLng}
                 onChange={(e) => setSceneLng(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-full bg-ems-inset border border-ems-border rounded-lg px-2.5 py-1.5 text-xs text-ems-ink focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+            <label className="block text-[11px] font-semibold text-ems-muted mb-1">
               รายละเอียดเหตุฉุกเฉิน (Scene Description)
             </label>
             <input
@@ -178,13 +178,13 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
               value={sceneDesc}
               onChange={(e) => setSceneDesc(e.target.value)}
               placeholder="ระบุจุดสังเกต อาการผู้บาดเจ็บ หรือจำนวนผู้ป่วย"
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full bg-ems-inset border border-ems-border rounded-lg px-2.5 py-1.5 text-xs text-ems-ink focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <div className="flex justify-between items-center pt-1">
-            <span className="text-[10px] text-slate-400">
-              * ตำแหน่งเริ่มต้นอ้างอิงพื้นที่ รพ.โพธาราม (13.6938, 99.8519)
+            <span className="text-[10px] text-ems-muted">
+              * ตำแหน่งเริ่มต้นอ้างอิงพื้นที่ รพ.ปลวกแดง (12.9756, 101.2155)
             </span>
             <button
               type="button"
@@ -202,10 +202,10 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
         {hasSearched && (
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-200">
+              <span className="font-bold text-ems-ink">
                 ผลการจัดอันดับรถพยาบาล (เรียงตามคะแนนความเหมาะสม):
               </span>
-              <span className="text-[10px] text-slate-400">
+              <span className="text-[10px] text-ems-muted">
                 พบรถทั้งหมด {candidates.length} คัน
               </span>
             </div>
@@ -218,29 +218,29 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
                     idx === 0 && c.is_eligible
                       ? 'bg-emerald-500/10 border-emerald-500/40 shadow-lg shadow-emerald-500/5'
                       : c.is_eligible
-                      ? 'bg-slate-800/40 border-slate-700/60'
-                      : 'bg-slate-900/60 border-slate-800 opacity-60'
+                      ? 'bg-ems-inset/40 border-ems-border/60'
+                      : 'bg-ems-surface/60 border-ems-border opacity-60'
                   }`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-bold text-sm text-white">
+                        <span className="font-bold text-sm text-ems-ink">
                           {c.vehicle_code}
                         </span>
-                        <span className="text-xs text-slate-400 font-mono">
+                        <span className="text-xs text-ems-muted font-mono">
                           ({c.registration_no})
                         </span>
                         {idx === 0 && c.is_eligible && (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-700 border border-emerald-500/40">
                             ★ รถที่แนะนำสูงสุด (Top Match)
                           </span>
                         )}
                         <span
                           className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                             c.current_status === 'AVAILABLE'
-                              ? 'bg-emerald-500/20 text-emerald-400'
-                              : 'bg-amber-500/20 text-amber-400'
+                              ? 'bg-emerald-500/20 text-emerald-700'
+                              : 'bg-amber-500/20 text-amber-700'
                           }`}
                         >
                           {c.current_status}
@@ -248,25 +248,25 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
                       </div>
 
                       {/* Distance & Time Breakdown */}
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300 mt-1">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ems-muted mt-1">
                         <span className="flex items-center gap-1">
-                          <Compass className="w-3.5 h-3.5 text-sky-400" />
-                          ระยะทางถนนจริง: <strong className="text-white">{c.estimated_road_distance_km} กม.</strong>
-                          <span className="text-[10px] text-slate-400">(ทางตรง {c.straight_line_distance_km} กม.)</span>
+                          <Compass className="w-3.5 h-3.5 text-sky-700" />
+                          ระยะทางถนนจริง: <strong className="text-ems-ink">{c.estimated_road_distance_km} กม.</strong>
+                          <span className="text-[10px] text-ems-muted">(ทางตรง {c.straight_line_distance_km} กม.)</span>
                         </span>
 
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-amber-400" />
-                          เวลาเดินทางโดยประมาณ: <strong className="text-amber-300">~{c.estimated_travel_minutes} นาที</strong>
+                          <Clock className="w-3.5 h-3.5 text-amber-700" />
+                          เวลาเดินทางโดยประมาณ: <strong className="text-amber-700">~{c.estimated_travel_minutes} นาที</strong>
                         </span>
 
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-ems-muted">
                           GPS: {c.gps_freshness} ({c.seconds_since_last_gps}s ago)
                         </span>
                       </div>
 
                       {!c.is_eligible && (
-                        <p className="text-[11px] text-rose-400 mt-1.5">
+                        <p className="text-[11px] text-rose-700 mt-1.5">
                           ⚠️ {c.reason}
                         </p>
                       )}
@@ -275,13 +275,13 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
                     {/* Dispatch Action */}
                     <div className="flex items-center gap-2">
                       <div className="text-right mr-2">
-                        <span className="text-[10px] text-slate-400 block">Suitability</span>
+                        <span className="text-[10px] text-ems-muted block">Suitability</span>
                         <span
                           className={`font-black text-sm ${
                             c.suitability_score >= 80
-                              ? 'text-emerald-400'
+                              ? 'text-emerald-700'
                               : c.suitability_score >= 50
-                              ? 'text-amber-400'
+                              ? 'text-amber-700'
                               : 'text-slate-500'
                           }`}
                         >
@@ -307,7 +307,7 @@ export const SmartDispatchModal: React.FC<SmartDispatchModalProps> = ({
             </div>
 
             {/* Disclaimer per Section 21 */}
-            <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-400">
+            <div className="p-3 bg-ems-canvas/60 rounded-xl border border-ems-border text-[11px] text-ems-muted">
               ℹ️ <strong>ข้อกำหนดความปลอดภัย EMS (Section 21):</strong> ผลลัพธ์นี้เป็นเพียงข้อเสนอแนะในการจัดสรรทรัพยากร (Candidate Recommendation) ผู้สั่งการ (Dispatcher) เป็นผู้มีอำนาจตัดสินใจสั่งการขั้นสุดท้ายเสมอ
             </div>
           </div>

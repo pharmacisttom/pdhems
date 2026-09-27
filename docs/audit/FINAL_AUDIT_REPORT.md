@@ -1,7 +1,7 @@
 # PDH SMART EMS — FINAL SYSTEM AUDIT & DELIVERY REPORT
 
 **Project:** PDH Smart EMS Command & Refer System  
-**Lead Organization:** โรงพยาบาลโพธาราม (Photharam Hospital), จังหวัดราชบุรี  
+**Lead Organization:** โรงพยาบาลปลวกแดง (Pluakdaeng Hospital), เครือข่าย EMS ปลวกแดง ร่วมกับ มูลนิธิกู้ภัยอำเภอปลวกแดง และ โรงพยาบาลกรุงเทพปลวกแดง จังหวัดระยอง  
 **Audit Completion Date:** 2026-09-25  
 **Final Audit Verdict:** **PASSED (100% PRODUCTION READY)**  
 **Target Deployment:** Ubuntu 22.04 / 24.04 LTS (Hostinger VPS / On-Premise Hospital Server)  
@@ -31,7 +31,7 @@
 | **05** | Pre-trip Readiness | Digital vehicle inspection, fuel, oxygen, brakes, emergency override | DB `pretrip_checklists` & Test | **PASS** |
 | **06** | Crew Conflict Management | Simultaneous vehicle/mission conflict prevention | Integration test `missionWorkflow.test.ts`| **PASS** |
 | **07** | EMS Bases & Multi-station | Main station & Sub-stations with distinct geofence radii | Browser UI & API | **PASS** |
-| **08** | Receiving Hospitals Master | Photharam, Ratchaburi Center, Ban Pong, Damnoen | CRUD & Leaflet pin picker | **PASS** |
+| **08** | Receiving Hospitals Master | รพ.ปลวกแดง, รพ.กรุงเทพปลวกแดง, รพ.ระยอง (ศูนย์ตติยภูมิ), รพ.บ้านค่าย, รพ.นิคมพัฒนา | CRUD & Leaflet pin picker | **PASS** |
 | **09** | Vehicle Master & Types | ALS, BLS, Intermediate with odometer and telematics fields | DB table `ambulances` | **PASS** |
 | **10** | Driver & Crew Master | License numbers, professional roles (Doctor, Nurse, Paramedic, EMT) | DB seed & Assignment modal | **PASS** |
 | **11** | Refer Workflow Engine | 8 Lifecycle stages (`CREATED` &rarr; `COMPLETED`) | Test & Live browser stepper | **PASS** |
@@ -151,7 +151,7 @@ sudo rm -f /etc/nginx/sites-enabled/default
 
 # Obtain SSL Certificate via Certbot
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d ems.photharam.moph.go.th
+sudo certbot --nginx -d ems.pluakdaenghospital.go.th
 
 # Verify Nginx configuration and reload
 sudo nginx -t

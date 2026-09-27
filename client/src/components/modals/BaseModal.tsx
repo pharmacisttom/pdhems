@@ -20,8 +20,8 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   if (!isOpen) return null;
 
   const [name, setName] = useState(base?.name || '');
-  const [latitude, setLatitude] = useState(base?.latitude || 13.693822);
-  const [longitude, setLongitude] = useState(base?.longitude || 99.851921);
+  const [latitude, setLatitude] = useState(base?.latitude || 12.975600);
+  const [longitude, setLongitude] = useState(base?.longitude || 101.215500);
   const [geofenceRadius, setGeofenceRadius] = useState(base?.geofence_radius || 150);
   const [showPicker, setShowPicker] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -53,16 +53,16 @@ export const BaseModal: React.FC<BaseModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden my-8">
-        <div className="p-4 bg-slate-800/90 border-b border-slate-700 flex items-center justify-between">
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-ems-canvas/80 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-ems-surface border border-ems-border rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden my-8">
+        <div className="p-4 bg-ems-inset/90 border-b border-ems-border flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-teal-400" />
-            <h3 className="font-bold text-slate-100 text-base">
+            <MapPin className="w-5 h-5 text-teal-700" />
+            <h3 className="font-bold text-ems-ink text-base">
               {base?.id ? 'แก้ไขฐานกู้ชีพ EMS Base' : 'เพิ่มฐานกู้ชีพ EMS Base ใหม่'}
             </h3>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white p-1">
+          <button onClick={onClose} className="text-ems-muted hover:text-ems-ink p-1">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -86,21 +86,21 @@ export const BaseModal: React.FC<BaseModalProps> = ({
         ) : (
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-ems-muted mb-1">
                 ชื่อฐานกู้ชีพ / จุดจอดรถ EMS *
               </label>
               <input
                 type="text"
                 required
-                placeholder="เช่น ศูนย์กู้ชีพและส่งต่อ รพ.โพธาราม (Main Station)"
+                placeholder="เช่น ศูนย์สั่งการกู้ชีพ รพ.ปลวกแดง หรือ มูลนิธิกู้ภัยอำเภอปลวกแดง"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-teal-500"
+                className="w-full px-3 py-2 bg-ems-inset border border-ems-border rounded-lg text-sm text-ems-ink focus:ring-2 focus:ring-teal-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-ems-muted mb-1">
                 รัศมี Geofence ตรวจจับการเข้า-ออกฐาน (เมตร)
               </label>
               <input
@@ -109,17 +109,17 @@ export const BaseModal: React.FC<BaseModalProps> = ({
                 max="1000"
                 value={geofenceRadius}
                 onChange={(e) => setGeofenceRadius(parseInt(e.target.value, 10) || 150)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-teal-500"
+                className="w-full px-3 py-2 bg-ems-inset border border-ems-border rounded-lg text-sm text-ems-ink focus:ring-2 focus:ring-teal-500"
               />
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-ems-muted mt-1">
                 เมื่อรถพยาบาลเคลื่อนเข้าหรือออกจากรัศมีนี้ ระบบจะตรวจจับ Geofence Enter/Exit อัตโนมัติ
               </p>
             </div>
 
-            <div className="p-4 bg-slate-800/60 border border-slate-700/80 rounded-xl space-y-3">
+            <div className="p-4 bg-ems-inset/60 border border-ems-border/80 rounded-xl space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-teal-400" /> พิกัดที่ตั้งฐาน (GPS Coordinates)
+                <span className="text-xs font-bold text-ems-muted flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-teal-700" /> พิกัดที่ตั้งฐาน (GPS Coordinates)
                 </span>
                 <button
                   type="button"
@@ -132,22 +132,22 @@ export const BaseModal: React.FC<BaseModalProps> = ({
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-                <div className="bg-slate-900 p-2 rounded border border-slate-700">
-                  <span className="text-slate-400 text-[10px] block font-sans">Latitude</span>
-                  <span className="text-slate-200">{latitude.toFixed(6)}</span>
+                <div className="bg-ems-surface p-2 rounded border border-ems-border">
+                  <span className="text-ems-muted text-[10px] block font-sans">Latitude</span>
+                  <span className="text-ems-ink">{latitude.toFixed(6)}</span>
                 </div>
-                <div className="bg-slate-900 p-2 rounded border border-slate-700">
-                  <span className="text-slate-400 text-[10px] block font-sans">Longitude</span>
-                  <span className="text-slate-200">{longitude.toFixed(6)}</span>
+                <div className="bg-ems-surface p-2 rounded border border-ems-border">
+                  <span className="text-ems-muted text-[10px] block font-sans">Longitude</span>
+                  <span className="text-ems-ink">{longitude.toFixed(6)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-ems-border">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-ems-inset hover:bg-slate-200 text-ems-muted rounded-lg text-sm font-medium transition-colors"
               >
                 ยกเลิก
               </button>

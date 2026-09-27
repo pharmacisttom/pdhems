@@ -27,8 +27,8 @@ export class OpenStreetMapClientProvider implements IClientMapProvider {
   }
 
   getDefaultCenter(): [number, number] {
-    // Photharam Hospital (PDH) Ratchaburi
-    return [13.693822, 99.851921];
+    // Pluakdaeng Hospital (PDH) Rayong
+    return [12.9756, 101.2155];
   }
 
   getDefaultZoom(): number {
@@ -50,7 +50,7 @@ export class MapboxSatelliteClientProvider implements IClientMapProvider {
   }
 
   getDefaultCenter(): [number, number] {
-    return [13.693822, 99.851921];
+    return [12.9756, 101.2155];
   }
 
   getDefaultZoom(): number {

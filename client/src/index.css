@@ -1,61 +1,90 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: 'Plus Jakarta Sans', 'Sarabun', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  color-scheme: dark;
+  font-family: 'Sarabun', 'Plus Jakarta Sans', system-ui, sans-serif;
+  color-scheme: light;
+  color: #16324f;
+  background: #f0f5fa;
+  --ems-blue: #0369a1;
+  --ems-ink: #16324f;
+  --ems-muted: #52677e;
+  --ems-border: #dbe5ef;
 }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button { touch-action: manipulation; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+:focus-visible { outline: 3px solid #38bdf8; outline-offset: 3px; }
+::selection { background: #bae6fd; color: #0c4a6e; }
+* { scrollbar-width: thin; scrollbar-color: #bdcddd transparent; }
+.ems-account-bar { min-height: 44px; padding: 4px 28px; background: #f7fafc; border-bottom: 1px solid var(--ems-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; position: relative; z-index: 1200; font-size: 12px; }
+.ems-account-context { display: flex; align-items: center; gap: 7px; color: var(--ems-muted); }
+.ems-account-trigger, .ems-logout-button { display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 6px 10px; border-radius: 8px; }
+.ems-account-trigger { color: var(--ems-ink); font-weight: 600; }
+.ems-account-trigger:hover { background: #eaf1f8; }
+.ems-logout-button { color: #52677e; border-left: 1px solid var(--ems-border); border-radius: 0; }
+.ems-logout-button:hover { color: #be123c; }
+.ems-account-panel { position: absolute; top: calc(100% + 8px); right: 24px; width: min(370px, calc(100vw - 24px)); max-height: calc(100dvh - 72px); overflow-y: auto; padding: 22px; background: white; border: 1px solid var(--ems-border); border-radius: 18px; box-shadow: 0 16px 60px #16324f26; }
+.ems-header { background: #fff; border-bottom: 1px solid var(--ems-border); }
+.ems-brand-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 18px 28px; }
+.ems-brand-mark { width: 48px; height: 48px; display: grid; place-items: center; flex-shrink: 0; border-radius: 15px; background: linear-gradient(145deg,#0284c7,#0e7490); color: white; box-shadow: 0 5px 12px #0284c729; }
+.ems-eyebrow { font-size: 9px; letter-spacing: .16em; font-weight: 700; color: #59788e; }
+.ems-service-label { display: flex; align-items: center; gap: 8px; padding: 9px 13px; border-radius: 9px; background: #eff8fc; color: #0369a1; font-size: 12px; font-weight: 600; }
+.ems-desktop-nav { display: flex; gap: 7px; padding: 0 28px 12px; overflow-x: auto; }
+.ems-nav-item { display: flex; align-items: center; justify-content: center; gap: 9px; padding: 11px 17px; white-space: nowrap; border-radius: 10px; color: #52677e; font-size: 13px; font-weight: 600; transition: background .15s, color .15s; }
+.ems-nav-item:hover { background: #f0f7fb; color: #0369a1; }
+.ems-nav-item.is-active { background: #0369a1; color: #fff; box-shadow: 0 4px 9px #0369a125; }
+.ems-count { border-radius: 6px; min-width: 20px; padding: 1px 6px; background: #fff; color: #be123c; font-size: 11px; }
+.ems-mobile-nav { display: none; }
+.ems-command-workspace { height: calc(100dvh - 191px); min-height: 570px; }
+.ems-emergency-banner { background: #fff1f2; border-bottom: 1px solid #fecdd3; border-left: 4px solid #e11d48; }
+.ems-field { display: block; font-size: 13px; font-weight: 600; color: #334e68; margin-bottom: 18px; }
+.ems-field input { display: block; width: 100%; min-height: 46px; margin-top: 8px; padding: 11px 14px; background: #f8fafc; border: 1px solid #cbdbe8; border-radius: 10px; font-size: 14px; color: var(--ems-ink); transition: border .15s, box-shadow .15s; }
+.ems-field input:focus { outline: none; border-color: #0284c7; box-shadow: 0 0 0 3px #e0f2fe; background: white; }
+.ems-field input::placeholder { color: #71869a; font-weight: 400; }
+.ems-primary-button { display: inline-flex; align-items: center; gap: 9px; min-height: 46px; padding: 11px 20px; border-radius: 10px; background: #0369a1; color: #fff; font-weight: 600; font-size: 14px; box-shadow: 0 5px 12px #0369a121; }
+.ems-primary-button:hover { background: #075985; }
+.ems-login { min-height: 100dvh; display: grid; grid-template-columns: 1fr 1fr; background: white; }
+.ems-login-story { display: flex; flex-direction: column; padding: clamp(28px,5vw,76px); color: #fff; background: radial-gradient(ellipse at 90% 90%,#0e938d90,transparent 65%),linear-gradient(135deg,#075985,#0369a1); position: relative; overflow: hidden; }
+.ems-login-story::after { content:''; position:absolute; width:500px; height:500px; border:1px solid #ffffff18; border-radius:50%; right:-290px; bottom:-170px; box-shadow:0 0 0 80px #ffffff07,0 0 0 160px #ffffff05; pointer-events:none; }
+.ems-login-story h1 { font-size: clamp(30px,3.5vw,52px); font-weight: 700; line-height: 1.45; letter-spacing: -.03em; margin: 24px 0; }
+.ems-login-story p { line-height: 1.8; }
+.ems-login-tag { font-size: 10px; letter-spacing: .13em; padding: 8px 12px; background: #ffffff15; border:1px solid #ffffff40; border-radius: 7px; }
+.ems-pulse-line { color: #67e8f9; margin-top: 35px; opacity: .65; }
+.ems-login-form-wrap { display:flex; flex-direction:column; justify-content:center; align-items:center; padding:40px 28px; background:linear-gradient(135deg,#fff,#f5f9fc); }
+.ems-login-form { width:100%; max-width:380px; }
+.ems-login-icon { width:56px; height:56px; border-radius:16px; background:#e0f2fe; color:#0369a1; display:grid; place-items:center; }
 
-/* Custom Leaflet Map styling */
-.leaflet-container {
-  width: 100%;
-  height: 100%;
-  background-color: #0b1120 !important;
-  font-family: inherit !important;
+/* Light map surfaces; night map remains an explicit optional layer. */
+.leaflet-container { width:100%; height:100%; background-color:#eaf1f6 !important; font-family:inherit !important; }
+.dark-tiles .leaflet-tile { filter:brightness(.65) invert(1) contrast(3.2) hue-rotate(200deg) saturate(.35) brightness(.75); }
+.leaflet-popup-content-wrapper { background:#fff !important; color:#16324f !important; border-radius:14px !important; box-shadow:0 8px 30px #16324f26 !important; border:1px solid #dbe5ef !important; padding:0 !important; }
+.leaflet-popup-content { margin:0 !important; line-height:1.5 !important; }
+.leaflet-popup-tip { background:#fff !important; }
+.leaflet-bar { border:1px solid #dbe5ef !important; border-radius:10px !important; overflow:hidden; box-shadow:0 3px 12px #16324f1a !important; }
+.leaflet-bar a { color:#16324f !important; }
+.swal2-popup { font-family:inherit !important; border-radius:18px !important; }
+@keyframes pulse-ring { 0%,100% { transform:scale(.9); opacity:.9; } 50% { transform:scale(1.3); opacity:.3; } }
+.pulse-ring { animation:pulse-ring 2s cubic-bezier(.4,0,.6,1) infinite; }
+@media (max-width:767px) {
+  .ems-account-bar { padding:4px 10px; justify-content:flex-end; }
+  .ems-account-context { display:none; }
+  .ems-account-panel { right:12px; }
+  .ems-brand-row { padding:14px 16px; }
+  .ems-brand-mark { width:43px; height:43px; border-radius:13px; }
+  .ems-desktop-nav { display:none; }
+  .ems-mobile-nav { position:fixed; bottom:0; left:0; right:0; z-index:1100; display:flex; justify-content:center; background:#fffffff5; backdrop-filter:blur(12px); border-top:1px solid #dbe5ef; padding:6px 6px calc(6px + env(safe-area-inset-bottom)); box-shadow:0 -3px 20px #16324f0a; }
+  .ems-mobile-nav button { flex:1; max-width:100px; min-width:0; min-height:54px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#52677e; font-size:10px; border-radius:11px; }
+  .ems-mobile-nav button.is-active { color:#0369a1; background:#eaf5fc; font-weight:700; }
+  .ems-mobile-count { position:absolute; top:-6px; right:-10px; font-size:9px; background:#e11d48; color:white; min-width:15px; padding:0 3px; border-radius:5px; }
+  .ems-command-workspace { height:auto; min-height:calc(100dvh - 200px); }
+  .ems-command-workspace > div:last-child { min-height:680px; }
+  .ems-login { grid-template-columns:1fr; }
+  .ems-login-story { display:none; }
+  .ems-login-form-wrap { min-height:100dvh; padding:32px 24px; }
 }
-
-/* Dark mode tile filter for OpenStreetMap */
-.dark-tiles .leaflet-tile {
-  filter: brightness(0.65) invert(1) contrast(3.2) hue-rotate(200deg) saturate(0.35) brightness(0.75);
-}
-
-/* Clean popup styling */
-.leaflet-popup-content-wrapper {
-  background: #1e293b !important;
-  color: #f8fafc !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5) !important;
-  border: 1px solid #334155 !important;
-  padding: 0 !important;
-}
-
-.leaflet-popup-content {
-  margin: 0 !important;
-  line-height: 1.4 !important;
-}
-
-.leaflet-popup-tip {
-  background: #1e293b !important;
-  border: 1px solid #334155 !important;
-}
-
-/* Custom Marker CSS animations */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.3);
-    opacity: 0.3;
-  }
-  100% {
-    transform: scale(0.9);
-    opacity: 0.9;
-  }
-}
-
-.pulse-ring {
-  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 }

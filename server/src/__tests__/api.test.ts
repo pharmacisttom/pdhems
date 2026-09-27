@@ -45,8 +45,8 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
     const pdh = res.body.data.find((f: any) => f.facility_code === 'PDH');
     expect(pdh).toBeDefined();
     expect(typeof pdh.latitude).toBe('number');
-    expect(pdh.latitude).toBeCloseTo(13.693822, 4);
-    expect(pdh.longitude).toBeCloseTo(99.851921, 4);
+    expect(pdh.latitude).toBeCloseTo(12.975600, 4);
+    expect(pdh.longitude).toBeCloseTo(101.215500, 4);
   });
 
   it('GET /api/map/bases returns EMS bases with numerical coordinates', async () => {
@@ -113,8 +113,8 @@ describe('PDH Smart EMS API & Geospatial Intelligence Tests', () => {
       mission_id: null,
       points: [
         {
-          latitude: 13.694000,
-          longitude: 99.852000,
+          latitude: 12.975600,
+          longitude: 101.215500,
           speed: 15.0,
           heading: 90.0,
           accuracy: 5.0,

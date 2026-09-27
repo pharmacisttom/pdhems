@@ -41,12 +41,12 @@ export const BasesPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <MapPin className="w-6 h-6 text-teal-400" />
-            <h1 className="text-xl sm:text-2xl font-bold text-white">
+            <MapPin className="w-6 h-6 text-teal-700" />
+            <h1 className="text-xl sm:text-2xl font-bold text-ems-ink">
               ฐานจอดรถกู้ชีพ (EMS Bases Master)
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-ems-muted mt-1">
             จัดการฐานจอดรถพยาบาล รัศมีตรวจจับ Geofence การกลับถึงฐาน และการเตรียมพร้อมออกเหตุ
           </p>
         </div>
@@ -65,21 +65,21 @@ export const BasesPage: React.FC = () => {
 
       {/* Search Input */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3 top-2.5 h-4 w-4 text-ems-muted" />
         <input
           type="text"
           placeholder="ค้นหาชื่อฐานกู้ชีพ..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+          className="w-full pl-9 pr-4 py-2 bg-ems-surface border border-ems-border rounded-xl text-sm text-ems-ink placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
         />
       </div>
 
       {/* Bases Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-ems-surface border border-ems-border rounded-2xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-slate-800/80 text-xs uppercase font-semibold text-slate-400 border-b border-slate-700">
+          <table className="w-full text-left text-sm text-ems-muted">
+            <thead className="bg-ems-inset/80 text-xs uppercase font-semibold text-ems-muted border-b border-ems-border">
               <tr>
                 <th className="py-3 px-4">#</th>
                 <th className="py-3 px-4">ชื่อฐานกู้ชีพ / จุดจอดรถ</th>
@@ -89,22 +89,22 @@ export const BasesPage: React.FC = () => {
                 <th className="py-3 px-4 text-right">การจัดการ</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-ems-border">
               {filtered.map((base, idx) => (
-                <tr key={base.id} className="hover:bg-slate-800/50 transition-colors">
+                <tr key={base.id} className="hover:bg-ems-inset/50 transition-colors">
                   <td className="py-3.5 px-4 font-mono text-slate-500">{idx + 1}</td>
-                  <td className="py-3.5 px-4 font-semibold text-slate-100 flex items-center gap-2">
-                    <span className="text-teal-400">📍</span>
+                  <td className="py-3.5 px-4 font-semibold text-ems-ink flex items-center gap-2">
+                    <span className="text-teal-700">📍</span>
                     <span>{base.name}</span>
                   </td>
-                  <td className="py-3.5 px-4 font-mono text-xs text-slate-400">
+                  <td className="py-3.5 px-4 font-mono text-xs text-ems-muted">
                     {Number(base.latitude).toFixed(5)}, {Number(base.longitude).toFixed(5)}
                   </td>
-                  <td className="py-3.5 px-4 text-xs font-semibold text-teal-300">
+                  <td className="py-3.5 px-4 text-xs font-semibold text-teal-700">
                     {Number(base.geofence_radius) || 150} เมตร
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <span className="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-500/20 text-emerald-700 border border-emerald-500/30">
                       เปิดใช้งาน
                     </span>
                   </td>
@@ -114,7 +114,7 @@ export const BasesPage: React.FC = () => {
                         setSelectedBase(base);
                         setIsModalOpen(true);
                       }}
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700 text-xs font-medium inline-flex items-center gap-1 transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-ems-inset hover:bg-slate-200 text-teal-700 border border-ems-border text-xs font-medium inline-flex items-center gap-1 transition-colors"
                     >
                       <Edit2 className="w-3 h-3" />
                       <span>แก้ไข / ปักหมุด</span>

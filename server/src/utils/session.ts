@@ -28,8 +28,9 @@ export function authError(res: Response, status: number, code: string, message: 
 // AUTH-2 replaces this projection with database permissions.
 export function navigation(role: string): string[] {
   if (role === 'DRIVER') return ['driver'];
-  if (role === 'EMS_STAFF') return ['missions'];
+  if (role === 'EMS_STAFF') return ['missions', 'expenses'];
   if (role === 'VIEWER') return ['map'];
-  if (['SUPER_ADMIN', 'EMS_ADMIN'].includes(role)) return ['map','missions','driver','facilities','bases','reports'];
-  return ['map','missions','reports'];
+  if (['SUPER_ADMIN', 'EMS_ADMIN', 'EMS_COMMANDER'].includes(role))
+    return ['map', 'missions', 'driver', 'fleet', 'facilities', 'bases', 'reports', 'expenses', 'users'];
+  return ['map', 'missions', 'fleet', 'reports', 'expenses'];
 }

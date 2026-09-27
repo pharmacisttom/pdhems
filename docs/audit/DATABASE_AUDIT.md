@@ -50,7 +50,7 @@
 
 ### 3.1 Telemetry Data Volume Estimation
 - **Sampling Interval:** 1 GPS point every 5 seconds per moving ambulance.
-- **Average Mission Duration:** 90 minutes (1.5 hours) for Refer or Emergency trips in Ratchaburi province.
+- **Average Mission Duration:** 90 minutes (1.5 hours) for Refer or Emergency trips in Pluak Daeng and Rayong province.
 - **Points per Mission:** $\frac{90 \times 60}{5} = 1,080$ points.
 - **Row Size in `gps_tracks`:** ~120 bytes per row (including coordinates, speed, heading, accuracy, timestamps, and indexes).
 - **Data per Mission:** $1,080 \times 120 \text{ bytes} \approx 130 \text{ KB}$.

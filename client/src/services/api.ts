@@ -388,3 +388,232 @@ export async function fetchSpatialDensity(timeframe = 'all'): Promise<any> {
   }
 }
 
+// Fleet Management APIs
+export async function fetchFleetSummary(): Promise<any> {
+  try {
+    const res = await fetch(`${API_BASE}/fleet/summary`);
+    if (!res.ok) throw new Error('Failed to fetch fleet summary');
+    return await res.json();
+  } catch (err: any) {
+    return { success: false, summary: { vehicles: [], drivers: [], staff: [] } };
+  }
+}
+
+export async function createAmbulance(data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/ambulances`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function updateAmbulance(id: number, data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/ambulances/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function deleteAmbulance(id: number): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/ambulances/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeader(),
+  });
+  return await res.json();
+}
+
+export async function fetchDrivers(): Promise<any[]> {
+  try {
+    const res = await fetch(`${API_BASE}/fleet/drivers`);
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function createDriver(data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/drivers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function updateDriver(id: number, data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/drivers/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function deleteDriver(id: number): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/drivers/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeader(),
+  });
+  return await res.json();
+}
+
+export async function fetchStaff(): Promise<any[]> {
+  try {
+    const res = await fetch(`${API_BASE}/fleet/staff`);
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function createStaff(data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/staff`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function updateStaff(id: number, data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/staff/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function deleteStaff(id: number): Promise<any> {
+  const res = await fetch(`${API_BASE}/fleet/staff/${id}`, {
+    method: 'DELETE',
+    headers: getAuthHeader(),
+  });
+  return await res.json();
+}
+
+// ==================== User & Role Management APIs ====================
+export async function fetchUsers(): Promise<any[]> {
+  try {
+    const res = await fetch(`${API_BASE}/users`);
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchRoles(): Promise<any[]> {
+  try {
+    const res = await fetch(`${API_BASE}/users/roles`);
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function createUser(data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/users`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function updateUser(id: number, data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/users/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function resetUserPassword(id: number): Promise<any> {
+  const res = await fetch(`${API_BASE}/users/${id}/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return await res.json();
+}
+
+export async function toggleUserStatus(id: number): Promise<any> {
+  const res = await fetch(`${API_BASE}/users/${id}/toggle-status`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return await res.json();
+}
+
+export async function verifyFirstLogin(data: {
+  citizen_id: string;
+  phone: string;
+  currentPassword: string;
+  newPassword: string;
+}): Promise<any> {
+  const res = await fetch(`${API_BASE}/auth/verify-first-login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+// ==================== Expenses & Audit Logs APIs ====================
+export async function fetchExpenses(filters: any = {}): Promise<{ data: any[]; summary: any }> {
+  try {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${API_BASE}/expenses?${query}`);
+    const json = await res.json();
+    return { data: json.data || [], summary: json.summary || {} };
+  } catch {
+    return { data: [], summary: {} };
+  }
+}
+
+export async function createExpense(data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/expenses`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function updateExpense(id: number, data: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/expenses/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return await res.json();
+}
+
+export async function deleteExpense(id: number): Promise<any> {
+  const res = await fetch(`${API_BASE}/expenses/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return await res.json();
+}
+
+export async function fetchAuditLogs(filters: any = {}): Promise<any[]> {
+  try {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${API_BASE}/expenses/audit/logs?${query}`);
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+
+

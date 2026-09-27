@@ -323,7 +323,7 @@ export async function getTripSummary(req: Request, res: Response) {
         vehicleCode: m.vehicle_code || 'N/A',
         registrationNo: m.registration_no || 'N/A',
         driverName: m.driver_name || 'ไม่ได้ระบุ',
-        origin: m.origin_facility_name || 'ฐานกู้ชีพโพธาราม',
+        origin: m.origin_facility_name || 'ฐานกู้ชีพปลวกแดง',
         destination: m.destination_facility_name || (m.scene_description ? `ที่เกิดเหตุ: ${m.scene_description}` : 'N/A'),
         sceneDescription: m.scene_description,
         sceneLatitude: m.scene_latitude ? Number(m.scene_latitude) : null,

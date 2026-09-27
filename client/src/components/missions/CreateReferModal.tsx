@@ -54,11 +54,11 @@ export const CreateReferModal: React.FC<CreateReferModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-slate-100">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-ems-canvas/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-ems-surface border border-ems-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-ems-ink">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-100 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          className="absolute top-4 right-4 text-ems-muted hover:text-ems-ink p-2 rounded-lg hover:bg-ems-inset transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -68,13 +68,13 @@ export const CreateReferModal: React.FC<CreateReferModalProps> = ({
             <span className="text-xl">🚑</span>
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">สร้างภารกิจส่งต่อผู้ป่วย (Refer Mission)</h3>
-            <p className="text-xs text-slate-400">ระบบบริหารจัดการและติดตามรถส่งต่อ รพ.โพธาราม</p>
+            <h3 className="text-lg font-bold text-ems-ink">สร้างภารกิจส่งต่อผู้ป่วย (Refer Mission)</h3>
+            <p className="text-xs text-ems-muted">ระบบบริหารจัดการและติดตามรถส่งต่อ เครือข่าย รพ.ปลวกแดง · รพ.กรุงเทพปลวกแดง · มูลนิธิกู้ภัย</p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
+          <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -82,14 +82,14 @@ export const CreateReferModal: React.FC<CreateReferModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-sky-400" />
+            <label className="block text-xs font-semibold text-ems-muted mb-1.5 flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-sky-700" />
               โรงพยาบาลต้นทาง (Origin Facility)
             </label>
             <select
               value={originId}
               onChange={(e) => setOriginId(Number(e.target.value))}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full bg-ems-inset border border-ems-border rounded-xl px-3 py-2 text-sm text-ems-ink focus:outline-none focus:ring-2 focus:ring-sky-500"
             >
               {facilities.map((fac) => (
                 <option key={fac.id} value={fac.id}>
@@ -100,14 +100,14 @@ export const CreateReferModal: React.FC<CreateReferModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-emerald-400" />
+            <label className="block text-xs font-semibold text-ems-muted mb-1.5 flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-emerald-700" />
               โรงพยาบาลปลายทาง (Destination Facility)
             </label>
             <select
               value={destId}
               onChange={(e) => setDestId(Number(e.target.value))}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full bg-ems-inset border border-ems-border rounded-xl px-3 py-2 text-sm text-ems-ink focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               {facilities.map((fac) => (
                 <option key={fac.id} value={fac.id}>
@@ -118,7 +118,7 @@ export const CreateReferModal: React.FC<CreateReferModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+            <label className="block text-xs font-semibold text-ems-muted mb-1.5">
               บันทึกรายละเอียดภารกิจ / สาเหตุการส่งต่อ (Notes)
             </label>
             <textarea
@@ -126,7 +126,7 @@ export const CreateReferModal: React.FC<CreateReferModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="เช่น ผู้ป่วย STEMI ส่งต่อทำ PCI ด่วน หรือผู้ป่วย Trauma ส่งต่อ CT Scan"
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full bg-ems-inset border border-ems-border rounded-xl px-3 py-2 text-sm text-ems-ink placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
@@ -134,7 +134,7 @@ export const CreateReferModal: React.FC<CreateReferModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm font-medium text-ems-muted hover:text-ems-ink hover:bg-ems-inset rounded-xl transition-colors"
             >
               ยกเลิก
             </button>

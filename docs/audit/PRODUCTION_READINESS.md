@@ -77,16 +77,16 @@ module.exports = {
 ```nginx
 server {
     listen 80;
-    server_name ems.photharam.moph.go.th;
+    server_name ems.pluakdaenghospital.go.th;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name ems.photharam.moph.go.th;
+    server_name ems.pluakdaenghospital.go.th;
 
-    ssl_certificate /etc/letsencrypt/live/ems.photharam.moph.go.th/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/ems.photharam.moph.go.th/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/ems.pluakdaenghospital.go.th/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ems.pluakdaenghospital.go.th/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
 

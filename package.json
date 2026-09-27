@@ -15,7 +15,8 @@
     "build:client": "cd client && npm run build",
     "test": "npm run test:server && npm run test:client",
     "test:server": "cd server && npm test",
-    "test:client": "cd client && npm test"
+    "test:client": "cd client && npm test",
+    "db:reset": "cd server && npm run db:reset"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

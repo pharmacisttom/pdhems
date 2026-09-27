@@ -100,38 +100,38 @@ export const FacilityMarkerLayer: React.FC<FacilityMarkerLayerProps> = ({
               icon={createFacilityIcon(fac)}
             >
               <Popup minWidth={240}>
-                <div className="p-3 text-slate-100 space-y-2">
-                  <div className="flex items-center gap-2 border-b border-slate-700/80 pb-2">
+                <div className="p-3 text-ems-ink space-y-2">
+                  <div className="flex items-center gap-2 border-b border-ems-border/80 pb-2">
                     <span className="text-xl">🏥</span>
                     <div>
-                      <h4 className="font-bold text-sm text-white">{fac.name}</h4>
-                      <p className="text-[11px] text-slate-400">
-                        รหัส: <span className="font-semibold text-sky-400">{fac.facility_code}</span>
+                      <h4 className="font-bold text-sm text-ems-ink">{fac.name}</h4>
+                      <p className="text-[11px] text-ems-muted">
+                        รหัส: <span className="font-semibold text-sky-700">{fac.facility_code}</span>
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">ประเภท:</span>
-                      <span className="font-semibold text-slate-200">{styles.label}</span>
+                      <span className="text-ems-muted">ประเภท:</span>
+                      <span className="font-semibold text-ems-ink">{styles.label}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">รัศมี Geofence:</span>
-                      <span className="font-semibold text-slate-200">{radius} เมตร</span>
+                      <span className="text-ems-muted">รัศมี Geofence:</span>
+                      <span className="font-semibold text-ems-ink">{radius} เมตร</span>
                     </div>
                     {fac.phone_optional && (
                       <div className="flex justify-between items-center">
-                        <span className="text-slate-400">เบอร์โทรศัพท์:</span>
+                        <span className="text-ems-muted">เบอร์โทรศัพท์:</span>
                         <a
                           href={`tel:${fac.phone_optional}`}
-                          className="text-sky-400 font-semibold hover:underline"
+                          className="text-sky-700 font-semibold hover:underline"
                         >
                           {fac.phone_optional}
                         </a>
                       </div>
                     )}
-                    <div className="flex justify-between text-[11px] text-slate-400 pt-1">
+                    <div className="flex justify-between text-[11px] text-ems-muted pt-1">
                       <span>พิกัด GPS:</span>
                       <span className="font-mono">
                         {lat.toFixed(5)}, {lng.toFixed(5)}

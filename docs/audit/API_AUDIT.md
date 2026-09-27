@@ -2,7 +2,7 @@
 
 **Audit Date:** 2026-09-25  
 **System:** PDH Smart EMS Command & Refer System  
-**Base URL:** `http://localhost:5000/api` (Production: `https://ems.photharam.moph.go.th/api`)  
+**Base URL:** `http://localhost:5000/api` (Production: `https://ems.pluakdaenghospital.go.th/api`)  
 
 ---
 

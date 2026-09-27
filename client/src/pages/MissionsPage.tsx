@@ -185,43 +185,43 @@ export const MissionsPage: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'CREATED':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">รอจัดสรรทีม</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ems-inset text-ems-muted border border-ems-border">รอจัดสรรทีม</span>;
       case 'ASSIGNED':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-400 border border-sky-500/30">มอบหมายแล้ว (รอตรวจความพร้อม)</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-700 border border-sky-500/30">มอบหมายแล้ว (รอตรวจความพร้อม)</span>;
       case 'CREW_CONFIRMED':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">ทีมพร้อม (รอตรวจรถ)</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-700 border border-indigo-500/30">ทีมพร้อม (รอตรวจรถ)</span>;
       case 'READY':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">✓ รถและทีมพร้อมออกรถ</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-700 border border-emerald-500/30">✓ รถและทีมพร้อมออกรถ</span>;
       case 'EN_ROUTE':
       case 'DEPARTED':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse">🚑 กำลังเดินทาง (En Route)</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-700 border border-blue-500/30 animate-pulse">🚑 กำลังเดินทาง (En Route)</span>;
       case 'ARRIVED':
       case 'AT_DESTINATION':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-400 border border-purple-500/30">🏥 ถึง รพ.ปลายทาง</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-700 border border-purple-500/30">🏥 ถึง รพ.ปลายทาง</span>;
       case 'HANDOVER_COMPLETED':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-400 border border-teal-500/30">✓ ส่งมอบเรียบร้อย</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-700 border border-teal-500/30">✓ ส่งมอบเรียบร้อย</span>;
       case 'RETURNING':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/30">↩ กำลังเดินทางกลับฐาน</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-700 border border-amber-500/30">↩ กำลังเดินทางกลับฐาน</span>;
       case 'COMPLETED':
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-700 text-slate-300">✓ เสร็จสิ้นภารกิจ</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-200 text-ems-muted">✓ เสร็จสิ้นภารกิจ</span>;
       default:
-        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-800 text-slate-400">{status}</span>;
+        return <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-ems-inset text-ems-muted">{status}</span>;
     }
   };
 
   return (
-    <div className="flex-1 bg-slate-950 p-4 md:p-6 overflow-y-auto">
+    <div className="flex-1 bg-ems-canvas p-4 md:p-6 overflow-y-auto">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-ems-surface/60 p-4 rounded-2xl border border-ems-border">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xl">📋</span>
-              <h1 className="text-xl font-bold text-white tracking-tight">
+              <h1 className="text-xl font-bold text-ems-ink tracking-tight">
                 บริหารจัดการภารกิจส่งต่อและกู้ชีพ (EMS & Refer Missions)
               </h1>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-ems-muted mt-1">
               ขั้นตอน: มอบหมายทีม → ตรวจความพร้อมรถ → ยืนยันออกรถ → ติดตาม GPS → ส่งมอบปลายทาง → เดินทางกลับ
             </p>
           </div>
@@ -229,7 +229,7 @@ export const MissionsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={loadData}
-              className="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors"
+              className="p-2 text-ems-muted hover:text-ems-ink bg-ems-inset hover:bg-slate-200 rounded-xl transition-colors"
               title="รีเฟรชข้อมูล"
             >
               <RefreshCw className="w-4 h-4" />
@@ -265,7 +265,7 @@ export const MissionsPage: React.FC = () => {
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   statusFilter === tab.id
                     ? 'bg-sky-600 text-white shadow-sm'
-                    : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+                    : 'bg-ems-surface text-ems-muted hover:bg-ems-inset hover:text-ems-ink border border-ems-border'
                 }`}
               >
                 {tab.label}
@@ -281,16 +281,16 @@ export const MissionsPage: React.FC = () => {
               placeholder="ค้นหาเลขที่, รถ, พลขับ, รพ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full bg-ems-surface border border-ems-border rounded-xl pl-9 pr-3 py-2 text-xs text-ems-ink placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
         </div>
 
         {/* Missions List */}
         {loading ? (
-          <div className="py-16 text-center text-slate-400 text-sm">กำลังโหลดข้อมูลภารกิจ...</div>
+          <div className="py-16 text-center text-ems-muted text-sm">กำลังโหลดข้อมูลภารกิจ...</div>
         ) : filteredMissions.length === 0 ? (
-          <div className="py-16 text-center bg-slate-900/30 rounded-2xl border border-slate-800 text-slate-400 text-sm">
+          <div className="py-16 text-center bg-ems-surface/30 rounded-2xl border border-ems-border text-ems-muted text-sm">
             ไม่พบภารกิจที่ตรงกับเงื่อนไขการค้นหา
           </div>
         ) : (
@@ -324,26 +324,26 @@ export const MissionsPage: React.FC = () => {
               return (
                 <div
                   key={mission.id}
-                  className="bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-4 sm:p-5 transition-all shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="bg-ems-surface border border-ems-border hover:border-ems-border/80 rounded-2xl p-4 sm:p-5 transition-all shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
                   {/* Left Column: Mission Info & Route */}
                   <div className="space-y-3 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-base font-bold text-white tracking-wider">
+                      <span className="font-mono text-base font-bold text-ems-ink tracking-wider">
                         {mission.mission_no}
                       </span>
                       <span
                         className={`px-2 py-0.5 text-[10px] font-bold rounded ${
                           mission.mission_type === 'EMERGENCY'
-                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                            : 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                            ? 'bg-rose-500/20 text-rose-700 border border-rose-500/30'
+                            : 'bg-sky-500/20 text-sky-700 border border-sky-500/30'
                         }`}
                       >
                         {mission.mission_type}
                       </span>
                       {getStatusBadge(mission.status)}
                       {mission.is_emergency_override === 1 && (
-                        <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500/20 text-amber-400 border border-amber-500/40">
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500/20 text-amber-700 border border-amber-500/40">
                           ⚡ EMERGENCY OVERRIDE
                         </span>
                       )}
@@ -351,36 +351,36 @@ export const MissionsPage: React.FC = () => {
 
                     {/* Route Display */}
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-sky-400" />
-                        {mission.origin_facility_name || 'รพ.โพธาราม'}
+                      <span className="text-ems-muted flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-sky-700" />
+                        {mission.origin_facility_name || 'รพ.ปลวกแดง'}
                       </span>
                       <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
-                      <span className="text-emerald-400 font-medium flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-700 font-medium flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-emerald-700" />
                         {mission.destination_facility_name || 'ไม่ระบุปลายทาง'}
                       </span>
                     </div>
 
                     {/* Asset / Driver tags */}
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-ems-muted">
                       <span className="flex items-center gap-1.5">
                         <Truck className="w-3.5 h-3.5 text-slate-500" />
                         {mission.vehicle_code ? (
-                          <span className="text-slate-200 font-medium">
+                          <span className="text-ems-ink font-medium">
                             {mission.vehicle_code} ({mission.registration_no})
                           </span>
                         ) : (
-                          <span className="text-amber-400 italic">ยังไม่ระบุรถ</span>
+                          <span className="text-amber-700 italic">ยังไม่ระบุรถ</span>
                         )}
                       </span>
 
                       <span className="flex items-center gap-1.5">
                         <UserCheck className="w-3.5 h-3.5 text-slate-500" />
                         {mission.driver_name ? (
-                          <span className="text-slate-200 font-medium">{mission.driver_name}</span>
+                          <span className="text-ems-ink font-medium">{mission.driver_name}</span>
                         ) : (
-                          <span className="text-amber-400 italic">ยังไม่ระบุพลขับ</span>
+                          <span className="text-amber-700 italic">ยังไม่ระบุพลขับ</span>
                         )}
                       </span>
 
@@ -392,7 +392,7 @@ export const MissionsPage: React.FC = () => {
                   </div>
 
                   {/* Right Column: Dynamic Action Buttons per Workflow Stage */}
-                  <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-slate-800">
+                  <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-ems-border">
                     {/* Stage 1: Assign Vehicle & Crew */}
                     {mission.status === 'CREATED' && (
                       <button
@@ -411,8 +411,8 @@ export const MissionsPage: React.FC = () => {
                           onClick={() => setPretripTarget(mission)}
                           className={`px-3 py-2 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-colors ${
                             mission.pretrip_passed
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                              : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                              ? 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30'
+                              : 'bg-ems-inset text-ems-muted border-ems-border hover:bg-slate-200'
                           }`}
                         >
                           <ShieldCheck className="w-3.5 h-3.5" />
@@ -421,7 +421,7 @@ export const MissionsPage: React.FC = () => {
 
                         <button
                           onClick={() => handleConfirmReadiness(mission.id, 'CREW')}
-                          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition-colors"
+                          className="px-3 py-2 bg-ems-inset hover:bg-slate-200 text-ems-muted rounded-xl text-xs font-medium border border-ems-border flex items-center gap-1.5 transition-colors"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
                           <span>ยืนยันทีมพร้อม</span>
@@ -495,7 +495,7 @@ export const MissionsPage: React.FC = () => {
                     {/* View Details Button */}
                     <button
                       onClick={() => handleOpenDetail(mission.id)}
-                      className="p-2 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-800 rounded-xl transition-colors border border-slate-700/50"
+                      className="p-2 text-ems-muted hover:text-ems-ink bg-ems-inset/80 hover:bg-ems-inset rounded-xl transition-colors border border-ems-border/50"
                       title="ดูรายละเอียดภารกิจและประวัติ Log"
                     >
                       <Info className="w-4 h-4" />
@@ -511,32 +511,32 @@ export const MissionsPage: React.FC = () => {
 
       {/* Detail Drawer Modal */}
       {selectedDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-slate-900 border-l border-slate-800 w-full max-w-md h-full p-6 overflow-y-auto space-y-6 text-slate-100 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-ems-canvas/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-ems-surface border-l border-ems-border w-full max-w-md h-full p-6 overflow-y-auto space-y-6 text-ems-ink shadow-2xl relative">
             <button
               onClick={() => setSelectedDetail(null)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-100 p-2 rounded-lg hover:bg-slate-800 transition-colors"
+              className="absolute top-4 right-4 text-ems-muted hover:text-ems-ink p-2 rounded-lg hover:bg-ems-inset transition-colors"
             >
               ✕
             </button>
 
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-mono text-lg font-bold text-sky-400">
+                <span className="font-mono text-lg font-bold text-sky-700">
                   {selectedDetail.mission_no}
                 </span>
                 {getStatusBadge(selectedDetail.status)}
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-ems-muted">
                 ประเภท: {selectedDetail.mission_type} | สร้างเมื่อ{' '}
                 {new Date(selectedDetail.created_at).toLocaleString('th-TH')}
               </p>
             </div>
 
             {/* Crew Members */}
-            <div className="border border-slate-800 rounded-xl p-3.5 bg-slate-950/50 space-y-2">
-              <h4 className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-indigo-400" />
+            <div className="border border-ems-border rounded-xl p-3.5 bg-ems-canvas/50 space-y-2">
+              <h4 className="text-xs font-semibold text-ems-muted flex items-center gap-1.5">
+                <Users className="w-4 h-4 text-indigo-700" />
                 ทีมปฏิบัติการประจำรถ
               </h4>
               {!selectedDetail.crew || selectedDetail.crew.length === 0 ? (
@@ -545,11 +545,11 @@ export const MissionsPage: React.FC = () => {
                 <div className="space-y-1.5">
                   {selectedDetail.crew.map((c, i) => (
                     <div key={i} className="flex items-center justify-between text-xs">
-                      <span className="text-slate-200">
+                      <span className="text-ems-ink">
                         {c.display_name} ({c.profession || c.crew_role})
                       </span>
                       {c.is_team_leader && (
-                        <span className="px-1.5 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-300 rounded border border-amber-500/30">
+                        <span className="px-1.5 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-700 rounded border border-amber-500/30">
                           ★ หัวหน้าทีม
                         </span>
                       )}
@@ -560,30 +560,30 @@ export const MissionsPage: React.FC = () => {
             </div>
 
             {/* Pretrip Inspection Result */}
-            <div className="border border-slate-800 rounded-xl p-3.5 bg-slate-950/50 space-y-2">
-              <h4 className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <div className="border border-ems-border rounded-xl p-3.5 bg-ems-canvas/50 space-y-2">
+              <h4 className="text-xs font-semibold text-ems-muted flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-700" />
                 ผลการตรวจสภาพรถ (Pre-trip Inspection)
               </h4>
               {!selectedDetail.pretrip_checklist ? (
-                <p className="text-xs text-amber-400 italic">ยังไม่ได้ตรวจสภาพรถก่อนออก</p>
+                <p className="text-xs text-amber-700 italic">ยังไม่ได้ตรวจสภาพรถก่อนออก</p>
               ) : (
-                <div className="space-y-1 text-xs text-slate-300">
+                <div className="space-y-1 text-xs text-ems-muted">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">น้ำมันเชื้อเพลิง:</span>
-                    <span className="font-semibold text-slate-200">
+                    <span className="text-ems-muted">น้ำมันเชื้อเพลิง:</span>
+                    <span className="font-semibold text-ems-ink">
                       {selectedDetail.pretrip_checklist.fuel_level}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">ออกซิเจน:</span>
-                    <span className="font-semibold text-sky-400">
+                    <span className="text-ems-muted">ออกซิเจน:</span>
+                    <span className="font-semibold text-sky-700">
                       {selectedDetail.pretrip_checklist.oxygen_level_psi} PSI
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">ผลการประเมิน:</span>
-                    <span className="text-emerald-400 font-bold">✓ ผ่านเกณฑ์พร้อมออกรถ</span>
+                    <span className="text-ems-muted">ผลการประเมิน:</span>
+                    <span className="text-emerald-700 font-bold">✓ ผ่านเกณฑ์พร้อมออกรถ</span>
                   </div>
                 </div>
               )}
@@ -592,19 +592,19 @@ export const MissionsPage: React.FC = () => {
             {/* Handover Data */}
             {selectedDetail.handover_confirmed_by && (
               <div className="border border-purple-500/30 bg-purple-500/5 rounded-xl p-3.5 space-y-1.5 text-xs">
-                <h4 className="font-semibold text-purple-300 flex items-center gap-1.5">
+                <h4 className="font-semibold text-purple-700 flex items-center gap-1.5">
                   <UserCheck className="w-4 h-4" />
                   การส่งมอบตัวผู้ป่วยปลายทาง
                 </h4>
-                <p className="text-slate-300">
-                  <span className="text-slate-400">ผู้รับมอบ:</span>{' '}
-                  <span className="font-semibold text-white">{selectedDetail.handover_confirmed_by}</span>
+                <p className="text-ems-muted">
+                  <span className="text-ems-muted">ผู้รับมอบ:</span>{' '}
+                  <span className="font-semibold text-ems-ink">{selectedDetail.handover_confirmed_by}</span>
                 </p>
                 {selectedDetail.handover_notes && (
-                  <p className="text-slate-400 text-[11px]">หมายเหตุ: {selectedDetail.handover_notes}</p>
+                  <p className="text-ems-muted text-[11px]">หมายเหตุ: {selectedDetail.handover_notes}</p>
                 )}
                 {selectedDetail.handover_at && (
-                  <p className="text-purple-400 text-[10px]">
+                  <p className="text-purple-700 text-[10px]">
                     ยืนยันเมื่อ: {new Date(selectedDetail.handover_at).toLocaleString('th-TH')}
                   </p>
                 )}
@@ -612,17 +612,17 @@ export const MissionsPage: React.FC = () => {
             )}
 
             {/* Status Timeline Logs */}
-            <div className="border border-slate-800 rounded-xl p-3.5 bg-slate-950/50 space-y-3">
-              <h4 className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-sky-400" />
+            <div className="border border-ems-border rounded-xl p-3.5 bg-ems-canvas/50 space-y-3">
+              <h4 className="text-xs font-semibold text-ems-muted flex items-center gap-1.5">
+                <Clock className="w-4 h-4 text-sky-700" />
                 ประวัติไทม์ไลน์สถานะ (Audit Trail)
               </h4>
-              <div className="relative border-l border-slate-700/60 ml-2 space-y-3 pl-3 text-xs">
+              <div className="relative border-l border-ems-border/60 ml-2 space-y-3 pl-3 text-xs">
                 {selectedDetail.status_logs?.map((log) => (
                   <div key={log.id} className="relative">
                     <div className="absolute -left-[17px] top-1 w-2 h-2 rounded-full bg-sky-500 ring-4 ring-slate-900" />
-                    <div className="font-semibold text-slate-200">{log.status}</div>
-                    <div className="text-[11px] text-slate-400">{log.note}</div>
+                    <div className="font-semibold text-ems-ink">{log.status}</div>
+                    <div className="text-[11px] text-ems-muted">{log.note}</div>
                     <div className="text-[10px] text-slate-500">
                       {new Date(log.created_at).toLocaleTimeString('th-TH')}
                       {log.logged_by_name ? ` • โดย ${log.logged_by_name}` : ''}

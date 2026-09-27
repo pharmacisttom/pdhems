@@ -74,21 +74,21 @@ export const BaseMarkerLayer: React.FC<BaseMarkerLayerProps> = ({ bases, showGeo
 
             <Marker position={[lat, lng]} icon={createBaseIcon(base)}>
               <Popup minWidth={220}>
-                <div className="p-3 text-slate-100 space-y-2">
-                  <div className="flex items-center gap-2 border-b border-slate-700/80 pb-2">
+                <div className="p-3 text-ems-ink space-y-2">
+                  <div className="flex items-center gap-2 border-b border-ems-border/80 pb-2">
                     <span className="text-xl">📍</span>
                     <div>
-                      <h4 className="font-bold text-sm text-white">{base.name}</h4>
-                      <p className="text-[11px] text-teal-400">ฐานจอดรถกู้ชีพ EMS Base</p>
+                      <h4 className="font-bold text-sm text-ems-ink">{base.name}</h4>
+                      <p className="text-[11px] text-teal-700">ฐานจอดรถกู้ชีพ EMS Base</p>
                     </div>
                   </div>
 
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">รัศมี Geofence:</span>
-                      <span className="font-semibold text-slate-200">{radius} เมตร</span>
+                      <span className="text-ems-muted">รัศมี Geofence:</span>
+                      <span className="font-semibold text-ems-ink">{radius} เมตร</span>
                     </div>
-                    <div className="flex justify-between text-[11px] text-slate-400 pt-1">
+                    <div className="flex justify-between text-[11px] text-ems-muted pt-1">
                       <span>พิกัด GPS:</span>
                       <span className="font-mono">
                         {lat.toFixed(5)}, {lng.toFixed(5)}

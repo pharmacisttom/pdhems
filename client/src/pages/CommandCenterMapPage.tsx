@@ -31,6 +31,7 @@ import { TrackingHealthWidget } from '../components/map/TrackingHealthWidget';
 import { SmartDispatchModal } from '../components/map/SmartDispatchModal';
 import { TripPlaybackScrubber } from '../components/map/TripPlaybackScrubber';
 import { MobileVehicleBottomSheet } from '../components/map/MobileVehicleBottomSheet';
+import { LiveTelematicsSimulator } from '../components/map/LiveTelematicsSimulator';
 import { showInfo, showToast, showWarning } from '../services/alertService';
 import { GpsTrackPoint } from '../types/ems';
 import {
@@ -129,7 +130,7 @@ export const CommandCenterMapPage: React.FC = () => {
     geofences: true,
     activeEmergencyScenes: true,
     actualTracks: true,
-    trafficOrDark: true,
+    trafficOrDark: false,
   });
 
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleMarkerData | null>(null);
@@ -231,27 +232,48 @@ export const CommandCenterMapPage: React.FC = () => {
     await loadData();
   };
 
+  const handleLiveTelematicsUpdate = (
+    vehicleId: number,
+    coords: { latitude: number; longitude: number; speed: number; heading: number }
+  ) => {
+    setVehicles((prev) =>
+      prev.map((v) =>
+        v.id === vehicleId
+          ? {
+              ...v,
+              current_latitude: coords.latitude,
+              current_longitude: coords.longitude,
+              current_speed: coords.speed,
+              current_heading: coords.heading,
+              last_gps_at: new Date().toISOString(),
+              gps_quality: 'GOOD',
+            }
+          : v
+      )
+    );
+  };
+
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden bg-slate-950">
+    <div className="ems-command-workspace flex flex-col overflow-hidden bg-ems-canvas">
       {/* Active Emergency Banner (Section 33) */}
       {activeEmergencies.length > 0 && (
-        <div className="bg-rose-950/80 border-b border-rose-500/40 px-4 py-2 flex items-center justify-between text-xs text-rose-200">
+        <div className="ems-emergency-banner px-4 py-3 flex flex-wrap gap-2 items-center justify-between text-xs text-rose-700">
           <div className="flex items-center gap-2">
             <span className="flex h-2.5 w-2.5 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
             </span>
-            <span className="font-bold text-rose-100 flex items-center gap-1.5">
+            <span className="font-bold text-rose-800 flex items-center gap-1.5">
               🚨 ACTIVE EMERGENCY ({activeEmergencies.length} เหตุฉุกเฉินกำลังดำเนินการ)
             </span>
-            <span className="hidden md:inline text-rose-300">
+            <span className="hidden md:inline text-rose-700">
               — {activeEmergencies[0].mission_no}: {activeEmergencies[0].scene_description || 'ออกเหตุฉุกเฉิน'}
             </span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-[11px] text-rose-300">
-              รถ: <strong className="text-white">{activeEmergencies[0].vehicle_code || 'EMS'}</strong> | สถานะ:{' '}
-              <strong className="text-white">{activeEmergencies[0].status}</strong>
+            <span className="text-[11px] text-rose-700">
+              รถ: <strong className="text-ems-ink">{activeEmergencies[0].vehicle_code || 'EMS'}</strong> | สถานะ:{' '}
+              <strong className="text-ems-ink">{activeEmergencies[0].status}</strong>
             </span>
           </div>
         </div>
@@ -269,9 +291,9 @@ export const CommandCenterMapPage: React.FC = () => {
       {/* Main Workspace Layout (Section 32) */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
         {/* Left Side Panel: Missions, Tracking Health & Fleet List */}
-        <aside className="w-full md:w-80 lg:w-96 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 h-72 md:h-full overflow-hidden">
+        <aside className="w-full md:w-80 lg:w-96 bg-ems-surface border-r border-ems-border flex flex-col shrink-0 h-72 md:h-full overflow-hidden">
           {/* Tracking Health Widget (Section 33) */}
-          <div className="p-2 border-b border-slate-800 bg-slate-950/50">
+          <div className="p-2 border-b border-ems-border bg-ems-canvas/50">
             <TrackingHealthWidget
               summary={healthSummary}
               onFilterAlerts={() => setCurrentFilter('TRACKING_ALERT')}
@@ -279,10 +301,10 @@ export const CommandCenterMapPage: React.FC = () => {
           </div>
 
           {/* Panel Header */}
-          <div className="p-2.5 bg-slate-800/80 border-b border-slate-700/80 flex items-center justify-between text-xs">
+          <div className="p-2.5 bg-ems-inset/80 border-b border-ems-border/80 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <Ambulance className="w-4 h-4 text-sky-400" />
-              <span className="font-bold text-slate-100">รายการรถ EMS & ภารกิจ</span>
+              <Ambulance className="w-4 h-4 text-sky-700" />
+              <span className="font-bold text-ems-ink">รายการรถ EMS & ภารกิจ</span>
             </div>
             <div className="flex items-center gap-1.5">
               <button
@@ -296,7 +318,7 @@ export const CommandCenterMapPage: React.FC = () => {
               <button
                 onClick={loadData}
                 title="รีเฟรชข้อมูล GPS"
-                className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-700 transition-colors"
+                className="text-ems-muted hover:text-ems-ink p-1 rounded hover:bg-slate-200 transition-colors"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               </button>
@@ -304,7 +326,7 @@ export const CommandCenterMapPage: React.FC = () => {
           </div>
 
           {/* Vehicle List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-800/80 p-2 space-y-1.5 scrollbar-thin">
+          <div className="flex-1 overflow-y-auto divide-y divide-ems-border/80 p-2 space-y-1.5 scrollbar-thin">
             {filteredVehicles.map((v) => {
               const isSelected = selectedVehicle?.id === v.id;
               const isLost = v.tracking_health === 'TRACKING_LOST';
@@ -323,8 +345,8 @@ export const CommandCenterMapPage: React.FC = () => {
                   }}
                   className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'bg-sky-950/60 border-sky-500 shadow-md shadow-sky-900/30'
-                      : 'bg-slate-800/50 border-slate-700/60 hover:bg-slate-800/90 hover:border-slate-600'
+                      ? 'bg-sky-50/60 border-sky-500 shadow-md shadow-sky-900/30'
+                      : 'bg-ems-inset/50 border-ems-border/60 hover:bg-ems-inset/90 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -332,18 +354,18 @@ export const CommandCenterMapPage: React.FC = () => {
                       <span className="text-base">🚑</span>
                       <div>
                         <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-sm text-white">{v.vehicle_code}</span>
+                          <span className="font-bold text-sm text-ems-ink">{v.vehicle_code}</span>
                           {isStopped ? (
-                            <span className="px-1.5 py-0.2 rounded bg-slate-700 text-slate-300 text-[10px] font-semibold">
+                            <span className="px-1.5 py-0.2 rounded bg-slate-200 text-ems-muted text-[10px] font-semibold">
                               🅿️ จอดนิ่ง
                             </span>
                           ) : v.current_speed > 0 && !isLost ? (
-                            <span className="px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 text-[10px] font-semibold border border-sky-500/30">
+                            <span className="px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-700 text-[10px] font-semibold border border-sky-500/30">
                               {Math.round(v.current_speed)} km/h
                             </span>
                           ) : null}
                         </div>
-                        <p className="text-[11px] text-slate-400">{v.registration_no}</p>
+                        <p className="text-[11px] text-ems-muted">{v.registration_no}</p>
                       </div>
                     </div>
 
@@ -351,14 +373,14 @@ export const CommandCenterMapPage: React.FC = () => {
                       <span
                         className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
                           v.status === 'AVAILABLE'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                            ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/40'
                             : v.status === 'EN_ROUTE'
-                            ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+                            ? 'bg-sky-500/20 text-sky-700 border border-sky-500/40'
                             : v.status === 'AT_SCENE'
-                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                            ? 'bg-rose-500/20 text-rose-700 border border-rose-500/40'
                             : isLost
-                            ? 'bg-slate-600/30 text-slate-400 border border-slate-600'
-                            : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                            ? 'bg-slate-600/30 text-ems-muted border border-slate-300'
+                            : 'bg-amber-500/20 text-amber-700 border border-amber-500/40'
                         }`}
                       >
                         {v.status}
@@ -373,16 +395,16 @@ export const CommandCenterMapPage: React.FC = () => {
 
                   {/* Warning tag */}
                   {(isLost || isDelayed) && (
-                    <div className="mt-1.5 px-2 py-1 rounded bg-amber-950/40 border border-amber-500/30 text-[10px] text-amber-300 flex items-center gap-1">
-                      <AlertTriangle className="w-3 h-3 text-amber-400 shrink-0" />
+                    <div className="mt-1.5 px-2 py-1 rounded bg-amber-50/40 border border-amber-500/30 text-[10px] text-amber-700 flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3 text-amber-700 shrink-0" />
                       <span>{isLost ? 'Tracking Lost (พิกัดล่าสุดที่บันทึกได้)' : 'Tracking Delayed'}</span>
                     </div>
                   )}
 
                   {/* Active mission subtitle & track button */}
                   {v.active_mission && (
-                    <div className="mt-2 pt-1.5 border-t border-slate-700/60 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-400 truncate max-w-[140px]">
+                    <div className="mt-2 pt-1.5 border-t border-ems-border/60 flex items-center justify-between text-[11px]">
+                      <span className="text-ems-muted truncate max-w-[140px]">
                         {v.active_mission.mission_no}
                       </span>
                       <button
@@ -391,7 +413,7 @@ export const CommandCenterMapPage: React.FC = () => {
                           e.stopPropagation();
                           handleShowMissionTrack(v.active_mission!.mission_no);
                         }}
-                        className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 hover:underline"
+                        className="text-cyan-700 hover:text-cyan-700 font-semibold flex items-center gap-1 hover:underline"
                       >
                         <Route className="w-3 h-3" />
                         <span>ดู Track</span>
@@ -407,7 +429,7 @@ export const CommandCenterMapPage: React.FC = () => {
                         e.stopPropagation();
                         handleSimulateGps(v.id);
                       }}
-                      className="px-2 py-0.5 text-[10px] bg-slate-700 hover:bg-slate-600 text-sky-300 rounded border border-slate-600 transition-colors"
+                      className="px-2 py-0.5 text-[10px] bg-slate-200 hover:bg-slate-600 text-sky-700 rounded border border-slate-300 transition-colors"
                       title="จำลองพิกัด GPS เคลื่อนที่เพื่อทดสอบการตอบสนองของแผนที่"
                     >
                       ⚡ จำลอง GPS เคลื่อนที่
@@ -419,7 +441,7 @@ export const CommandCenterMapPage: React.FC = () => {
           </div>
 
           {/* Footer of Left Panel */}
-          <div className="p-2.5 bg-slate-900 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+          <div className="p-2.5 bg-ems-surface border-t border-ems-border text-[11px] text-ems-muted flex items-center justify-between">
             <span>แสดง {filteredVehicles.length} / {vehicles.length} คัน</span>
             <span>อัปเดต: {lastRefreshed.toLocaleTimeString('th-TH')}</span>
           </div>
@@ -438,11 +460,11 @@ export const CommandCenterMapPage: React.FC = () => {
 
           {/* Fail-Safe Warning if Map Provider fails (Section 42) */}
           {mapError ? (
-            <div className="absolute inset-0 flex items-center justify-center p-6 bg-slate-900 text-center">
-              <div className="max-w-md p-6 bg-slate-800 border border-amber-500 rounded-2xl shadow-2xl">
-                <AlertTriangle className="w-12 h-12 text-amber-400 mx-auto mb-3" />
-                <h3 className="font-bold text-lg text-white mb-2">Map Provider ไม่ตอบสนอง</h3>
-                <p className="text-xs text-slate-300 mb-4">
+            <div className="absolute inset-0 flex items-center justify-center p-6 bg-ems-surface text-center">
+              <div className="max-w-md p-6 bg-ems-inset border border-amber-500 rounded-2xl shadow-2xl">
+                <AlertTriangle className="w-12 h-12 text-amber-700 mx-auto mb-3" />
+                <h3 className="font-bold text-lg text-ems-ink mb-2">Map Provider ไม่ตอบสนอง</h3>
+                <p className="text-xs text-ems-muted mb-4">
                   ระบบเข้าสู่โหมด Fail-Safe Telematics: แผนที่อาจแสดงผลไม่ได้ชั่วคราว
                   แต่งานสั่งการ EMS รับแจ้งเหตุ และการบันทึก GPS ยังทำงานได้ตามปกติ
                 </p>
@@ -455,16 +477,16 @@ export const CommandCenterMapPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className={isMapFullscreen ? "fixed inset-0 z-[1500] bg-slate-950 flex flex-col" : "flex-1 relative min-h-[380px]"}>
+            <div className={isMapFullscreen ? "fixed inset-0 z-[1500] bg-ems-canvas flex flex-col" : "flex-1 relative min-h-[380px]"}>
               {/* Fullscreen Map Toggle Button */}
               <button
                 onClick={() => setIsMapFullscreen(!isMapFullscreen)}
-                className="absolute top-4 right-4 z-[1000] px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl border border-slate-700 shadow-xl flex items-center gap-1.5 backdrop-blur-md active:scale-95 transition-all"
+                className="absolute top-4 right-4 z-[1000] px-3 py-1.5 bg-ems-surface/90 hover:bg-ems-inset text-ems-ink text-xs font-semibold rounded-xl border border-ems-border shadow-xl flex items-center gap-1.5 backdrop-blur-md active:scale-95 transition-all"
                 title={isMapFullscreen ? "ย่อแผนที่" : "เปิดแผนที่เต็มจอ"}
               >
                 {isMapFullscreen ? (
                   <>
-                    <X className="w-3.5 h-3.5 text-rose-400" />
+                    <X className="w-3.5 h-3.5 text-rose-700" />
                     <span>ย่อแผนที่</span>
                   </>
                 ) : (
@@ -540,16 +562,16 @@ export const CommandCenterMapPage: React.FC = () => {
                           )}
                           <Marker position={[sceneLat, sceneLng]} icon={sceneIcon}>
                             <Popup minWidth={220}>
-                              <div className="p-3 text-slate-100 space-y-1.5">
-                                <div className="flex items-center gap-1.5 text-rose-400 font-bold text-sm border-b border-slate-700 pb-1">
+                              <div className="p-3 text-ems-ink space-y-1.5">
+                                <div className="flex items-center gap-1.5 text-rose-700 font-bold text-sm border-b border-ems-border pb-1">
                                   <span>🚨</span>
                                   <span>{m.mission_no} (จุดเกิดเหตุ)</span>
                                 </div>
-                                <p className="text-xs text-slate-300 font-medium">
+                                <p className="text-xs text-ems-muted font-medium">
                                   {m.scene_description || 'ไม่มีคำอธิบายจุดเกิดเหตุ'}
                                 </p>
-                                <div className="text-[11px] text-slate-400 pt-1">
-                                  สถานะ: <strong className="text-white">{m.status}</strong>
+                                <div className="text-[11px] text-ems-muted pt-1">
+                                  สถานะ: <strong className="text-ems-ink">{m.status}</strong>
                                 </div>
                               </div>
                             </Popup>
@@ -565,8 +587,8 @@ export const CommandCenterMapPage: React.FC = () => {
                     icon={playbackIcon}
                   >
                     <Popup>
-                      <div className="p-2 text-xs text-slate-100 space-y-1">
-                        <p className="font-bold text-cyan-400">🚗 PLAYBACK POSITION</p>
+                      <div className="p-2 text-xs text-ems-ink space-y-1">
+                        <p className="font-bold text-cyan-700">🚗 PLAYBACK POSITION</p>
                         <p>เวลา: {new Date(playbackPoint.recorded_at).toLocaleTimeString('th-TH')}</p>
                         <p>ความเร็ว: {Math.round(playbackPoint.speed)} กม./ชม.</p>
                         <p>ทิศทาง: {playbackPoint.heading ?? '—'}°</p>
@@ -574,10 +596,16 @@ export const CommandCenterMapPage: React.FC = () => {
                     </Popup>
                   </Marker>
                 )}
+
+                {/* Live Real-Time Telematics Simulator (Simulation & Moving Ambulance HUD) */}
+                <LiveTelematicsSimulator
+                  vehicles={vehicles}
+                  onVehicleTelematicsUpdate={handleLiveTelematicsUpdate}
+                />
               </MapContainer>
 
               {/* Quick Map Legend Badge at Bottom Right */}
-              <div className="absolute bottom-4 right-4 z-[1000] bg-slate-900/90 border border-slate-700/80 backdrop-blur-md rounded-xl p-2.5 text-[11px] text-slate-300 shadow-xl hidden md:flex items-center gap-3">
+              <div className="absolute bottom-4 right-4 z-[1000] bg-ems-surface/90 border border-ems-border/80 backdrop-blur-md rounded-xl p-2.5 text-[11px] text-ems-muted shadow-xl hidden md:flex items-center gap-3">
                 <div className="flex items-center gap-1">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                   <span>พร้อมใช้งาน</span>
@@ -604,30 +632,30 @@ export const CommandCenterMapPage: React.FC = () => {
 
           {/* Bottom Active Mission Track Details Drawer (Phase MAP-2) */}
           {selectedTrack && (
-            <div className="bg-slate-900/95 border-t border-cyan-500/40 p-3 px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-2xl backdrop-blur-md z-[1000]">
+            <div className="bg-ems-surface/95 border-t border-cyan-500/40 p-3 px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-2xl backdrop-blur-md z-[1000]">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40">
+                  <span className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-700 font-bold border border-cyan-500/40">
                     ACTUAL GPS TRACK
                   </span>
-                  <span className="font-bold text-white text-sm">
+                  <span className="font-bold text-ems-ink text-sm">
                     {selectedTrack.mission_no} ({selectedTrack.vehicle_code})
                   </span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-300 text-[11px]">
+                <div className="flex items-center gap-3 text-ems-muted text-[11px]">
                   <span>
                     ระยะทางที่วิ่งจริง:{' '}
-                    <strong className="text-emerald-400 text-sm font-bold">
+                    <strong className="text-emerald-700 text-sm font-bold">
                       {selectedTrack.validated_distance_km} กม.
                     </strong>
                   </span>
                   <span>|</span>
                   <span>
                     จุด GPS ที่บันทึก:{' '}
-                    <strong className="text-cyan-300">{selectedTrack.points_count} จุด</strong>
+                    <strong className="text-cyan-700">{selectedTrack.points_count} จุด</strong>
                   </span>
                   <span>|</span>
-                  <span className="text-slate-400 italic">
+                  <span className="text-ems-muted italic">
                     * เส้นทางจริงที่บันทึกจาก Telematics ไม่ใช่แบบจำลอง
                   </span>
                 </div>
@@ -648,7 +676,7 @@ export const CommandCenterMapPage: React.FC = () => {
                     setIsPlaybackOpen(false);
                     setPlaybackPoint(null);
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-ems-inset hover:bg-slate-200 text-ems-muted text-xs font-semibold flex items-center gap-1 transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>ปิดเส้นทาง</span>

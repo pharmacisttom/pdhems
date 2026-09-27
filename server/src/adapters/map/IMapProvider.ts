@@ -29,8 +29,8 @@ export class OpenStreetMapProvider implements IMapProvider {
 
   getDefaultCenter(): { latitude: number; longitude: number; zoom: number } {
     return {
-      latitude: 13.693822, // Photharam Hospital (PDH)
-      longitude: 99.851921,
+      latitude: 12.9756, // Pluakdaeng Hospital (PDH) Rayong
+      longitude: 101.2155,
       zoom: 12
     };
   }

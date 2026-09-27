@@ -88,25 +88,25 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
   if (points.length === 0) return null;
 
   return (
-    <div className="absolute bottom-4 left-4 right-4 md:left-6 md:right-auto md:w-[540px] z-[1000] bg-slate-900/95 backdrop-blur-md border border-slate-800 rounded-2xl p-4 shadow-2xl text-slate-100 space-y-3">
+    <div className="absolute bottom-4 left-4 right-4 md:left-6 md:right-auto md:w-[540px] z-[1000] bg-ems-surface/95 backdrop-blur-md border border-ems-border rounded-2xl p-4 shadow-2xl text-ems-ink space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <History className="w-4 h-4 text-cyan-400" />
-          <span className="font-bold text-xs text-white">
+          <History className="w-4 h-4 text-cyan-700" />
+          <span className="font-bold text-xs text-ems-ink">
             เล่นเส้นทางย้อนหลัง (Trip Playback)
           </span>
-          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-700 border border-sky-500/30">
             {track.mission_no}
           </span>
-          <span className="text-[11px] text-slate-400 font-medium">
+          <span className="text-[11px] text-ems-muted font-medium">
             ({track.vehicle_code})
           </span>
         </div>
 
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors"
+          className="text-ems-muted hover:text-ems-ink p-1 rounded-lg hover:bg-ems-inset transition-colors"
           title="ปิดการเล่นย้อนหลัง"
         >
           <X className="w-4 h-4" />
@@ -115,32 +115,32 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
 
       {/* Telemetry info row */}
       {currentPoint && (
-        <div className="grid grid-cols-3 gap-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 text-xs">
+        <div className="grid grid-cols-3 gap-2 bg-ems-canvas/60 p-2.5 rounded-xl border border-ems-border/80 text-xs">
           <div className="flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-slate-400" />
+            <Clock className="w-3.5 h-3.5 text-ems-muted" />
             <div>
-              <span className="text-[10px] text-slate-400 block">เวลาที่บันทึก</span>
-              <span className="font-mono font-semibold text-slate-200">
+              <span className="text-[10px] text-ems-muted block">เวลาที่บันทึก</span>
+              <span className="font-mono font-semibold text-ems-ink">
                 {new Date(currentPoint.recorded_at).toLocaleTimeString('th-TH')}
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <Gauge className="w-3.5 h-3.5 text-sky-400" />
+            <Gauge className="w-3.5 h-3.5 text-sky-700" />
             <div>
-              <span className="text-[10px] text-slate-400 block">ความเร็วขณะนั้น</span>
-              <span className="font-bold text-sky-300">
+              <span className="text-[10px] text-ems-muted block">ความเร็วขณะนั้น</span>
+              <span className="font-bold text-sky-700">
                 {Math.round(currentPoint.speed)} กม./ชม.
               </span>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <Compass className="w-3.5 h-3.5 text-indigo-400" />
+            <Compass className="w-3.5 h-3.5 text-indigo-700" />
             <div>
-              <span className="text-[10px] text-slate-400 block">ทิศทาง</span>
-              <span className="font-mono text-slate-200">
+              <span className="text-[10px] text-ems-muted block">ทิศทาง</span>
+              <span className="font-mono text-ems-ink">
                 {currentPoint.heading ?? '—'}°
               </span>
             </div>
@@ -150,7 +150,7 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
 
       {/* Data Gap Notice */}
       {dataGapNotice && (
-        <div className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-400 text-[11px] flex items-center gap-1.5">
+        <div className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-700 text-[11px] flex items-center gap-1.5">
           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
           <span>{dataGapNotice}</span>
         </div>
@@ -158,9 +158,9 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
 
       {/* Scrubber Range Slider */}
       <div className="space-y-1">
-        <div className="flex justify-between text-[11px] text-slate-400">
+        <div className="flex justify-between text-[11px] text-ems-muted">
           <span>จุดเริ่มต้น</span>
-          <span className="font-mono text-cyan-400 font-bold">
+          <span className="font-mono text-cyan-700 font-bold">
             จุดที่ {currentIndex + 1} / {points.length}
           </span>
           <span>จุดสิ้นสุด</span>
@@ -174,7 +174,7 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
             setIsPlaying(false);
             setCurrentIndex(Number(e.target.value));
           }}
-          className="w-full accent-cyan-400 cursor-pointer h-2 bg-slate-800 rounded-lg"
+          className="w-full accent-cyan-400 cursor-pointer h-2 bg-ems-inset rounded-lg"
         />
       </div>
 
@@ -191,7 +191,7 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
 
           <button
             onClick={handleReset}
-            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors"
+            className="p-1.5 bg-ems-inset hover:bg-slate-200 text-ems-muted rounded-xl transition-colors"
             title="เริ่มใหม่ตั้งแต่ต้น"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -199,7 +199,7 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
         </div>
 
         {/* Speed Multipliers */}
-        <div className="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center gap-1 bg-ems-canvas/60 p-1 rounded-xl border border-ems-border">
           <FastForward className="w-3 h-3 text-slate-500 ml-1" />
           {[1, 2, 5, 10].map((spd) => (
             <button
@@ -208,7 +208,7 @@ export const TripPlaybackScrubber: React.FC<TripPlaybackScrubberProps> = ({
               className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-colors ${
                 playbackSpeed === spd
                   ? 'bg-cyan-500 text-slate-950'
-                  : 'text-slate-400 hover:text-slate-200'
+                  : 'text-ems-muted hover:text-ems-ink'
               }`}
             >
               {spd}x

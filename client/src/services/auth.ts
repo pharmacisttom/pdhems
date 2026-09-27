@@ -1,4 +1,19 @@
-export interface SessionUser { id: number; username: string; full_name: string; role: string; navigation: string[]; employee_code?: string; status: string; must_change_password: boolean; }
+export interface SessionUser {
+  id: number;
+  username: string;
+  full_name: string;
+  role: string;
+  navigation: string[];
+  employee_code?: string;
+  status: string;
+  must_change_password: boolean;
+  password_expired?: boolean;
+  password_age_days?: number;
+  password_days_remaining?: number;
+  citizen_id?: string;
+  phone?: string;
+  agency_affiliation?: string;
+}
 let generation = 0;
 export function clearIdentity() {
   generation++;

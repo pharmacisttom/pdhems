@@ -8,9 +8,14 @@ export default {
     extend: {
       colors: {
         ems: {
-          dark: '#0f172a',
-          card: '#1e293b',
-          border: '#334155',
+          canvas: '#f0f5fa',
+          surface: '#ffffff',
+          inset: '#f4f7fb',
+          ink: '#16324f',
+          muted: '#52677e',
+          dark: '#16324f',
+          card: '#ffffff',
+          border: '#dbe5ef',
           primary: '#0284c7',
           emergency: '#ef4444',
           warning: '#f59e0b',
