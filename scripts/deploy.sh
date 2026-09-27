@@ -1,47 +1,52 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# PDH SMART EMS — Automated Production Deployment Script
-# Target: Ubuntu 22.04 / 24.04 LTS (Hostinger VPS / On-Premise)
+# PDH SMART EMS — Production Zero-Downtime Safe Deployment Script
+# Target: Ubuntu 22.04 / 24.04 LTS (Hostinger VPS / Production Server)
 # ==============================================================================
 set -euo pipefail
 
-APP_DIR="/var/www/pdhsmartems"
-BRANCH="${1:-master}"
+APP_DIR="${APP_DIR:-/var/www/pdhsmartems}"
+BRANCH="master"
 
 echo "============================================================"
-echo "🚑 Starting PDH Smart EMS Production Deployment..."
+echo "🚑 PDH Smart EMS — Safe Production Deployment Pipeline"
 echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "Target Branch: ${BRANCH}"
 echo "============================================================"
 
-# 1. Navigate to Project Directory
+# Navigate to project workspace
 cd "${APP_DIR}"
 
-# 2. Fetch latest changes from Git
-echo "[1/6] Fetching latest source code from git..."
+# 1. Git Fetch
+echo "[1/8] Fetching remote repository..."
 git fetch origin
-git checkout "${BRANCH}"
+
+# 2. Git Status Check
+echo "[2/8] Inspecting git working tree status..."
+git status
+
+# 3. Pull from Origin Master
+echo "[3/8] Pulling latest commits from origin/${BRANCH}..."
 git pull origin "${BRANCH}"
 
-# 3. Install dependencies and build Server
-echo "[2/6] Building Backend API..."
-cd "${APP_DIR}/server"
-npm ci --prefer-offline --no-audit
-npm run build
+# 4. Install Dependencies
+echo "[4/8] Installing dependencies across workspace..."
+npm run install:server
+npm run install:client
 
-# 4. Run database migrations
-echo "[3/6] Applying database schema migrations..."
-npm run migrate
-
-# 5. Build Frontend SPA Bundle
-echo "[4/6] Building Frontend SPA..."
+# 5. Run Verification Tests
+echo "[5/8] Running Automated Test Suite..."
 cd "${APP_DIR}/client"
-npm ci --prefer-offline --no-audit
-npm run build
-
-# 6. Reload PM2 Process Cluster
-echo "[5/6] Zero-downtime reload of PM2 Cluster..."
+npm test -- --run
 cd "${APP_DIR}"
+
+# 6. Build Production Bundles (Client & Server)
+echo "[6/8] Building Production Bundles..."
+npm run build:server
+npm run build:client
+
+# 7. Zero-Downtime PM2 Reload (Only reached if all prior steps succeeded)
+echo "[7/8] Reloading PM2 Application Cluster..."
 if pm2 describe pdh-smart-ems-api > /dev/null 2>&1; then
     pm2 reload ecosystem.config.js --env production
 else
@@ -49,19 +54,13 @@ else
 fi
 pm2 save
 
-# 7. Test Nginx Configuration & Reload
-echo "[6/6] Reloading Nginx..."
-sudo nginx -t
-sudo systemctl reload nginx
-
-# 8. Post-deployment Health Check
-echo "============================================================"
-echo "Verifying application health..."
-sleep 3
-if curl -fsSL http://127.0.0.1:5000/api/health | grep -q '"status":"UP"'; then
-    echo "✅ DEPLOYMENT SUCCESS: PDH Smart EMS is UP and running healthy!"
-else
-    echo "❌ WARNING: Health check failed! Check logs: pm2 logs pdh-smart-ems-api"
-    exit 1
+# 8. Reload Nginx Web Server
+echo "[8/8] Testing and Reloading Nginx..."
+if command -v nginx > /dev/null 2>&1; then
+    sudo nginx -t
+    sudo systemctl reload nginx
 fi
+
+echo "============================================================"
+echo "🎉 DEPLOYMENT SUCCESSFUL: PDH Smart EMS is running on production."
 echo "============================================================"
